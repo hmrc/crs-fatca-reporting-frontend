@@ -46,10 +46,10 @@ trait Formatters {
         baseFormatter
           .bind(key, data)
           .flatMap {
-          case "true"  => Right(true)
-          case "false" => Right(false)
-          case _       => Left(Seq(FormError(key, invalidKey, args)))
-        }
+            case "true"  => Right(true)
+            case "false" => Right(false)
+            case _       => Left(Seq(FormError(key, invalidKey, args)))
+          }
 
       def unbind(key: String, value: Boolean) = Map(key -> value.toString)
     }
@@ -71,15 +71,19 @@ trait Formatters {
             case s =>
               nonFatalCatch
                 .either(s.toInt)
-                .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
-        }
+                .left
+                .map(
+                  _ => Seq(FormError(key, nonNumericKey, args))
+                )
+          }
 
       override def unbind(key: String, value: Int) =
         baseFormatter.unbind(key, value.toString)
     }
 
-
-  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): Formatter[A] =
+  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)(implicit
+    ev: Enumerable[A]
+  ): Formatter[A] =
     new Formatter[A] {
 
       private val baseFormatter = stringFormatter(requiredKey, args)
@@ -97,13 +101,13 @@ trait Formatters {
     }
 
   private[mappings] def currencyFormatter(
-                                           requiredKey: String,
-                                           invalidNumericKey: String,
-                                           nonNumericKey: String,
-                                           args: Seq[String] = Seq.empty
-                                         ) : Formatter[BigDecimal] =
+    requiredKey: String,
+    invalidNumericKey: String,
+    nonNumericKey: String,
+    args: Seq[String] = Seq.empty
+  ): Formatter[BigDecimal] =
     new Formatter[BigDecimal] {
-      val isNumeric = """(^£?\d*$)|(^£?\d*\.\d*$)"""
+      val isNumeric    = """(^£?\d*$)|(^£?\d*\.\d*$)"""
       val validDecimal = """(^£?\d*$)|(^£?\d*\.\d{1,2}$)"""
 
       private val baseFormatter = stringFormatter(requiredKey, args)
@@ -120,7 +124,10 @@ trait Formatters {
             case s =>
               nonFatalCatch
                 .either(BigDecimal(s.replace("£", "")))
-                .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
+                .left
+                .map(
+                  _ => Seq(FormError(key, nonNumericKey, args))
+                )
           }
 
       override def unbind(key: String, value: BigDecimal): Map[String, String] =
