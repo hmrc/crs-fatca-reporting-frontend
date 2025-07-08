@@ -1,5 +1,5 @@
-@*
- * Copyright 2025 HM Revenue & Customs
+/*
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    layout: templates.Layout
-)
+package forms.mappings
 
-@()(implicit request: Request[_], messages: Messages)
+import forms.mappings.Mappings
+import play.api.data.Form
 
-@layout(
-    pageTitle    = titleNoForm(messages("index.title")),
-    showBackLink = false
-) {
+import javax.inject.Inject
 
-    <h1 class="govuk-heading-xl">@messages("index.heading")</h1>
+class UploadXMLFormProvider @Inject() extends Mappings {
 
-    <p class="govuk-body">@messages("index.guidance")</p>
+  def apply(): Form[String] =
+    Form(
+      "file-upload" -> text()
+    )
 }
