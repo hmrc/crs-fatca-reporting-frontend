@@ -21,7 +21,7 @@ import java.util.concurrent.Executors
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionRepositorySpec
-  extends AnyFreeSpec
+    extends AnyFreeSpec
     with Matchers
     with DefaultPlayMongoRepositorySupport[UserAnswers]
     with ScalaFutures
@@ -29,7 +29,7 @@ class SessionRepositorySpec
     with OptionValues
     with MockitoSugar {
 
-  private val instant = Instant.now.truncatedTo(ChronoUnit.MILLIS)
+  private val instant          = Instant.now.truncatedTo(ChronoUnit.MILLIS)
   private val stubClock: Clock = Clock.fixed(instant, ZoneId.systemDefault)
 
   private val userAnswers = UserAnswers("id", Json.obj("foo" -> "bar"), Instant.ofEpochSecond(1))
@@ -37,10 +37,10 @@ class SessionRepositorySpec
   private val mockAppConfig = mock[FrontendAppConfig]
   when(mockAppConfig.cacheTtl) thenReturn 1L
 
-  protected override val repository: SessionRepository = new SessionRepository(
+  override protected val repository: SessionRepository = new SessionRepository(
     mongoComponent = mongoComponent,
-    appConfig      = mockAppConfig,
-    clock          = stubClock
+    appConfig = mockAppConfig,
+    clock = stubClock
   )(scala.concurrent.ExecutionContext.Implicits.global)
 
   ".set" - {
@@ -140,8 +140,9 @@ class SessionRepositorySpec
 
       MDC.put("test", "foo")
 
-      f.map { _ =>
-        MDC.get("test") mustEqual "foo"
+      f.map {
+        _ =>
+          MDC.get("test") mustEqual "foo"
       }.futureValue
     }
 }
