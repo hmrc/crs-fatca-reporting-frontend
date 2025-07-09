@@ -30,7 +30,7 @@ $("#uploadForm").submit(function (e) {
         setTimeout(function () {
             this.submit();
             disableFileUpload();
-        }.bind(this), 0);
+        }.bind(this), 3000);
     }
 
 });
