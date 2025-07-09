@@ -17,9 +17,10 @@
 package controllers
 
 import base.SpecBase
+import forms.mappings.UploadXMLFormProvider
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.IndexView
+import play.api.test.Helpers.*
+import views.html.UploadXMLView
 
 class IndexControllerSpec extends SpecBase {
 
@@ -30,15 +31,18 @@ class IndexControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
+        val formProvider = new UploadXMLFormProvider()
+        val form         = formProvider()
+
         val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[IndexView]
+        val view = application.injector.instanceOf[UploadXMLView]
 
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form)(request, messages(application)).toString
       }
     }
   }
