@@ -28,9 +28,8 @@ $("#uploadForm").submit(function (e) {
 
         addUploadSpinner();
         setTimeout(function () {
-            this.submit();
             disableFileUpload();
-        }.bind(this), 3000);
+        }.bind(this), 0);
     }
 
 });
