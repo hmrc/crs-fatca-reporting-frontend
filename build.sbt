@@ -38,8 +38,15 @@ lazy val microservice = (project in file("."))
       ".*BuildInfo.*;.*javascript.*;.*Routes.*;.*viewmodels.*;.*ViewUtils.*;.*GuiceInjector;" +
       ".*ControllerConfiguration;.*LanguageSwitchController",
     ScoverageKeys.coverageMinimumStmtTotal := 60, //todo : increase back to 78 when we have developed some pages
-    ScoverageKeys.coverageFailOnMinimum    := true,
-    ScoverageKeys.coverageHighlighting     := true,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true,
+      scalacOptions := scalacOptions.value.distinct,
+    scalacOptions ++= Seq(
+      "-feature",
+      "-Wconf:cat=deprecation:s",
+      "-Wconf:cat=feature:s",
+      "-Wconf:src=target/.*:s"
+    ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     // concatenate js
