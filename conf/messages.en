@@ -47,3 +47,22 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+fileError.title = There is a problem with the formatting of your file
+fileError.heading = There is a problem with the formatting of your file
+fileError.p1 = We cannot accept the file {0} because there is a problem with its formatting.
+fileError.p2 = Check that all:
+fileError.p3 = The file must also have one of the following:
+fileError.p4 = To make sure your XML file is formatted correctly, refer to the:
+fileError.list.l1 = element names are correct
+fileError.list.l2 = elements have an opening and a closing tag
+fileError.list.l3 = tags are correctly nested
+fileError.list.l4 = a CRS_OECD element with an XML namespace (xmlns) of {0} for CRS
+fileError.list.l4.value = "urn:oecd:ties:crs:v3"
+fileError.list.l5 = a FATCA_OECD element with an XML namespace (xmlns) of {0} for FATCA
+fileError.list.l5.value = "urn:oecd:ties:fatca:v2"
+fileError.list.l6 = CRS technical guidance for XML files
+fileError.list.l7 = FATCA technical guidance for XML files
+fileError.list.l8 = Print this page
+fileError.list.l9 = Upload a different file
+fileError.list.l10 = Back to manage your CRS and FATCA reports
