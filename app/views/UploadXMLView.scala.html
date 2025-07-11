@@ -26,7 +26,7 @@
     pageTitle    = titleNoForm(messages("uploadXML.title")),
     showBackLink = true
 ) {
-
+<form method="post" id="uploadForm" enctype="multipart/form-data" novalidate>
     <h1 class="govuk-heading-l">@messages("uploadXML.heading")</h1>
 
     <p class="govuk-body">@messages("uploadXML.p1")</p>
@@ -47,9 +47,13 @@
 
     </div>
 
+    <div id="processing" aria-live="polite" role="status" class="govuk-!-margin-bottom-5 govuk-!-margin-top-5">
+    </div>
+
     <p class="govuk-body">
         @govukButton(
         ButtonViewModel(messages("site.continue")).withAttribute( "id" -> "submit").preventingDoubleClick()
         )
     </p>
+</form>
 }

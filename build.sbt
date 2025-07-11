@@ -3,6 +3,8 @@ import sbt.Def
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
+import scala.collection.Seq
+
 lazy val appName: String = "crs-fatca-reporting-frontend"
 
 ThisBuild / majorVersion := 0
@@ -47,8 +49,36 @@ lazy val microservice = (project in file("."))
     ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    pipelineStages := Seq(digest),
-    Assets / pipelineStages := Seq(concat)
+    // concatenate js
+    Concat.groups := Seq(
+      "javascripts/application.js" ->
+        group(
+          Seq(
+            "javascripts/app.js",
+            "javascripts/jquery-3.6.0.min.js",
+            "javascripts/upload-spinner.js"
+          )
+        )
+    ),
+    uglifyOps := UglifyOps.singleFile,
+    // prevent removal of unused code which generates warning errors due to use of third-party libs
+    uglifyCompressOptions   := Seq("unused=false", "dead_code=false"),
+    pipelineStages          := Seq(digest),
+    Assets / pipelineStages := Seq(concat, uglify),
+    uglify / includeFilter  := GlobFilter("application.js")
+  )
+  .settings(
+    scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"),
+    scalacOptions ++= Seq(
+      "-Wconf:cat=unused-imports&site=.*views\\.html.*:s",
+      "-Wconf:src=.+/test/.+:s",
+      "-Wconf:cat=deprecation&msg=\\.*()\\.*:s",
+      "-Wconf:cat=unused-imports&site=<empty>:s",
+      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
+      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s"
+    )
   )
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(

@@ -28,7 +28,6 @@ $("#uploadForm").submit(function (e) {
 
         addUploadSpinner();
         setTimeout(function () {
-            this.submit();
             disableFileUpload();
         }.bind(this), 0);
     }
