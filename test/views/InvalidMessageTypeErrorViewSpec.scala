@@ -28,17 +28,17 @@ import views.html.InvalidMessageTypeErrorView
 
 class InvalidMessageTypeErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view: InvalidMessageTypeErrorView = app.injector.instanceOf[InvalidMessageTypeErrorView]
+  val view: InvalidMessageTypeErrorView                                 = app.injector.instanceOf[InvalidMessageTypeErrorView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "InvalidMessageTypeErrorView" - {
 
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable = view()
-      lazy val doc = Jsoup.parse(renderedHtml.body)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       val paragraphValues = Seq(
         "You must update the MessageType value to either ‘CRS’ or ‘FATCA’ and then upload the updated file.",
