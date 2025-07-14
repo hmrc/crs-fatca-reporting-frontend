@@ -50,8 +50,8 @@ class InvalidMessageTypeErrorViewSpec extends SpecBase with GuiceOneAppPerSuite 
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
 
       val linkElements = doc.select(".govuk-link")
-      linkElements.select(":contains(CRS technical guidance for XML files)").attr("href") mustEqual "#crs"
-      linkElements.select(":contains(FATCA technical guidance for XML files)").attr("href") mustEqual "#fatca"
+      linkElements.select(":contains(CRS technical guidance for XML files)").attr("href") mustEqual "#"
+      linkElements.select(":contains(FATCA technical guidance for XML files)").attr("href") mustEqual "#"
     }
   }
 
