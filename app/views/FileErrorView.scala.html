@@ -1,0 +1,56 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+        appConfig: FrontendAppConfig,
+        layout: templates.Layout,
+        link: components.Link,
+        printLink: components.PrintLink
+)
+
+@(fileName: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("fileError.title"))) {
+
+    <h1 class="govuk-heading-l">@messages("fileError.heading")</h1>
+
+    <p class="govuk-body">@messages("fileError.p1", fileName)</p>
+
+    <p class="govuk-body govuk-!-margin-bottom-2 govuk-!-padding-top-2">@messages("fileError.p2")</p>
+    <ul class="govuk-list govuk-list--bullet">
+     <li>@messages("fileError.list.l1")</li>
+     <li>@messages("fileError.list.l2")</li>
+     <li>@messages("fileError.list.l3")</li>
+    </ul>
+    <p class="govuk-body govuk-!-margin-bottom-2 govuk-!-padding-top-2">@messages("fileError.p3")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Html(messages("fileError.list.l4",s"""<span class=code--slim>${messages("fileError.list.l4.value")}</span>"""))</li>
+        <li>@Html(messages("fileError.list.l5",s"""<span class=code--slim>${messages("fileError.list.l5.value")}</span>"""))</li>
+    </ul>
+    <p class="govuk-body govuk-!-margin-bottom-2 govuk-!-padding-top-2 govuk-!-display-none-print">@messages("fileError.p4")</p>
+    <ul class="govuk-list govuk-list--bullet govuk-!-display-none-print">
+        <li>@link("#","fileError.list.l6")</li>
+        <li>@link("#","fileError.list.l7")</li>
+    </ul>
+
+    <ul class="govuk-!-padding-top-3 govuk-list govuk-!-display-none-print">
+        <li>@printLink("fileError.list.l8")</li>
+        <li>@link(routes.IndexController.onPageLoad().url,"fileError.list.l9")</li>
+        <li>@link(appConfig.manageFI,"fileError.list.l10")</li>
+    </ul>
+}
