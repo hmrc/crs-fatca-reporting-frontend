@@ -37,13 +37,17 @@ class DataErrorsController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = identify {
     implicit request =>
-      val errors: Seq[GenericError] = Seq(GenericError(1, Message("error1")))
+      //Pass file errors
+    val errors: Seq[GenericError] = Seq(GenericError(1, Message("error1")))
+      //Pass file name
       val fileName: String = "PlaceHolder file name"
-      val regimeBoolean: Boolean = true
-      val regimeType: String = "CRS"
+      //compare regimeTypes and pass messageKey listCRSLink | listFATCALink
+      val regimeType: String = "dataErrors.listCRSLink"
+      //compare regimeTypes and pass "CRS" or "FATCA"
+      val regimeTypeString: String = "CRS"
 
-      Ok(view(errorViewHelper.generateTable(errors), fileName, regimeBoolean, regimeType))
+      Ok(view(errorViewHelper.generateTable(errors), fileName, regimeTypeString, regimeType))
   }
 }

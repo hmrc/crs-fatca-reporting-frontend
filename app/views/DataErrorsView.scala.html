@@ -22,20 +22,20 @@
         govukButton: GovukButton
 )
 
-@(errorRows: Seq[Seq[TableRow]], fileName: String, regime: Boolean, regimeType: String)(implicit request: Request[_], messages: Messages)
+@(errorRows: Seq[Seq[TableRow]], fileName: String, regimeTypeString: String, regimeType: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("dataErrors.title"))) {
 
     <h1 class="govuk-heading-l">@messages("dataErrors.heading")</h1>
 
-    <p class="govuk-body">@messages("dataErrors.p1", fileName)</p>
+    <p class="govuk-body">@messages("dataErrors.p1", fileName, regimeTypeString)</p>
 
-    <h2 class="govuk-heading-m">@messages("dataErrors.subheading1")</h2>
+    <h2 class="govuk-heading-m">@messages("dataErrors.subHeading")</h2>
 
     <ol class="govuk-list govuk-list--number" >
-        <li>@printLink("dataErrors.print").</li>
+        <li>@printLink("fileError.list.l8").</li>
         <li>@messages("dataErrors.bullet2").</li>
-        <li>@Html(messages("dataErrors.bullet3", link("#", "dataErrors.bullet3.link"))).</li>
+        <li>@Html(messages("dataErrors.bullet3", link("#", regimeType))).</li>
         <li>@link(routes.IndexController.onPageLoad().url, "dataErrors.bullet4").</li>
     </ol>
 
