@@ -25,7 +25,7 @@
 
 @(fileName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("fileError.title"))) {
+@layout(pageTitle = titleNoForm(messages("fileError.title")), showBackLink = false) {
 
     <h1 class="govuk-heading-l">@messages("fileError.heading")</h1>
 
