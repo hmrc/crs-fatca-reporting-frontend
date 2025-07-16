@@ -42,4 +42,7 @@ trait ViewHelper {
   def elementText(page: Document, selector: String): String =
     page.select(selector).text()
 
+  def getAllElements(page: Document, selector: String): Elements =
+    page.select(selector)
+
 }

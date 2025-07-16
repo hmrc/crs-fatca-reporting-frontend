@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   }
 
   // handle print click
-  var printLink = document.querySelector('.cbc-print-link');
+  var printLink = document.querySelector('.print-link');
   if (printLink !== null) {
     var html = printLink.innerHTML;
     printLink.innerHTML = '<a class="govuk-link" href="#">' + html + '</a>';
