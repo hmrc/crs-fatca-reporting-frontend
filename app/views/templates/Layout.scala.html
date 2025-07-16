@@ -75,6 +75,7 @@
     @hmrcReportTechnicalIssueHelper()
 }
 
+
 @beforeContent = {
 
     @if(appConfig.languageTranslationEnabled) {
@@ -82,16 +83,23 @@
             if (messages.lang.code == "cy") Cy else En,
             (En, routes.LanguageSwitchController.switchToLanguage("en").url),
             (Cy, routes.LanguageSwitchController.switchToLanguage("cy").url)
-    ))
-}
+        ))
+    }
 
-@{
-        if (showBackLink) {
-            val backLinkCssClass = if (backLink.equalsIgnoreCase("#")) "govuk-default-back-link js-visible" else "js-visible"
-            govukBackLink(BackLinkViewModel(href = backLink).withCssClass(backLinkCssClass))
-        }
+
+    @if(showBackLink) {
+        @govukBackLink(
+            BackLink(
+                attributes = Map("id" -> "back-link"),
+                classes= if (backLink.equalsIgnoreCase("#")) "govuk-default-back-link js-visible" else "js-visible",
+                href="javascript:history.back()",
+                content = HtmlContent(messages("site.back"))
+            )
+        )
     }
 }
+
+
 
 @fullWidthContent(contentBlock: Html) = {
 
