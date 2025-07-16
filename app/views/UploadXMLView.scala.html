@@ -26,10 +26,16 @@
     pageTitle    = titleNoForm(messages("uploadXML.title")),
     showBackLink = true
 ) {
+
 <form method="post" id="uploadForm" enctype="multipart/form-data" novalidate>
-    <h1 class="govuk-heading-l">@messages("uploadXML.heading")</h1>
+    <h1 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--l" for="file-upload">
+            @messages("uploadXML.heading")
+        </label>
+    </h1>
 
     <p class="govuk-body">@messages("uploadXML.p1")</p>
+
 
     <div id="file-upload-container" class="js-visible mt-3">
 
