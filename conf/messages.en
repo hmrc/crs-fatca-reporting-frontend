@@ -48,6 +48,14 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
+invalidMessageType.title = There is a problem with the MessageType value in your file - Send a CRS or FATCA report - GOV.UK
+invalidMessageType.heading = There is a problem with the MessageType value in your file
+invalidMessageType.p1 = You must update the MessageType value to either ‘CRS’ or ‘FATCA’ and then
+invalidMessageType.p1.link.text = upload the updated file.
+invalidMessageType.p2 = Refer to the:
+invalidMessageType.list.l1 = CRS technical guidance for XML files
+invalidMessageType.list.l2 = FATCA technical guidance for XML files
+
 fileError.title = There is a problem with the formatting of your file
 fileError.heading = There is a problem with the formatting of your file
 fileError.p1 = We cannot accept the file {0} because there is a problem with its formatting.
@@ -66,3 +74,4 @@ fileError.list.l7 = FATCA technical guidance for XML files
 fileError.list.l8 = Print this page
 fileError.list.l9 = Upload a different file
 fileError.list.l10 = Back to manage your CRS and FATCA reports
+
