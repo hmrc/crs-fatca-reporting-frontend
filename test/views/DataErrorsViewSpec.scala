@@ -30,12 +30,12 @@ import views.html.DataErrorsView
 
 class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view1: DataErrorsView = app.injector.instanceOf[DataErrorsView]
+  val view1: DataErrorsView                                             = app.injector.instanceOf[DataErrorsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val errorViewHelper: ErrorViewHelper = app.injector.instanceOf[ErrorViewHelper]
+  val errorViewHelper: ErrorViewHelper                                  = app.injector.instanceOf[ErrorViewHelper]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "DataErrorsView" - {
 
@@ -81,7 +81,7 @@ class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
       validateListValues(getAllElements(doc, ".govuk-list"), listValues)
       val linkElements = getAllElements(doc, ".govuk-link")
-      val crsFILink = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
+      val crsFILink    = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
       linkElements.select(":contains(CRS technical guidance for XML files)").attr("href") mustEqual "#"
       linkElements.select(":contains(Upload the file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
       crsFILink mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
@@ -89,8 +89,9 @@ class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
     "should render page components for FATCA regimeType with over 100 errors" in {
 
-      val errors = (1 to 101).map(i => GenericError(i, Message(s"error$i")))
-
+      val errors = (1 to 101).map(
+        i => GenericError(i, Message(s"error$i"))
+      )
 
       val paragraphValues = Seq(
         "We cannot accept the file PlaceHolder file name because it does not meet the FATCA data requirements.",
@@ -119,7 +120,7 @@ class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
       validateListValues(getAllElements(doc, ".govuk-list"), listValues)
       val linkElements = getAllElements(doc, ".govuk-link")
-      val crsFILink = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
+      val crsFILink    = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
       linkElements.select(":contains(FATCA technical guidance for XML files)").attr("href") mustEqual "#"
       linkElements.select(":contains(Upload the file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
       crsFILink mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"

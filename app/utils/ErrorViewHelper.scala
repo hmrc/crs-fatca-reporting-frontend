@@ -23,7 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
 
 import javax.inject.Inject
 
-class ErrorViewHelper @Inject()() {
+class ErrorViewHelper @Inject() () {
 
   def generateTable(error: Seq[GenericError])(implicit messages: Messages): Seq[Seq[TableRow]] =
     error.map {

@@ -39,7 +39,7 @@ class DataErrorsController @Inject() (
     implicit request =>
       //Pass file errors
       val errors: Seq[GenericError] = Seq(GenericError(12345, Message("error1")), GenericError(2, Message("error2")))
-      val errorLength: Int = errors.length
+      val errorLength: Int          = errors.length
       //Pass file name
       val fileName: String = "PlaceHolder file name"
       //compare regimeTypes and pass "CRS" or "FATCA"
