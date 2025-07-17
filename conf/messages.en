@@ -31,6 +31,8 @@ uploadXML.title = Upload an XML file for CRS or FATCA
 uploadXML.heading = Upload an XML file for CRS or FATCA
 uploadXML.p1 = We will automatically check the formatting of the file and send you to another page once completed.
 
+fileCheck.p1 = We are checking your file
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
