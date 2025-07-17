@@ -48,7 +48,7 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
-invalidMessageType.title = There is a problem with the MessageType value in your file - Send a CRS or FATCA report - GOV.UK
+invalidMessageType.title = There is a problem with the MessageType value in your file
 invalidMessageType.heading = There is a problem with the MessageType value in your file
 invalidMessageType.p1 = You must update the MessageType value to either ‘CRS’ or ‘FATCA’ and then
 invalidMessageType.p1.link.text = upload the updated file.
@@ -74,4 +74,11 @@ fileError.list.l7 = FATCA technical guidance for XML files
 fileError.list.l8 = Print this page
 fileError.list.l9 = Upload a different file
 fileError.list.l10 = Back to manage your CRS and FATCA reports
+
+fINotMatching.title = The FI ID in your file does not match any financial institutions in the service
+fINotMatching.heading = The FI ID in your file does not match any financial institutions in the service
+fINotMatching.para.1 = You must update the SendingCompanyIN value in your file to match the FI ID of a financial institution in the service, then {0}.
+fINotMatching.para.1.link = upload the updated file
+fINotMatching.para.2 = If you have not added the financial institution yet, then you must {0}.
+fINotMatching.para.2.link = add a new financial institution first
 

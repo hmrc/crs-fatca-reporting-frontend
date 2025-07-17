@@ -24,3 +24,4 @@ GET         /report/problem/invalid-messagetype          controllers.InvalidMess
 
 GET         /report/problem/invalid-xml                  controllers.FileErrorController.onPageLoad()
 
+GET         /report/problem/fi-not-matching              controllers.FINotMatchingController.onPageLoad()
