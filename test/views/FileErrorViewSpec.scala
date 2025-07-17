@@ -70,7 +70,7 @@ class FileErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting
       val crsFILink    = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
       linkElements.select(":contains(CRS technical guidance for XML files)").attr("href") mustEqual "#"
       linkElements.select(":contains(FATCA technical guidance for XML files)").attr("href") mustEqual "#"
-      linkElements.select(":contains(Upload a different file)").attr("href") mustEqual "/report-for-crs-and-fatca"
+      linkElements.select(":contains(Upload a different file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
       crsFILink mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
     }
 
