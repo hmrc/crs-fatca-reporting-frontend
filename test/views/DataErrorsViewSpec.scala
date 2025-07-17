@@ -30,21 +30,33 @@ import views.html.DataErrorsView
 
 class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view1: DataErrorsView                                             = app.injector.instanceOf[DataErrorsView]
+  val view1: DataErrorsView = app.injector.instanceOf[DataErrorsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val errorViewHelper: ErrorViewHelper = app.injector.instanceOf[ErrorViewHelper]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "DataErrorsView" - {
 
     val errors = Seq(GenericError(12345, Message("error1")), GenericError(2, Message("error2")))
 
+    def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
+      paraValues.foreach(
+        p => allParaValues must include(p)
+      )
+
+    def validateListValues(elements: Elements, listValues: Seq[String]): Unit = {
+      val allListValues = elements.text()
+      listValues.foreach(
+        values => allListValues must include(values)
+      )
+    }
+
     "should render page components for CRS regimeType with under 100 errors" in {
 
       val paragraphValues = Seq(
-        "We cannot accept the file PlaceHolder file name because it does not meet the CRS data requirements.",
+        "We cannot accept the file PlaceHolder file name because it does not meet the CRS data requirements."
       )
 
       val listValues = Seq(
@@ -62,31 +74,55 @@ class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
         2
       )
 
-      lazy val doc                            = Jsoup.parse(renderedHtml.body)
+      lazy val doc = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("There is a problem with your file data")
       getPageHeading(doc) mustEqual "There is a problem with your file data"
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
       validateListValues(getAllElements(doc, ".govuk-list"), listValues)
       val linkElements = getAllElements(doc, ".govuk-link")
-      val crsFILink    = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
+      val crsFILink = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
       linkElements.select(":contains(CRS technical guidance for XML files)").attr("href") mustEqual "#"
       linkElements.select(":contains(Upload the file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
       crsFILink mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
     }
 
-    def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
-      paraValues.foreach(
-        p => allParaValues must include(p)
+    "should render page components for FATCA regimeType with over 100 errors" in {
+
+      val errors = (1 to 101).map(i => GenericError(i, Message(s"error$i")))
+
+
+      val paragraphValues = Seq(
+        "We cannot accept the file PlaceHolder file name because it does not meet the FATCA data requirements.",
+        "Your file has over 100 errors. We only show the first 100 errors on this page."
       )
 
-    def validateListValues(elements: Elements, listValues: Seq[String]): Unit = {
-      val allListValues = elements.text()
-      listValues.foreach(
-        values => allListValues must include(values)
+      val listValues = Seq(
+        "Print this page",
+        "View the errors on this page",
+        "Refer to the FATCA technical guidance for XML files and update your file",
+        "Upload the file"
       )
+
+      val renderedHtml: HtmlFormat.Appendable = view1(
+        errorViewHelper.generateTable(errors),
+        "PlaceHolder file name",
+        "dataErrors.listFATCALink",
+        "FATCA",
+        101
+      )
+
+      lazy val doc = Jsoup.parse(renderedHtml.body)
+
+      getWindowTitle(doc) must include("There is a problem with your file data")
+      getPageHeading(doc) mustEqual "There is a problem with your file data"
+      validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
+      validateListValues(getAllElements(doc, ".govuk-list"), listValues)
+      val linkElements = getAllElements(doc, ".govuk-link")
+      val crsFILink = linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href")
+      linkElements.select(":contains(FATCA technical guidance for XML files)").attr("href") mustEqual "#"
+      linkElements.select(":contains(Upload the file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
+      crsFILink mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
     }
-
   }
-
 }

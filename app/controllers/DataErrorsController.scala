@@ -30,8 +30,6 @@ class DataErrorsController @Inject() (
   override val messagesApi: MessagesApi,
   errorViewHelper: ErrorViewHelper,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: DataErrorsView
 ) extends FrontendBaseController
