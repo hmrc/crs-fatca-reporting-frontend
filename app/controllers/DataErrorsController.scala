@@ -40,14 +40,15 @@ class DataErrorsController @Inject() (
   def onPageLoad: Action[AnyContent] = identify {
     implicit request =>
       //Pass file errors
-    val errors: Seq[GenericError] = Seq(GenericError(1, Message("error1")))
+      val errors: Seq[GenericError] = Seq(GenericError(12345, Message("error1")), GenericError(2, Message("error2")))
+      val errorLength: Int = errors.length
       //Pass file name
       val fileName: String = "PlaceHolder file name"
-      //compare regimeTypes and pass messageKey listCRSLink | listFATCALink
-      val regimeType: String = "dataErrors.listCRSLink"
       //compare regimeTypes and pass "CRS" or "FATCA"
-      val regimeTypeString: String = "CRS"
+      val regimeType: String = "CRS"
+      //compare regimeTypes and pass messageKey listCRSLink | listFATCALink
+      val regimeTypeMessage: String = if (regimeType == "CRS") "dataErrors.listCRSLink" else "dataErrors.listFATCALink"
 
-      Ok(view(errorViewHelper.generateTable(errors), fileName, regimeTypeString, regimeType))
+      Ok(view(errorViewHelper.generateTable(errors), fileName, regimeTypeMessage, regimeType, errorLength))
   }
 }

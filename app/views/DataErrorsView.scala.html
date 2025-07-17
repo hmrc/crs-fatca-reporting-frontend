@@ -14,21 +14,29 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+
 @this(
         layout: templates.Layout,
         table: components.Table2,
         link: components.Link,
+        appConfig: FrontendAppConfig,
         printLink: components.PrintLink,
         govukButton: GovukButton
 )
 
-@(errorRows: Seq[Seq[TableRow]], fileName: String, regimeTypeString: String, regimeType: String)(implicit request: Request[_], messages: Messages)
+@(errorRows: Seq[Seq[TableRow]], fileName: String, regimeTypeString: String, regimeType: String, errorLength: Int)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("dataErrors.title"))) {
+@layout(pageTitle = titleNoForm(messages("dataErrors.title")), showBackLink = false, fullWidth = true) {
 
+<div class="govuk-grid-column-two-thirds govuk-grid-row wrappable">
     <h1 class="govuk-heading-l">@messages("dataErrors.heading")</h1>
 
-    <p class="govuk-body">@messages("dataErrors.p1", fileName, regimeTypeString)</p>
+    <p class="govuk-body govuk-!-padding-bottom-3">@messages("dataErrors.p1", fileName, regimeTypeString)</p>
+
+    @if(errorLength > 100) {
+        <p class="govuk-body govuk-!-padding-bottom-1">@messages("dataErrors.p2")</p>
+    }
 
     <h2 class="govuk-heading-m">@messages("dataErrors.subHeading")</h2>
 
@@ -39,13 +47,17 @@
         <li>@link(routes.IndexController.onPageLoad().url, "dataErrors.bullet4").</li>
     </ol>
 
-    <div class="govuk-!-padding-top-3">
+</div>
+
+    <div class="govuk-!-padding-top-3 data-errors-table">
         @table(
             caption = Some(messages("dataErrors.tableCaption")),
             rows = errorRows,
             head = Some(
-                Seq(HeadCell(Text(messages("dataErrors.tableHeading1"))), HeadCell(Text(messages("dataErrors.tableHeading2"))))
+                Seq(HeadCell(Text(messages("dataErrors.tableHeading1")), classes = "header1"), HeadCell(Text(messages("dataErrors.tableHeading2"))))
             )
         )
     </div>
+
+    <p class="govuk-body govuk-!-padding-top-5">@link(appConfig.manageFI,"fileError.list.l10")</p>
 }
