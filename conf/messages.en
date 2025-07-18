@@ -77,3 +77,19 @@ fileError.list.l8 = Print this page
 fileError.list.l9 = Upload a different file
 fileError.list.l10 = Back to manage your CRS and FATCA reports
 
+
+dataErrors.title = There is a problem with your file data
+dataErrors.heading = There is a problem with your file data
+dataErrors.p1 = We cannot accept the file {0} because it does not meet the {1} data requirements.
+dataErrors.p2 = Your file has over 100 errors. We only show the first 100 errors on this page.
+dataErrors.subHeading = What you can do next
+dataErrors.bullet1 = Print this page
+dataErrors.bullet2 = View the errors on this page
+dataErrors.bullet3 = {0} and update your file
+dataErrors.bullet4 = Upload the file
+dataErrors.listCRSLink = Refer to the CRS technical guidance for XML files
+dataErrors.listFATCALink = Refer to the FATCA technical guidance for XML files
+dataErrors.errorSubHeading = Errors
+dataErrors.tableCaption = Errors
+dataErrors.tableHeading1 = Line
+dataErrors.tableHeading2 = Error
