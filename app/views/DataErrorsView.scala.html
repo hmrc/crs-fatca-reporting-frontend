@@ -34,10 +34,6 @@
 
     <p class="govuk-body govuk-!-padding-bottom-3">@messages("dataErrors.p1", fileName, regimeType)</p>
 
-    @if(errorLength > 100) {
-        <p class="govuk-body govuk-!-padding-bottom-1">@messages("dataErrors.p2")</p>
-    }
-
     <h2 class="govuk-heading-m">@messages("dataErrors.subHeading")</h2>
 
     <ol class="govuk-list govuk-list--number" >
@@ -46,6 +42,10 @@
         <li>@Html(messages("dataErrors.bullet3", link("#", regimeTypeString))).</li>
         <li>@link(routes.IndexController.onPageLoad().url, "dataErrors.bullet4").</li>
     </ol>
+
+    @if(errorLength > 100) {
+    <p class="govuk-body govuk-!-padding-bottom-1">@messages("dataErrors.p2")</p>
+    }
 
 </div>
 
