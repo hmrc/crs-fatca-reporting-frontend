@@ -25,6 +25,11 @@
    	display: none;
    }
 
+  a[href]:after {
+      content: "" !important;
+      display: none !important;
+  }
+
    #secondary-nav {
    	display: none;
    }
