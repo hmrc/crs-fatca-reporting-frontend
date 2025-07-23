@@ -44,7 +44,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
       getWindowTitle(doc) must include(heading)
       getPageHeading(doc) mustEqual heading
     }
-    
+
     "should have paragraphs" in {
       val paragraphValues = Seq(
         "You must update the SendingCompanyIN value in your file to match the FI ID of a financial institution in the service, then upload the updated file.",
@@ -52,7 +52,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
       )
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
     }
-    
+
     "should have links" in {
       val linkElements = getAllElements(doc, ".govuk-link")
 
