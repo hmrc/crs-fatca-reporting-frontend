@@ -30,6 +30,16 @@
       display: none !important;
   }
 
+  a {
+     text-decoration: none !important;
+     color: black !important;
+     pointer-events: none;
+  }
+
+ .manage-reports-link-print-hidden {
+      display: none !important;
+  }
+
    #secondary-nav {
    	display: none;
    }
