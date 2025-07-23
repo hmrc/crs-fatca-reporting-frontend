@@ -93,3 +93,9 @@ dataErrors.errorSubHeading = Errors
 dataErrors.tableCaption = Errors
 dataErrors.tableHeading1 = Line
 dataErrors.tableHeading2 = Error
+
+reportingPeriodError.title = There is a problem with the reporting period in your file
+reportingPeriodError.heading = There is a problem with the reporting period in your file
+reportingPeriodError.p1 = The ReportingPeriod element in your file must contain a date between 31 December 2014 and 31 December {0}.
+reportingPeriodError.p2 = Update the ReportingPeriod and {0}.
+reportingPeriodError.p2.link.text = upload the updated file
