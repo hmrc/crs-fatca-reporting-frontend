@@ -23,9 +23,10 @@ link: components.Link
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("fINotMatching.title"))) {
+@layout(pageTitle = titleNoForm(messages("fINotMatching.title")), showBackLink = false) {
 
     @heading(messages("fINotMatching.heading"))
 
-    <p class="govuk-body">@messages("fINotMatching.para.1") @link("#","fINotMatching.para.1.link")</p>
+    <p class="govuk-body">@Html(messages("fINotMatching.para.1", link("","fINotMatching.para.1.link")))</p>
+    <p class="govuk-body">@Html(messages("fINotMatching.para.2", link("#","fINotMatching.para.2.link")))</p>
 }

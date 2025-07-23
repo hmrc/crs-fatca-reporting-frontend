@@ -31,6 +31,8 @@ uploadXML.title = Upload an XML file for CRS or FATCA
 uploadXML.heading = Upload an XML file for CRS or FATCA
 uploadXML.p1 = We will automatically check the formatting of the file and send you to another page once completed.
 
+fileCheck.p1 = We are checking your file
+
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
@@ -50,8 +52,8 @@ unauthorised.heading = You can’t access this service with this account
 
 invalidMessageType.title = There is a problem with the MessageType value in your file
 invalidMessageType.heading = There is a problem with the MessageType value in your file
-invalidMessageType.p1 = You must update the MessageType value to either ‘CRS’ or ‘FATCA’ and then
-invalidMessageType.p1.link.text = upload the updated file.
+invalidMessageType.p1 = You must update the MessageType value to either ‘CRS’ or ‘FATCA’ and then {0}.
+invalidMessageType.p1.link.text = upload the updated file
 invalidMessageType.p2 = Refer to the:
 invalidMessageType.list.l1 = CRS technical guidance for XML files
 invalidMessageType.list.l2 = FATCA technical guidance for XML files
@@ -82,3 +84,18 @@ fINotMatching.para.1.link = upload the updated file
 fINotMatching.para.2 = If you have not added the financial institution yet, then you must {0}.
 fINotMatching.para.2.link = add a new financial institution first
 
+dataErrors.title = There is a problem with your file data
+dataErrors.heading = There is a problem with your file data
+dataErrors.p1 = We cannot accept the file {0} because it does not meet the {1} data requirements.
+dataErrors.p2 = Your file has over 100 errors. We only show the first 100 errors on this page.
+dataErrors.subHeading = What you can do next
+dataErrors.bullet1 = Print this page
+dataErrors.bullet2 = View the errors on this page
+dataErrors.bullet3 = {0} and update your file
+dataErrors.bullet4 = Upload the file
+dataErrors.listCRSLink = Refer to the CRS technical guidance for XML files
+dataErrors.listFATCALink = Refer to the FATCA technical guidance for XML files
+dataErrors.errorSubHeading = Errors
+dataErrors.tableCaption = Errors
+dataErrors.tableHeading1 = Line
+dataErrors.tableHeading2 = Error

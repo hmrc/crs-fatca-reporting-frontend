@@ -45,7 +45,7 @@ class InvalidMessageTypeErrorViewSpec extends SpecBase with GuiceOneAppPerSuite 
         "Refer to the:"
       )
 
-      getWindowTitle(doc) must include("There is a problem with the MessageType value in your file - Send a CRS or FATCA report - GOV.UK")
+      getWindowTitle(doc) mustEqual "There is a problem with the MessageType value in your file - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual "There is a problem with the MessageType value in your file"
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
 
