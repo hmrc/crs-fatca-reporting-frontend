@@ -18,7 +18,8 @@
         layout: templates.Layout,
         govukButton: GovukButton,
         heading: components.Heading,
-link: components.Link
+        link:   components.Link,
+        appConfig: config.FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -27,6 +28,6 @@ link: components.Link
 
     @heading(messages("fINotMatching.heading"))
 
-    <p class="govuk-body">@Html(messages("fINotMatching.para.1", link("","fINotMatching.para.1.link")))</p>
-    <p class="govuk-body">@Html(messages("fINotMatching.para.2", link("#","fINotMatching.para.2.link")))</p>
+    <p class="govuk-body">@Html(messages("fINotMatching.para.1", link(routes.IndexController.onPageLoad().url, "fINotMatching.para.1.link")))</p>
+    <p class="govuk-body">@Html(messages("fINotMatching.para.2", link(appConfig.yourFIs, "fINotMatching.para.2.link")))</p>
 }
