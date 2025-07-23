@@ -35,7 +35,7 @@ class ReportingPeriodErrorViewSpec extends SpecBase with GuiceOneAppPerSuite wit
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
-  private val currentYear                                       = LocalDate.now(ZoneId.of("Europe/London")).getYear
+  private val currentYear                               = LocalDate.now(ZoneId.of("Europe/London")).getYear
 
   "InvalidMessageTypeErrorView" - {
 
