@@ -24,4 +24,6 @@ GET         /report/problem/invalid-messagetype          controllers.InvalidMess
 
 GET         /report/problem/invalid-xml                  controllers.FileErrorController.onPageLoad()
 
-GET         /report/problem/data-errors                       controllers.DataErrorsController.onPageLoad()
+GET         /report/problem/data-errors                  controllers.DataErrorsController.onPageLoad()
+
+GET        /report/problem/reporting-period               controllers.ReportingPeriodErrorController.onPageLoad()
