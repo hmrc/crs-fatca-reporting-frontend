@@ -21,7 +21,6 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET         /report/problem/invalid-messagetype          controllers.InvalidMessageTypeErrorController.onPageLoad()
-
 GET         /report/problem/invalid-xml                  controllers.FileErrorController.onPageLoad()
-
-GET         /report/problem/data-errors                       controllers.DataErrorsController.onPageLoad()
+GET         /report/problem/data-errors                  controllers.DataErrorsController.onPageLoad()
+GET         /report/problem/fi-not-matching              controllers.FINotMatchingController.onPageLoad()

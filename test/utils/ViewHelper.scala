@@ -18,8 +18,9 @@ package utils
 
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import org.scalatest.matchers.must.Matchers
 
-trait ViewHelper {
+trait ViewHelper extends Matchers {
 
   def getWindowTitle(page: Document): String =
     page.title
@@ -44,5 +45,10 @@ trait ViewHelper {
 
   def getAllElements(page: Document, selector: String): Elements =
     page.select(selector)
+
+  def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
+    paraValues.foreach(
+      p => allParaValues must include(p)
+    )
 
 }
