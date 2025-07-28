@@ -34,18 +34,20 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        <h1 class="govuk-heading-l">
+            @messages(s"requiredGiin.heading")
+        </h1>
+
         <p class="govuk-body">@messages("requiredGiin.p1", fiName)</p>
 
         <p class="govuk-body">@messages("requiredGiin.p2", fiName)</p>
 
-        <p class="govuk-body">@messages("requiredGiin.subHeading", fiName)</p>
-
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("requiredGiin.subHeading")).asPageHeading()
+                label = LabelViewModel(messages("requiredGiin.subHeading")).asPageSubheading()
             )
-            .withWidth(ThreeQuarters).withHint(HintViewModel(messages("requiredGiin.hint")))
+            .withWidth(Fixed20).withHint(HintViewModel(messages("requiredGiin.hint")))
         )
 
         @govukButton(

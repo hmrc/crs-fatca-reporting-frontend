@@ -17,6 +17,6 @@
 package utils
 
 trait RegexConstants {
-  
-  final val giinFormatRegex = """^[A-HJ-NP-Z0-9]{6}\\\\.[A-HJ-NP-Z0-9]{5}\\\\.[A-HJ-NP-Z]{2}\\\\.[0-9]{3}$"""
+
+  final val giinFormatRegex = """^[0-9A-NP-Z]{6}\.[0-9A-NP-Z]{5}\.[A-NP-Z]{2}\.[0-9]{3}$"""
 }

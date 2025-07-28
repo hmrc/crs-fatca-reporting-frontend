@@ -39,21 +39,21 @@ class RequiredGiinFormProvider @Inject() extends Mappings with RegexConstants {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] = {
         data.get(key) match {
           case None | Some("") =>
-            Left(Seq(FormError(key, "giin.error.required")))
+            Left(Seq(FormError(key, "requiredGiin.error.required")))
           case Some(value) =>
             val strippedValue = value.replaceAll("\\s", "")
             
             if (strippedValue == notRealGiinExample.replaceAll("\\s", "")) {
-              Left(Seq(FormError(key, "giin.error.notReal")))
+              Left(Seq(FormError(key, "requiredGiin.error.notReal")))
             }
             else if (strippedValue.length != giinExactLength) {
-              Left(Seq(FormError(key, "giin.error.length")))
+              Left(Seq(FormError(key, "requiredGiin.error.length")))
             }
             else if (!strippedValue.matches("^[A-Za-z0-9.]*$")) {
-              Left(Seq(FormError(key, "giin.error.invalidCharacters")))
+              Left(Seq(FormError(key, "requiredGiin.error.invalidCharacters")))
             }
             else if (!strippedValue.matches(giinFormatRegex)) {
-              Left(Seq(FormError(key, "giin.error.format")))
+              Left(Seq(FormError(key, "requiredGiin.error.format")))
             }
             else {
               Right(strippedValue)
