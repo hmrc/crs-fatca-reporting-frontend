@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-//package viewmodels.checkAnswers
-//
-//import controllers.routes
-//import models.{CheckMode, UserAnswers}
-//import pages.RequiredGiinPage
-//import play.api.i18n.Messages
-//import play.twirl.api.HtmlFormat
-//import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-//import viewmodels.govuk.summarylist._
-//import viewmodels.implicits._
-//
-//object RequiredGiinSummary  {
-//
-//  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-//    answers.get(RequiredGiinPage).map {
-//      answer =>
-//
-//        SummaryListRowViewModel(
-//          key     = "requiredGiin.checkYourAnswersLabel",
-//          value   = ValueViewModel(HtmlFormat.escape(answer).toString),
-//          actions = Seq(
-//            accessibleActionItem("site.change", routes.RequiredGiinController.onPageLoad(CheckMode).url)
-//              .withVisuallyHiddenText(messages("requiredGiin.change.hidden"))
-//          )
-//        )
-//    }
-//}
+package viewmodels.checkAnswers
+
+import controllers.routes
+import models.{CheckMode, UserAnswers}
+import pages.RequiredGiinPage
+import play.api.i18n.Messages
+import play.twirl.api.HtmlFormat
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import viewmodels.common.accessibleActionItem
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
+
+object RequiredGiinSummary  {
+
+  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
+    answers.get(RequiredGiinPage).map {
+      answer =>
+
+        SummaryListRowViewModel(
+          key     = "requiredGiin.checkYourAnswersLabel",
+          value   = ValueViewModel(HtmlFormat.escape(answer).toString),
+          actions = Seq(
+            accessibleActionItem("site.change", routes.RequiredGiinController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("requiredGiin.change.hidden"))
+          )
+        )
+    }
+}
