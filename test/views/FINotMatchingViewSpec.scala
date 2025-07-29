@@ -58,7 +58,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
 
       val FIManagementLink = linkElements
         .select(":contains(add a new financial institution first)")
-        .attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions/your-fis"
+        .attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions/?goToYourFIs=true"
 
       linkElements.select(":contains(upload the updated file)").attr("href") mustEqual controllers.routes.IndexController.onPageLoad().url
     }
