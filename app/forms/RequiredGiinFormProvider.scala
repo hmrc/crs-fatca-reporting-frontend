@@ -42,7 +42,7 @@ class RequiredGiinFormProvider @Inject() extends Mappings with RegexConstants {
             Left(Seq(FormError(key, "requiredGiin.error.required")))
           case Some(value) =>
             val strippedValue = value.replaceAll("\\s", "")
-            
+
             if (strippedValue == notRealGiinExample.replaceAll("\\s", "")) {
               Left(Seq(FormError(key, "requiredGiin.error.notReal")))
             }

@@ -42,10 +42,12 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val requiredGiinRoute = routes.RequiredGiinController.onPageLoad(NormalMode).url
 
+  val hardcodedFiName = "fiName"
+  val exampleGiin = "8Q298C.00000.LE.340"
+
   "RequiredGiin Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
@@ -56,13 +58,12 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[RequiredGiinView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, "fiName")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, hardcodedFiName)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(RequiredGiinPage, "answer").success.value
+      val userAnswers = UserAnswers(userAnswersId).set(RequiredGiinPage, exampleGiin).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -74,7 +75,7 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill("answer"), NormalMode, "fiName")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(exampleGiin), NormalMode, hardcodedFiName)(request, messages(application)).toString
       }
     }
 
@@ -95,8 +96,7 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, requiredGiinRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
-
+            .withFormUrlEncodedBody(("value", exampleGiin))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -111,7 +111,7 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, requiredGiinRoute)
-            .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", "")) // Invalid data
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -120,11 +120,11 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, hardcodedFiName)(request, messages(application)).toString
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "must return OK and the correct view for a GET if no existing data is found (controller does not redirect)" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -133,24 +133,56 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        val view = application.injector.instanceOf[RequiredGiinView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(form, NormalMode, hardcodedFiName)(request, messages(application)).toString
       }
     }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+    "must redirect to the next page for a POST if no existing data is found and valid data is submitted (controller creates new UserAnswers)" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = None)
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, requiredGiinRoute)
+            .withFormUrlEncodedBody(("value", exampleGiin)) // Valid data
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must return a Bad Request for a POST if no existing data is found and invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
           FakeRequest(POST, requiredGiinRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "")) // Invalid data
+
+        val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[RequiredGiinView]
 
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, hardcodedFiName)(request, messages(application)).toString
       }
     }
   }

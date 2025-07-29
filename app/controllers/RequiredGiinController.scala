@@ -49,9 +49,9 @@ class RequiredGiinController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val preparedForm = request.userAnswers.map(_.get(RequiredGiinPage)) match {
+      val preparedForm = request.userAnswers.flatMap(_.get(RequiredGiinPage)) match {
         case None        => form
-        case Some(value) => form.fill(value.get)
+        case Some(value) => form.fill(value)
       }
       
 

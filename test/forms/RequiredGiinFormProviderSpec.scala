@@ -17,22 +17,25 @@
 package forms
 
 import forms.behaviours.StringFieldBehaviours
+import org.scalatest.matchers.should.Matchers.should
 import play.api.data.FormError
+import wolfendale.scalacheck.regexp.RegexpGen
 
 class RequiredGiinFormProviderSpec extends StringFieldBehaviours {
 
   val requiredKey = "requiredGiin.error.required"
   val lengthKey = "requiredGiin.error.length"
-  val invalidKey = "requiredGiin.error.invalid"
+  val invalidKey = "requiredGiin.error.format"
+  val invalidCharactersKey = "requiredGiin.error.invalidCharacters"
   val giinLength = 19
 
   val form = new RequiredGiinFormProvider()()
 
   val validGiinRegex = "^[0-9A-NP-Z]{6}\\.[0-9A-NP-Z]{5}\\.[A-NP-Z]{2}\\.[0-9]{3}$"
 
-  ".requiredGiin" - {
+  ".value" - {
 
-    val fieldName = "requiredGiin"
+    val fieldName = "value"
 
     behave like fieldThatBindsValidData(
       form,
@@ -54,14 +57,21 @@ class RequiredGiinFormProviderSpec extends StringFieldBehaviours {
       )
     }
 
-    "not bind strings that do not match the GIIN regex" in {
-      val invalidGiin = "ABCDEF.12345.XY.123x" // Example: last char is 'x' instead of digit
-      form.bind(Map(fieldName -> invalidGiin)).errors should contain(
+    "not bind strings that contain invalid characters" in {
+      val invalidCharGiin = "ABCDEF.12345.XY.12!"
+      form.bind(Map(fieldName -> invalidCharGiin)).errors should contain(
+        FormError(fieldName, invalidCharactersKey)
+      )
+    }
+
+    "not bind strings that do not match the GIIN format regex" in {
+      val invalidFormatGiinActual = "ABCDEF.12345.XY.12A"
+      form.bind(Map(fieldName -> invalidFormatGiinActual)).errors should contain(
         FormError(fieldName, invalidKey)
       )
 
-      val invalidGiin2 = "ABCDEF.12345.XY.123" // Correct length but wrong format (e.g., lowercase in first block if not allowed)
-      form.bind(Map(fieldName -> invalidGiin2)).errors should contain(
+      val invalidFormatGiin2 = "ABCDEF.12345.XO.123"
+      form.bind(Map(fieldName -> invalidFormatGiin2)).errors should contain(
         FormError(fieldName, invalidKey)
       )
     }
