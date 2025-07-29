@@ -50,8 +50,10 @@
             .withWidth(Fixed20).withHint(HintViewModel(messages("requiredGiin.hint")))
         )
 
-        @govukButton(
-            ButtonViewModel(messages("site.continue"))
-        )
+        <p class="govuk-body">
+            @govukButton(
+            ButtonViewModel(messages("site.continue")).withAttribute( "id" -> "submit").preventingDoubleClick()
+            )
+        </p>
     }
 }
