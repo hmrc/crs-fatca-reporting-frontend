@@ -23,11 +23,11 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 class RequiredGiinFormProviderSpec extends StringFieldBehaviours {
 
-  val requiredKey = "requiredGiin.error.required"
-  val lengthKey = "requiredGiin.error.length"
-  val invalidKey = "requiredGiin.error.format"
+  val requiredKey          = "requiredGiin.error.required"
+  val lengthKey            = "requiredGiin.error.length"
+  val invalidKey           = "requiredGiin.error.format"
   val invalidCharactersKey = "requiredGiin.error.invalidCharacters"
-  val giinLength = 19
+  val giinLength           = 19
 
   val form = new RequiredGiinFormProvider()()
 

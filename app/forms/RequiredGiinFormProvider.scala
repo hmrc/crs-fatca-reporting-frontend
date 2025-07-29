@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class RequiredGiinFormProvider @Inject() extends Mappings with RegexConstants {
 
-  private val giinExactLength = 19
+  private val giinExactLength    = 19
   private val notRealGiinExample = "98O96B.00000.LE.350"
 
   def apply(): Form[String] =
@@ -36,7 +36,8 @@ class RequiredGiinFormProvider @Inject() extends Mappings with RegexConstants {
 
   private def giinFormatter(): Formatter[String] =
     new Formatter[String] {
-      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] = {
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
         data.get(key) match {
           case None | Some("") =>
             Left(Seq(FormError(key, "requiredGiin.error.required")))
@@ -45,21 +46,16 @@ class RequiredGiinFormProvider @Inject() extends Mappings with RegexConstants {
 
             if (strippedValue == notRealGiinExample.replaceAll("\\s", "")) {
               Left(Seq(FormError(key, "requiredGiin.error.notReal")))
-            }
-            else if (strippedValue.length != giinExactLength) {
+            } else if (strippedValue.length != giinExactLength) {
               Left(Seq(FormError(key, "requiredGiin.error.length")))
-            }
-            else if (!strippedValue.matches("^[A-Za-z0-9.]*$")) {
+            } else if (!strippedValue.matches("^[A-Za-z0-9.]*$")) {
               Left(Seq(FormError(key, "requiredGiin.error.invalidCharacters")))
-            }
-            else if (!strippedValue.matches(giinFormatRegex)) {
+            } else if (!strippedValue.matches(giinFormatRegex)) {
               Left(Seq(FormError(key, "requiredGiin.error.format")))
-            }
-            else {
+            } else {
               Right(strippedValue)
             }
         }
-      }
 
       override def unbind(key: String, value: String): Map[String, String] =
         Map(key -> value)
