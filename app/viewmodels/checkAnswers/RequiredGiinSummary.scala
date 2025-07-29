@@ -26,15 +26,14 @@ import viewmodels.common.accessibleActionItem
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object RequiredGiinSummary  {
+object RequiredGiinSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(RequiredGiinPage).map {
       answer =>
-
         SummaryListRowViewModel(
-          key     = "requiredGiin.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlFormat.escape(answer).toString),
+          key = "requiredGiin.checkYourAnswersLabel",
+          value = ValueViewModel(HtmlFormat.escape(answer).toString),
           actions = Seq(
             accessibleActionItem("site.change", routes.RequiredGiinController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("requiredGiin.change.hidden"))
