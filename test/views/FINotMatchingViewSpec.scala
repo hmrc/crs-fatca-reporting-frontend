@@ -18,7 +18,6 @@ package views
 
 import base.SpecBase
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest

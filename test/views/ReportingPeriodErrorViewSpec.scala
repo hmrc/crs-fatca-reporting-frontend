@@ -53,7 +53,5 @@ class ReportingPeriodErrorViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
     }
   }
-
-  private def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
-    paraValues.foreach(allParaValues must include(_))
+  
 }

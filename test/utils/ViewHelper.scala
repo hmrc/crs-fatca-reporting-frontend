@@ -51,4 +51,10 @@ trait ViewHelper extends Matchers {
       p => allParaValues must include(p)
     )
 
+  def validateListValues(elements: Elements, listValues: Seq[String]): Unit = {
+    val allListValues = elements.text()
+    listValues.foreach(
+      values => allListValues must include(values)
+    )
+  }
 }

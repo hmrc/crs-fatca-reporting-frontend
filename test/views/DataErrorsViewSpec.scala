@@ -19,7 +19,6 @@ package views
 import base.SpecBase
 import models.{GenericError, Message}
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
@@ -40,18 +39,6 @@ class DataErrorsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
   "DataErrorsView" - {
 
     val errors = Seq(GenericError(12345, Message("error1")), GenericError(2, Message("error2")))
-
-    def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
-      paraValues.foreach(
-        p => allParaValues must include(p)
-      )
-
-    def validateListValues(elements: Elements, listValues: Seq[String]): Unit = {
-      val allListValues = elements.text()
-      listValues.foreach(
-        values => allListValues must include(values)
-      )
-    }
 
     "should render page components for CRS regimeType with under 100 errors" in {
 

@@ -28,7 +28,6 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.{FakeRequest, Injecting}
-import utils.ViewHelper
 
 trait SpecBase
     extends AnyFreeSpec
