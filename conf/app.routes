@@ -21,14 +21,12 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET         /report/problem/invalid-messagetype          controllers.InvalidMessageTypeErrorController.onPageLoad()
-
 GET         /report/problem/invalid-xml                  controllers.FileErrorController.onPageLoad()
-
 GET         /report/problem/data-errors                  controllers.DataErrorsController.onPageLoad()
+GET         /report/problem/fi-not-matching              controllers.FINotMatchingController.onPageLoad()
+GET         /report/problem/reporting-period             controllers.ReportingPeriodErrorController.onPageLoad()
 
-GET        /report/problem/reporting-period               controllers.ReportingPeriodErrorController.onPageLoad()
-
-GET        /report/required-giin                        controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
-POST       /report/required-giin                        controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
-GET        /report/change-required-giin                  controllers.RequiredGiinController.onPageLoad(mode: Mode = CheckMode)
-POST       /report/change-required-giin                  controllers.RequiredGiinController.onSubmit(mode: Mode = CheckMode)
+GET         /report/required-giin                        controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
+POST        /report/required-giin                        controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
+GET         /report/change-required-giin                 controllers.RequiredGiinController.onPageLoad(mode: Mode = CheckMode)
+POST        /report/change-required-giin                 controllers.RequiredGiinController.onSubmit(mode: Mode = CheckMode)

@@ -55,8 +55,4 @@ class InvalidMessageTypeErrorViewSpec extends SpecBase with GuiceOneAppPerSuite 
     }
   }
 
-  def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
-    paraValues.foreach(
-      p => allParaValues must include(p)
-    )
 }

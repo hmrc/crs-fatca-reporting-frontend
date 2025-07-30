@@ -56,9 +56,4 @@ class RequiredGiinViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
     }
   }
 
-  def validateAllParaValues(allParaValues: String, paraValues: Seq[String]): Unit =
-    paraValues.foreach(
-      p => allParaValues must include(p)
-    )
-
 }
