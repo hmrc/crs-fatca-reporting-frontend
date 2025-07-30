@@ -43,9 +43,7 @@ lazy val microservice = (project in file("."))
     scalacOptions                          := scalacOptions.value.distinct,
     scalacOptions ++= Seq(
       "-feature",
-      "-Wconf:cat=deprecation:s",
-      "-Wconf:cat=feature:s",
-      "-Wconf:src=target/.*:s"
+      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
     ),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,

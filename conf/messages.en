@@ -105,3 +105,16 @@ reportingPeriodError.heading = There is a problem with the reporting period in y
 reportingPeriodError.p1 = The ReportingPeriod element in your file must contain a date between 31 December 2014 and 31 December {0}.
 reportingPeriodError.p2 = Update the ReportingPeriod and {0}.
 reportingPeriodError.p2.link.text = upload the updated file
+
+requiredGiin.title = Global Intermediary Identification Number (GIIN)
+requiredGiin.heading = Global Intermediary Identification Number (GIIN)
+requiredGiin.p1 = You must provide a GIIN for {0} to send a FATCA report.
+requiredGiin.p2 = To receive a GIIN for FATCA, {0} must have registered with the United States of America’s Internal Revenue Service.
+requiredGiin.hint = For example, ‘98O96B.00000.LE.350’.
+requiredGiin.subHeading = What is the GIIN for {0}?
+requiredGiin.error.required = Enter the financial institution’s GIIN
+requiredGiin.error.length = GIIN must include 19 characters
+requiredGiin.error.notReal = Enter a real GIIN
+requiredGiin.error.format = GIIN must be in the right format
+requiredGiin.error.invalidCharacters = 	GIIN must only include letters a to z, numbers 0 to 9 and full stops
+
