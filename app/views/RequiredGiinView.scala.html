@@ -45,7 +45,7 @@
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("requiredGiin.subHeading")).asPageSubheading()
+                label = LabelViewModel(messages("requiredGiin.subHeading", fiName)).asPageSubheading()
             )
             .withWidth(Fixed20).withHint(HintViewModel(messages("requiredGiin.hint")))
         )
