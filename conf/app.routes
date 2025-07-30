@@ -27,3 +27,8 @@ GET         /report/problem/invalid-xml                  controllers.FileErrorCo
 GET         /report/problem/data-errors                  controllers.DataErrorsController.onPageLoad()
 
 GET        /report/problem/reporting-period               controllers.ReportingPeriodErrorController.onPageLoad()
+
+GET        /report/required-giin                        controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/required-giin                        controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
+GET        /report/change-required-giin                  controllers.RequiredGiinController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/change-required-giin                  controllers.RequiredGiinController.onSubmit(mode: Mode = CheckMode)
