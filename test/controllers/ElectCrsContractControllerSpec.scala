@@ -38,8 +38,8 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ElectCrsContractFormProvider()
-  val form = formProvider()
-  val fi = "EFG Bank plc"
+  val form         = formProvider()
+  val fi           = "EFG Bank plc"
 
   lazy val electCrsContractRoute = routes.ElectCrsContractController.onPageLoad(NormalMode).url
 

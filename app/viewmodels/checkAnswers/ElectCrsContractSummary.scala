@@ -41,17 +41,16 @@ import viewmodels.common.accessibleActionItem
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object ElectCrsContractSummary  {
+object ElectCrsContractSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(ElectCrsContractPage).map {
       answer =>
-
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "electCrsContract.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "electCrsContract.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             accessibleActionItem("site.change", routes.ElectCrsContractController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("electCrsContract.change.hidden"))
