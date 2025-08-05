@@ -16,12 +16,14 @@
 
 package controllers
 
-import controllers.actions._
+import controllers.actions.*
 import forms.DormantAccountsFormProvider
+
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
 import pages.DormantAccountsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -42,7 +44,7 @@ class DormantAccountsController @Inject()(
                                          view: DormantAccountsView
                                  )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   val fiName = "placeholderFIName"
   
