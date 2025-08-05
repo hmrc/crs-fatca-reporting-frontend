@@ -118,3 +118,9 @@ requiredGiin.error.notReal = Enter a real GIIN
 requiredGiin.error.format = GIIN must be in the right format
 requiredGiin.error.invalidCharacters = 	GIIN must only include letters a to z, numbers 0 to 9 and full stops
 
+
+electCrsContract.title = Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+electCrsContract.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+electCrsContract.checkYourAnswersLabel = electCrsContract
+electCrsContract.error.required = Select yes if the financial institution is excluding cash value insurance contracts or annuity contracts from their reporting for CRS
+electCrsContract.change.hidden = ElectCrsContract
