@@ -27,7 +27,7 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
-import views.html.{DormantAccountsView, RequiredGiinView}
+import views.html.DormantAccountsView
 
 class DormantAccountsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
