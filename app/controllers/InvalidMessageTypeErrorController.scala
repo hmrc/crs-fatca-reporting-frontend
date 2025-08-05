@@ -20,7 +20,7 @@ import controllers.actions.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{InvalidMessageTypeErrorView, JourneyRecoveryStartAgainView}
+import views.html.InvalidMessageTypeErrorView
 
 import javax.inject.Inject
 
@@ -29,8 +29,7 @@ class InvalidMessageTypeErrorController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
-  view: InvalidMessageTypeErrorView,
-  startAgainView: JourneyRecoveryStartAgainView
+  view: InvalidMessageTypeErrorView
 ) extends FrontendBaseController
     with I18nSupport {
 

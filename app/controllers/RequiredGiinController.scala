@@ -18,8 +18,6 @@ package controllers
 
 import controllers.actions.*
 import forms.RequiredGiinFormProvider
-
-import javax.inject.Inject
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.RequiredGiinPage
@@ -29,6 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RequiredGiinView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RequiredGiinController @Inject() (
@@ -37,7 +36,6 @@ class RequiredGiinController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   formProvider: RequiredGiinFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RequiredGiinView
