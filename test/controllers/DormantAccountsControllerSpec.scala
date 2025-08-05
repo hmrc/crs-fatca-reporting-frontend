@@ -38,9 +38,9 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider              = new DormantAccountsFormProvider()
-  val form: Form[Boolean] = formProvider()
-  val fiName                    = "placeholderFIName"
+  val formProvider                      = new DormantAccountsFormProvider()
+  val form: Form[Boolean]               = formProvider()
+  val fiName                            = "placeholderFIName"
   lazy val dormantAccountsRoute: String = routes.DormantAccountsController.onPageLoad(NormalMode).url
 
   "DormantAccounts Controller" - {
@@ -124,7 +124,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(boundForm, NormalMode, fiName)(request, messages(application)).toString
       }
     }
-    
+
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()

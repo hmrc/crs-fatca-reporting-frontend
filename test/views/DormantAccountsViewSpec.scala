@@ -31,9 +31,9 @@ import views.html.{DormantAccountsView, RequiredGiinView}
 
 class DormantAccountsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view: DormantAccountsView                                        = app.injector.instanceOf[DormantAccountsView]
+  val view: DormantAccountsView                                         = app.injector.instanceOf[DormantAccountsView]
   val formProvider                                                      = new RequiredGiinFormProvider()
-  val form: Form[String] = formProvider()
+  val form: Form[String]                                                = formProvider()
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()

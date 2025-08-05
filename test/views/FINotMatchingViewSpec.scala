@@ -35,7 +35,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   val renderedHtml: HtmlFormat.Appendable = view()
-  lazy val doc: Document = Jsoup.parse(renderedHtml.body)
+  lazy val doc: Document                  = Jsoup.parse(renderedHtml.body)
 
   "FINotMatchingView" - {
 
@@ -56,7 +56,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
     "should have links" in {
       val linkElements = getAllElements(doc, ".govuk-link")
 
-      val FIManagementLink = linkElements
+      linkElements
         .select(":contains(add a new financial institution first)")
         .attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions/?goToYourFIs=true"
 

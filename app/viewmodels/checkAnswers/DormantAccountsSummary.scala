@@ -25,18 +25,16 @@ import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 import viewmodels.common.accessibleActionItem
 
-
-object DormantAccountsSummary  {
+object DormantAccountsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(DormantAccountsPage).map {
       answer =>
-
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "dormantAccounts.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "dormantAccounts.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             accessibleActionItem("site.change", routes.DormantAccountsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("dormantAccounts.change.hidden"))
