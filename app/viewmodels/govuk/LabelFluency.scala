@@ -17,9 +17,8 @@
 package viewmodels.govuk
 
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
-import uk.gov.hmrc.govukfrontend.views.viewmodels.fieldset.Legend
 import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
-import viewmodels.{LabelSize, LegendSize}
+import viewmodels.LabelSize
 
 object label extends LabelFluency
 
@@ -33,7 +32,7 @@ trait LabelFluency {
 
   implicit class FluentLabel(label: Label) {
 
-    def asPageHeading(size: LabelSize = LabelSize.ExtraLarge): Label =
+    def asPageHeading(size: LabelSize = LabelSize.Large): Label =
       label
         .copy(isPageHeading = true)
         .withCssClass(size.toString)

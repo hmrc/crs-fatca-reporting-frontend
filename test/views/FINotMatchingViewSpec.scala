@@ -18,6 +18,7 @@ package views
 
 import base.SpecBase
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
@@ -34,7 +35,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   val renderedHtml: HtmlFormat.Appendable = view()
-  lazy val doc                            = Jsoup.parse(renderedHtml.body)
+  lazy val doc: Document = Jsoup.parse(renderedHtml.body)
 
   "FINotMatchingView" - {
 

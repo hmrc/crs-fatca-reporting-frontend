@@ -37,7 +37,6 @@ class RequiredGiinController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   formProvider: RequiredGiinFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RequiredGiinView

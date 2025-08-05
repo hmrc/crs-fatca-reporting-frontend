@@ -17,9 +17,9 @@
 package forms
 
 import forms.mappings.Mappings
-import play.api.data.format.Formatter
-import play.api.data.{FieldMapping, Form, FormError, Mapping}
 import play.api.data.Forms.of
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError}
 import utils.RegexConstants
 
 import javax.inject.Inject

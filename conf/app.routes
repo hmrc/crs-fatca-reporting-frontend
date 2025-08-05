@@ -30,3 +30,8 @@ GET         /report/required-giin                        controllers.RequiredGii
 POST        /report/required-giin                        controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
 GET         /report/change-required-giin                 controllers.RequiredGiinController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/change-required-giin                 controllers.RequiredGiinController.onSubmit(mode: Mode = CheckMode)
+
+GET         /elections/crs/dormant-accounts              controllers.DormantAccountsController.onPageLoad(mode: Mode = NormalMode)
+POST        /elections/crs/dormant-accounts              controllers.DormantAccountsController.onSubmit(mode: Mode = NormalMode)
+GET         /elections/crs/change-dormant-accounts       controllers.DormantAccountsController.onPageLoad(mode: Mode = CheckMode)
+POST        /elections/crs/change-dormant-accounts       controllers.DormantAccountsController.onSubmit(mode: Mode = CheckMode)
