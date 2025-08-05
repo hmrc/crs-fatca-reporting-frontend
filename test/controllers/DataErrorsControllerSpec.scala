@@ -18,8 +18,7 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.DataErrorsView
+import play.api.test.Helpers.*
 
 class DataErrorsControllerSpec extends SpecBase {
 
@@ -33,8 +32,6 @@ class DataErrorsControllerSpec extends SpecBase {
         val request = FakeRequest(GET, routes.DataErrorsController.onPageLoad().url)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[DataErrorsView]
 
         status(result) mustEqual OK
         contentAsString(result) must include("We cannot accept the file PlaceHolder file name because it does not meet the CRS data requirements.")

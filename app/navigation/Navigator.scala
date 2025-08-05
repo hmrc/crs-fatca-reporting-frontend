@@ -26,18 +26,20 @@ import models._
 @Singleton
 class Navigator @Inject() () {
 
-  private val normalRoutes: Page => UserAnswers => Call = {
-    case _ => _ => routes.IndexController.onPageLoad()
-  }
+  val normalRoutes: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
 
-  private val checkRouteMap: Page => UserAnswers => Call = {
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
-  }
+  val checkRouteMap: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
+  private def checkRoutes(mode: Mode): PartialFunction[Page, UserAnswers => Call] = mode match {
     case NormalMode =>
-      normalRoutes(page)(userAnswers)
+      normalRoutes orElse {
+        case _ => _ => routes.IndexController.onPageLoad()
+      }
     case CheckMode =>
-      checkRouteMap(page)(userAnswers)
+      checkRouteMap orElse {
+        case _ => _ => routes.CheckYourAnswersController.onPageLoad()
+      }
   }
+
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = checkRoutes(mode)(page)(userAnswers)
 }

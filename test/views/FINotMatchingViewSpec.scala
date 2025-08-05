@@ -55,7 +55,7 @@ class FINotMatchingViewSpec extends SpecBase with ViewHelper {
     "should have links" in {
       val linkElements = getAllElements(doc, ".govuk-link")
 
-      val FIManagementLink = linkElements
+      linkElements
         .select(":contains(add a new financial institution first)")
         .attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions/?goToYourFIs=true"
 
