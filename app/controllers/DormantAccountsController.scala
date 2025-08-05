@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.DormantAccountsFormProvider
 
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.DormantAccountsPage
 import play.api.data.Form
@@ -38,7 +38,6 @@ class DormantAccountsController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   formProvider: DormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: DormantAccountsView
@@ -60,7 +59,7 @@ class DormantAccountsController @Inject() (
       Ok(view(preparedForm, mode, fiName))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
       form
         .bindFromRequest()
@@ -68,7 +67,7 @@ class DormantAccountsController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(DormantAccountsPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(DormantAccountsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(DormantAccountsPage, mode, updatedAnswers))
         )
