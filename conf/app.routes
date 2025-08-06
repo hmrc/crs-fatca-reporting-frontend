@@ -30,3 +30,8 @@ GET         /report/required-giin                        controllers.RequiredGii
 POST        /report/required-giin                        controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
 GET         /report/change-required-giin                 controllers.RequiredGiinController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/change-required-giin                 controllers.RequiredGiinController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report/elections/crs/contracts               controllers.ElectCrsContractController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/crs/contracts               controllers.ElectCrsContractController.onSubmit(mode: Mode = NormalMode)
+GET        /report/elections/crs/change-contracts        controllers.ElectCrsContractController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/elections/crs/change-contracts        controllers.ElectCrsContractController.onSubmit(mode: Mode = CheckMode)
