@@ -23,8 +23,8 @@ import javax.inject.Inject
 
 class ElectCrsCarfGrossProceedsFormProvider @Inject() extends Mappings {
 
-  def apply(cutOfYear: Int): Form[Boolean] =
+  def apply(currentYear: Int): Form[Boolean] =
     Form(
-      "value" -> boolean("electCrsCarfGrossProceeds.error.required", args = Seq(cutOfYear.toString))
+      "value" -> boolean("electCrsCarfGrossProceeds.error.required", args = Seq(currentYear.toString))
     )
 }
