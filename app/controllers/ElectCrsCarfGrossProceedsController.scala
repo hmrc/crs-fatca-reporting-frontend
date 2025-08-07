@@ -44,12 +44,12 @@ class ElectCrsCarfGrossProceedsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-  val fiName      = "EFG Bank plc"
+  val fiName = "EFG Bank plc"
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
       val currentYear = LocalDate.now().getYear
-      val form = formProvider(currentYear)
+      val form        = formProvider(currentYear)
       val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsCarfGrossProceedsPage)) match {
         case None        => form
         case Some(value) => form.fill(value)
@@ -61,7 +61,7 @@ class ElectCrsCarfGrossProceedsController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
       val currentYear = LocalDate.now().getYear
-      val form = formProvider(currentYear)
+      val form        = formProvider(currentYear)
       form
         .bindFromRequest()
         .fold(
