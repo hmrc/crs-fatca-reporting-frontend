@@ -27,17 +27,18 @@ import pages.ElectCrsCarfGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.ElectCrsCarfGrossProceedsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute  = Call("GET", "/foo")
   val fiName       = "EFG Bank plc"
-  val currentYear  = 2026
+  val currentYear  = LocalDate.now().getYear()
   val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
   val form         = formProvider(currentYear)
 

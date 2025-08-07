@@ -27,6 +27,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ElectCrsCarfGrossProceedsView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,7 +44,7 @@ class ElectCrsCarfGrossProceedsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-  val currentYear = 2026
+  val currentYear = LocalDate.now().getYear
   val form        = formProvider(currentYear)
   val fiName      = "EFG Bank plc"
 
