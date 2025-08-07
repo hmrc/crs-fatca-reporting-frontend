@@ -28,8 +28,6 @@
 
     @formHelper(action = controllers.elections.crs.routes.ThresholdsController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
-        <h1 class="govuk-heading-l">@messages("elections.crs.thresholds.heading",financialInstitutionName)</h1>
-
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
@@ -37,7 +35,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("elections.crs.thresholds.heading",financialInstitutionName)).withCssClass("govuk-visually-hidden govuk-!-display-block")
+                legend = LegendViewModel(messages("elections.crs.thresholds.heading",financialInstitutionName)).asPageHeading().withCssClass("govuk-fieldset__legend--l govuk-!-display-block")
             )
         )
 
