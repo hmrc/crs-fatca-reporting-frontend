@@ -48,7 +48,7 @@ class ElectCrsCarfGrossProceedsController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val currentYear = LocalDate.now().getYear  // Fresh each time
+      val currentYear = LocalDate.now().getYear
       val form = formProvider(currentYear)
       val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsCarfGrossProceedsPage)) match {
         case None        => form
@@ -60,7 +60,7 @@ class ElectCrsCarfGrossProceedsController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-      val currentYear = LocalDate.now().getYear  // Fresh each time
+      val currentYear = LocalDate.now().getYear
       val form = formProvider(currentYear)
       form
         .bindFromRequest()
