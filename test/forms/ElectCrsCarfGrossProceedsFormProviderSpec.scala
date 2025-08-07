@@ -23,9 +23,9 @@ class ElectCrsCarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "electCrsCarfGrossProceeds.error.required"
   val invalidKey  = "error.boolean"
-  val cuttofDate  = 2025
+  val currentYear  = 2025
 
-  val form = new ElectCrsCarfGrossProceedsFormProvider()(cuttofDate)
+  val form = new ElectCrsCarfGrossProceedsFormProvider()(currentYear)
 
   ".value" - {
 
@@ -34,13 +34,13 @@ class ElectCrsCarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
     behave like booleanField(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey, args = Seq(cuttofDate.toString))
+      invalidError = FormError(fieldName, invalidKey, args = Seq(currentYear.toString))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey, args = Seq(cuttofDate.toString))
+      requiredError = FormError(fieldName, requiredKey, args = Seq(currentYear.toString))
     )
   }
 }
