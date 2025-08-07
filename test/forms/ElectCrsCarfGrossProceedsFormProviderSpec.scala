@@ -23,7 +23,7 @@ class ElectCrsCarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "electCrsCarfGrossProceeds.error.required"
   val invalidKey  = "error.boolean"
-  val currentYear  = 2025
+  val currentYear = 2025
 
   val form = new ElectCrsCarfGrossProceedsFormProvider()(currentYear)
 
