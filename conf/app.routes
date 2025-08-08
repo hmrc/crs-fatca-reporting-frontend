@@ -41,3 +41,8 @@ GET         /report/elections/crs/thresholds                    controllers.elec
 POST        /report/elections/crs/thresholds                    controllers.elections.crs.ThresholdsController.onSubmit(mode: Mode = NormalMode)
 GET         /report/elections/crs/change-thresholds              controllers.elections.crs.ThresholdsController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/elections/crs/change-thresholds              controllers.elections.crs.ThresholdsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report/elections/crs/gross-proceeds           controllers.elections.crs.ElectCrsGrossProceedsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/crs/gross-proceeds           controllers.elections.crs.ElectCrsGrossProceedsController.onSubmit(mode: Mode = NormalMode)
+GET        /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onSubmit(mode: Mode = CheckMode)

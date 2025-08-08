@@ -17,8 +17,7 @@
 package views.elections.crs
 
 import base.SpecBase
-import forms.RequiredGiinFormProvider
-import forms.elections.crs.ThresholdsFormProvider
+import forms.ElectCrsGrossProceedsFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.{Lang, Messages}
@@ -26,26 +25,25 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
-import views.html.elections.crs.ThresholdsView
+import views.html.elections.crs.ElectCrsGrossProceedsView
 
-class ThresholdsViewSpec extends SpecBase with ViewHelper {
-
-  val view: ThresholdsView                                              = app.injector.instanceOf[ThresholdsView]
+class ElectCrsGrossProceedsViewSpec extends SpecBase with ViewHelper {
+  val view: ElectCrsGrossProceedsView = app.injector.instanceOf[ElectCrsGrossProceedsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val formProvider                                                      = new ThresholdsFormProvider()
-  val form                                                              = formProvider()
+  val formProvider = new ElectCrsGrossProceedsFormProvider()
+  val form = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
-  val renderedHtml: HtmlFormat.Appendable = view("testFI", form, NormalMode)
-  lazy val doc                            = Jsoup.parse(renderedHtml.body)
+  val renderedHtml: HtmlFormat.Appendable = view("EFG Bank plc", form, NormalMode)
+  lazy val doc = Jsoup.parse(renderedHtml.body)
 
-  "ThresholdsView" - {
+  "ElectCrsGrossProceedsView" - {
 
     "should have title and heading" in {
-      val title: String   = "Are they applying thresholds to any of their accounts in their due diligence process for CRS?"
-      val heading: String = "Is testFI applying thresholds to any of their accounts in their due diligence process for CRS?"
+      val title: String = "Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS? - Send a CRS or FATCA report - GOV.UK"
+      val heading: String = "Is EFG Bank plc also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?"
       getWindowTitle(doc) must include(title)
       getPageHeading(doc) mustEqual heading
     }
@@ -58,8 +56,7 @@ class ThresholdsViewSpec extends SpecBase with ViewHelper {
     }
 
     "should have continue Button" in {
-      elementText(doc, "#submit") mustEqual "Continue"
+      elementText(doc, "button") mustEqual "Continue"
     }
   }
-
 }
