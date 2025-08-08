@@ -118,16 +118,24 @@ requiredGiin.error.notReal = Enter a real GIIN
 requiredGiin.error.format = GIIN must be in the right format
 requiredGiin.error.invalidCharacters = 	GIIN must only include letters a to z, numbers 0 to 9 and full stops
 
+dormantAccounts.title = Is the financial institution treating dormant accounts as not being reportable accounts for CRS?
+dormantAccounts.heading = Is {0} treating dormant accounts as not being reportable accounts for CRS?
+dormantAccounts.checkYourAnswersLabel = dormantAccounts
+dormantAccounts.error.required = 	Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
 
 electCrsContract.title = Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 electCrsContract.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 electCrsContract.checkYourAnswersLabel = electCrsContract
 electCrsContract.error.required = Select yes if the financial institution is excluding cash value insurance contracts or annuity contracts from their reporting for CRS
-electCrsContract.change.hidden = ElectCrsContract
 
-elections.crs.thresholds.title = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
+elections.crs.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for CRS?
 elections.crs.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for CRS?
 elections.crs.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for CRS
+
+electCrsCarfGrossProceeds.title = Is the financial institution reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}?
+electCrsCarfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
+electCrsCarfGrossProceeds.checkYourAnswersLabel = electCrsCarfGrossProceeds
+electCrsCarfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}
 
 elections.crs.grossProceeds.title = Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
