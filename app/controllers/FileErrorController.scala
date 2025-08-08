@@ -24,12 +24,11 @@ import views.html.FileErrorView
 
 import javax.inject.Inject
 
-class FileErrorController @Inject() (
-  override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  val controllerComponents: MessagesControllerComponents,
-  view: FileErrorView
+class FileErrorController @Inject() (override val messagesApi: MessagesApi,
+                                     identify: IdentifierAction,
+                                     getData: DataRetrievalAction,
+                                     val controllerComponents: MessagesControllerComponents,
+                                     view: FileErrorView
 ) extends FrontendBaseController
     with I18nSupport {
 

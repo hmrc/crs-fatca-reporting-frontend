@@ -118,6 +118,10 @@ requiredGiin.error.notReal = Enter a real GIIN
 requiredGiin.error.format = GIIN must be in the right format
 requiredGiin.error.invalidCharacters = 	GIIN must only include letters a to z, numbers 0 to 9 and full stops
 
+dormantAccounts.title = Is the financial institution treating dormant accounts as not being reportable accounts for CRS?
+dormantAccounts.heading = Is {0} treating dormant accounts as not being reportable accounts for CRS?
+dormantAccounts.checkYourAnswersLabel = dormantAccounts
+dormantAccounts.error.required = 	Select yes if the financial institution is treating dormant accounts as not being reportable accounts for CRS
 
 electCrsContract.title = Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 electCrsContract.heading = Is {0} excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
