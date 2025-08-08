@@ -28,21 +28,22 @@ import utils.ViewHelper
 import views.html.elections.crs.ElectCrsGrossProceedsView
 
 class ElectCrsGrossProceedsViewSpec extends SpecBase with ViewHelper {
-  val view: ElectCrsGrossProceedsView = app.injector.instanceOf[ElectCrsGrossProceedsView]
+  val view: ElectCrsGrossProceedsView                                   = app.injector.instanceOf[ElectCrsGrossProceedsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-  val formProvider = new ElectCrsGrossProceedsFormProvider()
-  val form = formProvider()
+  val formProvider                                                      = new ElectCrsGrossProceedsFormProvider()
+  val form                                                              = formProvider()
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   val renderedHtml: HtmlFormat.Appendable = view("EFG Bank plc", form, NormalMode)
-  lazy val doc = Jsoup.parse(renderedHtml.body)
+  lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
   "ElectCrsGrossProceedsView" - {
 
     "should have title and heading" in {
-      val title: String = "Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS? - Send a CRS or FATCA report - GOV.UK"
+      val title: String =
+        "Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS? - Send a CRS or FATCA report - GOV.UK"
       val heading: String = "Is EFG Bank plc also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?"
       getWindowTitle(doc) must include(title)
       getPageHeading(doc) mustEqual heading
