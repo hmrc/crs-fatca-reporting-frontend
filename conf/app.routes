@@ -41,6 +41,11 @@ POST        /report/elections/crs/thresholds                controllers.election
 GET         /report/elections/crs/change-thresholds         controllers.elections.crs.ThresholdsController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/elections/crs/change-thresholds         controllers.elections.crs.ThresholdsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /report/elections/crs/carf-gross-proceeds            controllers.ElectCrsCarfGrossProceedsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/crs/carf-gross-proceeds            controllers.ElectCrsCarfGrossProceedsController.onSubmit(mode: Mode = NormalMode)
+GET        /report/elections/crs/change-carf-gross-proceeds     controllers.ElectCrsCarfGrossProceedsController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/elections/crs/change-carf-gross-proceeds     controllers.ElectCrsCarfGrossProceedsController.onSubmit(mode: Mode = CheckMode)
+
 GET         /report/elections/crs/dormant-accounts          controllers.DormantAccountsController.onPageLoad(mode: Mode = NormalMode)
 POST        /report/elections/crs/dormant-accounts          controllers.DormantAccountsController.onSubmit(mode: Mode = NormalMode)
 GET         /report/elections/crs/change-dormant-accounts   controllers.DormantAccountsController.onPageLoad(mode: Mode = CheckMode)
