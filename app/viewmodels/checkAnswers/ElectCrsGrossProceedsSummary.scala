@@ -16,7 +16,6 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.ElectCrsGrossProceedsPage
 import play.api.i18n.Messages
@@ -25,17 +24,16 @@ import viewmodels.common.accessibleActionItem
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object ElectCrsGrossProceedsSummary  {
+object ElectCrsGrossProceedsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(ElectCrsGrossProceedsPage).map {
       answer =>
-
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key     = "elections.crs.grossProceeds.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          key = "elections.crs.grossProceeds.checkYourAnswersLabel",
+          value = ValueViewModel(value),
           actions = Seq(
             accessibleActionItem("site.change", controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("electCrsGrossProceeds.change.hidden"))
