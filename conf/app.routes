@@ -50,3 +50,8 @@ GET         /report/elections/crs/dormant-accounts          controllers.DormantA
 POST        /report/elections/crs/dormant-accounts          controllers.DormantAccountsController.onSubmit(mode: Mode = NormalMode)
 GET         /report/elections/crs/change-dormant-accounts   controllers.DormantAccountsController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/elections/crs/change-dormant-accounts   controllers.DormantAccountsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report-elections                        controllers.ReportElectionsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report-elections                        controllers.ReportElectionsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-report-elections                  controllers.ReportElectionsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-report-elections                  controllers.ReportElectionsController.onSubmit(mode: Mode = CheckMode)

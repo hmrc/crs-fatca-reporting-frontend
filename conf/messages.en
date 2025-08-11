@@ -136,3 +136,8 @@ electCrsCarfGrossProceeds.title = Is the financial institution reporting gross p
 electCrsCarfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
 electCrsCarfGrossProceeds.checkYourAnswersLabel = electCrsCarfGrossProceeds
 electCrsCarfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}
+
+reportElections.title = Do you want to make any elections for {0} for the {1} reporting period {2}?
+reportElections.heading = Do you want to make any elections for {0} for the {1} reporting period {2}?
+reportElections.error.CRS.required = Select yes if you want to make any elections for the financial institution for CRS
+reportElections.error.FATCA.required = Select yes if you want to make any elections for the financial institution for FATCA
