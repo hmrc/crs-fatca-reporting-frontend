@@ -29,7 +29,7 @@ import views.html.elections.ReportElectionsView
 
 class ReportElectionsViewSpec extends SpecBase with ViewHelper {
 
-  val view: ReportElectionsView                                              = app.injector.instanceOf[ReportElectionsView]
+  val view: ReportElectionsView                                         = app.injector.instanceOf[ReportElectionsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val formProvider                                                      = new ReportElectionsFormProvider()
   val form                                                              = formProvider("crs")

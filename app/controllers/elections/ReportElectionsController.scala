@@ -30,29 +30,30 @@ import views.html.elections.ReportElectionsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReportElectionsController @Inject()(
-                                           override val messagesApi: MessagesApi,
-                                           sessionRepository: SessionRepository,
-                                           navigator: Navigator,
-                                           identify: IdentifierAction,
-                                           getData: DataRetrievalAction,
-                                           requireData: DataRequiredAction,
-                                           formProvider: ReportElectionsFormProvider,
-                                           val controllerComponents: MessagesControllerComponents,
-                                           view: ReportElectionsView
-                                         )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class ReportElectionsController @Inject() (
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: ReportElectionsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ReportElectionsView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
   def form(regime: String) = formProvider(regime)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-
       val reportingPeriod = "2026"
-      val regime = "crs"
-      val name = "Placeholder name"
+      val regime          = "crs"
+      val name            = "Placeholder name"
 
       val preparedForm = request.userAnswers.flatMap(_.get(ReportElectionsPage)) match {
-        case None => form(regime)
+        case None        => form(regime)
         case Some(value) => form(regime).fill(value)
       }
 
@@ -62,17 +63,17 @@ class ReportElectionsController @Inject()(
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
       val reportingPeriod = "2026"
-      val regime = "crs"
-      val name = "Placeholder name"
-      form(regime).bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(reportingPeriod, regime, name, formWithErrors, mode))),
-
-        value =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ReportElectionsPage, value))
-            _ <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(ReportElectionsPage, mode, updatedAnswers))
-      )
+      val regime          = "crs"
+      val name            = "Placeholder name"
+      form(regime)
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(reportingPeriod, regime, name, formWithErrors, mode))),
+          value =>
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ReportElectionsPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(ReportElectionsPage, mode, updatedAnswers))
+        )
   }
 }

@@ -22,7 +22,7 @@ import play.api.data.FormError
 
 class ReportElectionsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val invalidKey = "error.boolean"
+  val invalidKey   = "error.boolean"
   val formProvider = new ReportElectionsFormProvider()
 
   ".value" - {
@@ -31,7 +31,7 @@ class ReportElectionsFormProviderSpec extends BooleanFieldBehaviours {
 
     "when the regime is crs" - {
 
-      val form = formProvider("crs")
+      val form        = formProvider("crs")
       val requiredKey = "reportElections.error.crs.required"
 
       behave like booleanField(
@@ -49,7 +49,7 @@ class ReportElectionsFormProviderSpec extends BooleanFieldBehaviours {
 
     "when the regime is fatca" - {
 
-      val form = formProvider("fatca")
+      val form        = formProvider("fatca")
       val requiredKey = "reportElections.error.fatca.required"
 
       behave like booleanField(

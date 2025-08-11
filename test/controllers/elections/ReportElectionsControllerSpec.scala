@@ -37,9 +37,9 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val regime = "crs"
+  val regime       = "crs"
   val formProvider = new ReportElectionsFormProvider()
-  val form = formProvider(regime)
+  val form         = formProvider(regime)
 
   lazy val reportElectionsRoute = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
 
