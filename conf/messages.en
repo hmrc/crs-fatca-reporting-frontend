@@ -136,3 +136,7 @@ electCrsCarfGrossProceeds.title = Is the financial institution reporting gross p
 electCrsCarfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
 electCrsCarfGrossProceeds.checkYourAnswersLabel = electCrsCarfGrossProceeds
 electCrsCarfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}
+
+election.fatca.thresholds.title = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA

@@ -50,3 +50,8 @@ GET         /report/elections/crs/dormant-accounts          controllers.DormantA
 POST        /report/elections/crs/dormant-accounts          controllers.DormantAccountsController.onSubmit(mode: Mode = NormalMode)
 GET         /report/elections/crs/change-dormant-accounts   controllers.DormantAccountsController.onPageLoad(mode: Mode = CheckMode)
 POST        /report/elections/crs/change-dormant-accounts   controllers.DormantAccountsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report/elections/fatca/thresholds                   controllers.elections.fatca.ElectFatcaThresholdsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/fatca/thresholds                   controllers.elections.fatca.ElectFatcaThresholdsController.onSubmit(mode: Mode = NormalMode)
+GET        /report/elections/fatca/change-thresholds            controllers.elections.fatca.ElectFatcaThresholdsController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/elections/fatca/chnage-thresholds            controllers.elections.fatca.ElectFatcaThresholdsController.onSubmit(mode: Mode = CheckMode)
