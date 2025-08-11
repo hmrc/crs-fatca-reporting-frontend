@@ -17,26 +17,26 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, UserAnswers}
-import pages.elections.crs.ElectCrsGrossProceedsPage
+import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.common.accessibleActionItem
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object ElectCrsGrossProceedsSummary {
+object TreasuryRegulationsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(ElectCrsGrossProceedsPage).map {
+    answers.get(TreasuryRegulationsPage).map {
       answer =>
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "elections.crs.grossProceeds.checkYourAnswersLabel",
+          key = "treasuryRegulations.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            accessibleActionItem("site.change", controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("electCrsGrossProceeds.change.hidden"))
+            accessibleActionItem("site.change", controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("treasuryRegulations.change.hidden"))
           )
         )
     }

@@ -15,18 +15,18 @@
  *@
 
 @this(
-        layout: templates.Layout,
-        formHelper: FormWithCSRF,
-        govukErrorSummary: GovukErrorSummary,
-        govukRadios: GovukRadios,
-        govukButton: GovukButton
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
 )
 
-@(fiName: String, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("elections.crs.grossProceeds.title"))) {
+@layout(pageTitle = title(form, messages("treasuryRegulations.title"))) {
 
-    @formHelper(action = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onSubmit(mode), Symbol("autoComplete") -> "on") {
+    @formHelper(action = controllers.elections.fatca.routes.TreasuryRegulationsController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -35,7 +35,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("elections.crs.grossProceeds.heading", fiName)).asPageHeading()
+                legend = LegendViewModel(messages("treasuryRegulations.heading")).asPageHeading()
             )
         )
 

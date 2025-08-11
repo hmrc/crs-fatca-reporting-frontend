@@ -140,3 +140,9 @@ electCrsCarfGrossProceeds.error.required = Select yes if the financial instituti
 elections.crs.grossProceeds.title = Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
+
+treasuryRegulations.title = treasuryRegulations
+treasuryRegulations.heading = treasuryRegulations
+treasuryRegulations.checkYourAnswersLabel = treasuryRegulations
+treasuryRegulations.error.required = Select yes if treasuryRegulations
+treasuryRegulations.change.hidden = TreasuryRegulations

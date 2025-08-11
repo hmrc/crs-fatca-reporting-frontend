@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.elections.fatca
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case object ElectCrsCarfGrossProceedsPage extends QuestionPage[Boolean] {
+case object TreasuryRegulationsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "electCrsCarfGrossProceeds"
+  override def toString: String = "treasuryRegulations"
 }

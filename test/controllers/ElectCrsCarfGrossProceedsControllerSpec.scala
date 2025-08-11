@@ -23,13 +23,13 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ElectCrsCarfGrossProceedsPage
+import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.ElectCrsCarfGrossProceedsView
+import views.html.elections.crs.ElectCrsCarfGrossProceedsView
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -42,7 +42,7 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
   val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
   val form         = formProvider(currentYear)
 
-  lazy val electCrsCarfGrossProceedsRoute = routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
+  lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
 
   "ElectCrsCarfGrossProceeds Controller" - {
 

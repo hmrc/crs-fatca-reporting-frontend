@@ -23,14 +23,14 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.DormantAccountsPage
+import pages.elections.crs.DormantAccountsPage
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.DormantAccountsView
+import views.html.elections.crs.DormantAccountsView
 
 import scala.concurrent.Future
 
@@ -41,7 +41,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider                      = new DormantAccountsFormProvider()
   val form: Form[Boolean]               = formProvider()
   val fiName                            = "placeholderFIName"
-  lazy val dormantAccountsRoute: String = routes.DormantAccountsController.onPageLoad(NormalMode).url
+  lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
 
   "DormantAccounts Controller" - {
 

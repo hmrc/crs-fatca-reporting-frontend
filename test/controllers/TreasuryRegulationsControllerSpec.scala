@@ -14,68 +14,67 @@
  * limitations under the License.
  */
 
-package controllers.elections.crs
+package controllers
 
 import base.SpecBase
-import forms.ElectCrsGrossProceedsFormProvider
+import forms.TreasuryRegulationsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.elections.crs.ElectCrsGrossProceedsPage
+import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers.*
+import play.api.test.Helpers._
 import repositories.SessionRepository
-import views.html.elections.crs.ElectCrsGrossProceedsView
+import views.html.elections.fatca.TreasuryRegulationsView
 
 import scala.concurrent.Future
 
-class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
+class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new ElectCrsGrossProceedsFormProvider()
-  val form         = formProvider()
-  val fiName       = "EFG Bank plc"
+  val formProvider = new TreasuryRegulationsFormProvider()
+  val form = formProvider()
 
-  lazy val electCrsGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode).url
+  lazy val treasuryRegulationsRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
 
-  "ElectCrsGrossProceeds Controller" - {
+  "TreasuryRegulations Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, electCrsGrossProceedsRoute)
+        val request = FakeRequest(GET, treasuryRegulationsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
+        val view = application.injector.instanceOf[TreasuryRegulationsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsGrossProceedsPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(TreasuryRegulationsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, electCrsGrossProceedsRoute)
+        val request = FakeRequest(GET, treasuryRegulationsRoute)
 
-        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
+        val view = application.injector.instanceOf[TreasuryRegulationsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +94,7 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, electCrsGrossProceedsRoute)
+          FakeRequest(POST, treasuryRegulationsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -111,17 +110,47 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, electCrsGrossProceedsRoute)
+          FakeRequest(POST, treasuryRegulationsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
+        val view = application.injector.instanceOf[TreasuryRegulationsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(fiName, boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, treasuryRegulationsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, treasuryRegulationsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }
