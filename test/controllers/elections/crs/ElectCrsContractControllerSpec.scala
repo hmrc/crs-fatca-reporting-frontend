@@ -14,67 +14,68 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections.crs
 
 import base.SpecBase
-import forms.TreasuryRegulationsFormProvider
+import forms.ElectCrsContractFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.elections.fatca.TreasuryRegulationsPage
+import pages.elections.crs.ElectCrsContractPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.elections.fatca.TreasuryRegulationsView
+import views.html.elections.crs.ElectCrsContractView
 
 import scala.concurrent.Future
 
-class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
+class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new TreasuryRegulationsFormProvider()
+  val formProvider = new ElectCrsContractFormProvider()
   val form         = formProvider()
+  val fi           = "EFG Bank plc"
 
-  lazy val treasuryRegulationsRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
+  lazy val electCrsContractRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
 
-  "TreasuryRegulations Controller" - {
+  "ElectCrsContract Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, treasuryRegulationsRoute)
+        val request = FakeRequest(GET, electCrsContractRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[TreasuryRegulationsView]
+        val view = application.injector.instanceOf[ElectCrsContractView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fi, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(TreasuryRegulationsPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsContractPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, treasuryRegulationsRoute)
+        val request = FakeRequest(GET, electCrsContractRoute)
 
-        val view = application.injector.instanceOf[TreasuryRegulationsView]
+        val view = application.injector.instanceOf[ElectCrsContractView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fi, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -94,7 +95,7 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, treasuryRegulationsRoute)
+          FakeRequest(POST, electCrsContractRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -110,47 +111,17 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, treasuryRegulationsRoute)
+          FakeRequest(POST, electCrsContractRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[TreasuryRegulationsView]
+        val view = application.injector.instanceOf[ElectCrsContractView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, treasuryRegulationsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, treasuryRegulationsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        contentAsString(result) mustEqual view(fi, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }

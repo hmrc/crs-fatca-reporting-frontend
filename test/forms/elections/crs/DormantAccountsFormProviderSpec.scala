@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package forms
+package forms.elections.crs
 
+import forms.DormantAccountsFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 

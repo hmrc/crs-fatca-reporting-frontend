@@ -14,68 +14,69 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections.crs
 
 import base.SpecBase
-import forms.DormantAccountsFormProvider
+import forms.ElectCrsCarfGrossProceedsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.elections.crs.DormantAccountsPage
-import play.api.data.Form
+import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.elections.crs.DormantAccountsView
+import views.html.elections.crs.ElectCrsCarfGrossProceedsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
+class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute: Call = Call("GET", "/foo")
+  def onwardRoute  = Call("GET", "/foo")
+  val fiName       = "EFG Bank plc"
+  val currentYear  = LocalDate.now().getYear()
+  val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
+  val form         = formProvider(currentYear)
 
-  val formProvider                      = new DormantAccountsFormProvider()
-  val form: Form[Boolean]               = formProvider()
-  val fiName                            = "placeholderFIName"
-  lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
+  lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
 
-  "DormantAccounts Controller" - {
+  "ElectCrsCarfGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, dormantAccountsRoute)
+        val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(DormantAccountsPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsCarfGrossProceedsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, dormantAccountsRoute)
+        val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +96,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, dormantAccountsRoute)
+          FakeRequest(POST, electCrsCarfGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -111,17 +112,17 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, dormantAccountsRoute)
+          FakeRequest(POST, electCrsCarfGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }
