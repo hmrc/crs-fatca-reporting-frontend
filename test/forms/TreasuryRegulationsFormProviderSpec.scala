@@ -22,7 +22,7 @@ import play.api.data.FormError
 class TreasuryRegulationsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "treasuryRegulations.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new TreasuryRegulationsFormProvider()()
 

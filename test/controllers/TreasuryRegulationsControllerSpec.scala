@@ -38,7 +38,7 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new TreasuryRegulationsFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val treasuryRegulationsRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
 
