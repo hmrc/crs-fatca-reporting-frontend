@@ -43,7 +43,7 @@ class ElectFatcaThresholdsViewSpec extends SpecBase with ViewHelper {
 
     "should have title and heading" in {
       val title: String =
-        "Are they applying thresholds to any of their accounts in their due diligence process for FATCA? - Send a CRS or FATCA report - GOV.UK"
+        "Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA? - Send a CRS or FATCA report - GOV.UK"
       val heading: String = "Is testFI applying thresholds to any of their accounts in their due diligence process for FATCA?"
       getWindowTitle(doc) must include(title)
       getPageHeading(doc) mustEqual heading

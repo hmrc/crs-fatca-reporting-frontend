@@ -141,6 +141,6 @@ elections.crs.grossProceeds.title = Is the financial institution also reporting 
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 
-election.fatca.thresholds.title = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA
