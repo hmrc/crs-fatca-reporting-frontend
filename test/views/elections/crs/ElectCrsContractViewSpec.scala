@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package views
+package views.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
-import views.html.ElectCrsContractView
+import views.html.elections.crs.ElectCrsContractView
 
 class ElectCrsContractViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
   private val view                                = app.injector.instanceOf[ElectCrsContractView]
@@ -38,25 +37,26 @@ class ElectCrsContractViewSpec extends SpecBase with GuiceOneAppPerSuite with In
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  val renderedHtml: HtmlFormat.Appendable               = view(fiName, form, NormalMode)
+  lazy val doc                                          = Jsoup.parse(renderedHtml.body)
 
-  "Create companion object for class" - {
-    "should render page components" in {
-      val renderedHtml: HtmlFormat.Appendable = view(fiName, form, NormalMode)
-      lazy val doc                            = Jsoup.parse(renderedHtml.body)
-
+  "ElectCrsContractView" - {
+    "should have title and heading" in {
       getWindowTitle(
         doc
       ) mustEqual "Is the financial institution excluding cash value insurance contracts or annuity contracts from their reporting for CRS? - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"Is $fiName excluding cash value insurance contracts or annuity contracts from their reporting for CRS?"
-      assertRadioLabel(doc)
-      getButtonText(doc).strip() mustEqual "Continue"
     }
-  }
 
-  private def getButtonText(page: Document) = elementText(page, "button")
+    "should have radio Button" in {
+      val linkElements = getAllElements(doc, ".govuk-radios__label")
+      linkElements.size() mustEqual 2
+      linkElements.get(0).text() mustEqual "Yes"
+      linkElements.get(1).text() mustEqual "No"
+    }
 
-  private def assertRadioLabel(page: Document) = {
-    val radioLabel = page.select(".govuk-radios__label")
-    Seq("Yes", "No").foreach(radioLabel.text() must include(_))
+    "should have continue Button" in {
+      elementText(doc, "button") mustEqual "Continue"
+    }
   }
 }

@@ -32,9 +32,8 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.ElectCrsContractPage
+import pages.elections.crs.ElectCrsContractPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.common.accessibleActionItem
@@ -52,7 +51,7 @@ object ElectCrsContractSummary {
           key = "electCrsContract.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            accessibleActionItem("site.change", routes.ElectCrsContractController.onPageLoad(CheckMode).url)
+            accessibleActionItem("site.change", controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("electCrsContract.change.hidden"))
           )
         )
