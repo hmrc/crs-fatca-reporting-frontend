@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.ElectCrsGrossProceedsFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.ElectCrsGrossProceedsPage
+import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository

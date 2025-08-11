@@ -14,63 +14,61 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections.crs
 
 import controllers.actions.*
-import forms.ElectCrsCarfGrossProceedsFormProvider
+import forms.DormantAccountsFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.ElectCrsCarfGrossProceedsPage
+import pages.elections.crs.DormantAccountsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.ElectCrsCarfGrossProceedsView
+import views.html.elections.crs.DormantAccountsView
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ElectCrsCarfGrossProceedsController @Inject() (
+class DormantAccountsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  formProvider: ElectCrsCarfGrossProceedsFormProvider,
+  formProvider: DormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: ElectCrsCarfGrossProceedsView
+  view: DormantAccountsView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-  val fiName = "EFG Bank plc"
+
+  val form: Form[Boolean] = formProvider()
+
+  val fiName = "placeholderFIName"
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val currentYear = LocalDate.now().getYear
-      val form        = formProvider(currentYear)
-      val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsCarfGrossProceedsPage)) match {
+      val preparedForm = request.userAnswers.flatMap(_.get(DormantAccountsPage)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(fiName, currentYear, preparedForm, mode))
+      Ok(view(preparedForm, mode, fiName))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-      val currentYear = LocalDate.now().getYear
-      val form        = formProvider(currentYear)
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(fiName, currentYear, formWithErrors, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ElectCrsCarfGrossProceedsPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(DormantAccountsPage, value))
               _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ElectCrsCarfGrossProceedsPage, mode, updatedAnswers))
+            } yield Redirect(navigator.nextPage(DormantAccountsPage, mode, updatedAnswers))
         )
   }
 }

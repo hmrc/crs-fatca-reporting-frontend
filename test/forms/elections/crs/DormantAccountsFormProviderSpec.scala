@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package forms.elections.crs
 
+import forms.DormantAccountsFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class ElectCrsGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
+class DormantAccountsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "elections.crs.grossProceeds.error.required"
+  val requiredKey = "dormantAccounts.error.required"
   val invalidKey  = "error.boolean"
 
-  val form = new ElectCrsGrossProceedsFormProvider()()
+  val form = new DormantAccountsFormProvider()()
 
   ".value" - {
 

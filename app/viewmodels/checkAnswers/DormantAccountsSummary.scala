@@ -16,14 +16,13 @@
 
 package viewmodels.checkAnswers
 
-import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.DormantAccountsPage
+import pages.elections.crs.DormantAccountsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
 import viewmodels.common.accessibleActionItem
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
 object DormantAccountsSummary {
 
@@ -36,7 +35,7 @@ object DormantAccountsSummary {
           key = "dormantAccounts.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            accessibleActionItem("site.change", routes.DormantAccountsController.onPageLoad(CheckMode).url)
+            accessibleActionItem("site.change", controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("dormantAccounts.change.hidden"))
           )
         )

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package pages
+package pages.elections.crs
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
-case object ElectCrsGrossProceedsPage extends QuestionPage[Boolean] {
+case object ElectCrsCarfGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "electionsCrsGrossProceeds"
+  override def toString: String = "electCrsCarfGrossProceeds"
 }

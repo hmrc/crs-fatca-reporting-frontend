@@ -17,7 +17,6 @@
 package views.elections.crs
 
 import base.SpecBase
-import forms.RequiredGiinFormProvider
 import forms.elections.crs.ThresholdsFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package forms
+package forms.elections.crs
 
+import forms.ElectCrsCarfGrossProceedsFormProvider
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class ElectCrsContractFormProviderSpec extends BooleanFieldBehaviours {
+class ElectCrsCarfGrossProceedsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "electCrsContract.error.required"
+  val requiredKey = "electCrsCarfGrossProceeds.error.required"
   val invalidKey  = "error.boolean"
+  val currentYear = 2025
 
-  val form = new ElectCrsContractFormProvider()()
+  val form = new ElectCrsCarfGrossProceedsFormProvider()(currentYear)
 
   ".value" - {
 
@@ -33,13 +35,13 @@ class ElectCrsContractFormProviderSpec extends BooleanFieldBehaviours {
     behave like booleanField(
       form,
       fieldName,
-      invalidError = FormError(fieldName, invalidKey)
+      invalidError = FormError(fieldName, invalidKey, args = Seq(currentYear.toString))
     )
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
+      requiredError = FormError(fieldName, requiredKey, args = Seq(currentYear.toString))
     )
   }
 }

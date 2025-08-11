@@ -15,18 +15,18 @@
  *@
 
 @this(
-        layout: templates.Layout,
-        formHelper: FormWithCSRF,
-        govukErrorSummary: GovukErrorSummary,
-        govukRadios: GovukRadios,
-        govukButton: GovukButton
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
 )
 
-@(fiName: String, carfGrossProceedsCutOffYear: Int, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(fi: String, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("electCrsCarfGrossProceeds.title", f"$carfGrossProceedsCutOffYear%d"))) {
+@layout(pageTitle = title(form, messages("electCrsContract.title"))) {
 
-    @formHelper(action = routes.ElectCrsCarfGrossProceedsController.onSubmit(mode), Symbol("autoComplete") -> "on") {
+    @formHelper(action = controllers.elections.crs.routes.ElectCrsContractController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -35,7 +35,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("electCrsCarfGrossProceeds.heading", fiName, f"$carfGrossProceedsCutOffYear%d")).asPageHeading().withCssClass("govuk-fieldset__legend--l govuk-!-display-block")
+                legend = LegendViewModel(messages("electCrsContract.heading", fi)).asPageHeading().withCssClass("govuk-fieldset__legend--l govuk-!-display-block")
             )
         )
 
