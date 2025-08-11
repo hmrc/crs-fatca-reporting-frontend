@@ -136,3 +136,7 @@ electCrsCarfGrossProceeds.title = Is the financial institution reporting gross p
 electCrsCarfGrossProceeds.heading = Is {0} reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {1}?
 electCrsCarfGrossProceeds.checkYourAnswersLabel = electCrsCarfGrossProceeds
 electCrsCarfGrossProceeds.error.required = Select yes if the financial institution is reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}
+
+elections.crs.grossProceeds.title = Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
+elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
+elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
