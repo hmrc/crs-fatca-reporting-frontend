@@ -17,26 +17,26 @@
 package viewmodels.checkAnswers
 
 import models.{CheckMode, UserAnswers}
-import pages.elections.crs.DormantAccountsPage
+import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.common.accessibleActionItem
 import viewmodels.govuk.summarylist.*
 import viewmodels.implicits.*
 
-object DormantAccountsSummary {
+object ElectCrsGrossProceedsSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(DormantAccountsPage).map {
+    answers.get(ElectCrsGrossProceedsPage).map {
       answer =>
         val value = if (answer) "site.yes" else "site.no"
 
         SummaryListRowViewModel(
-          key = "dormantAccounts.checkYourAnswersLabel",
+          key = "elections.crs.grossProceeds.checkYourAnswersLabel",
           value = ValueViewModel(value),
           actions = Seq(
-            accessibleActionItem("site.change", controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("dormantAccounts.change.hidden"))
+            accessibleActionItem("site.change", controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url)
+              .withVisuallyHiddenText(messages("electCrsGrossProceeds.change.hidden"))
           )
         )
     }

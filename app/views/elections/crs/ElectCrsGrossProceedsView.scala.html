@@ -15,18 +15,18 @@
  *@
 
 @this(
-    layout: templates.Layout,
-    formHelper: FormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
-    govukRadios: GovukRadios,
-    govukButton: GovukButton
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        govukRadios: GovukRadios,
+        govukButton: GovukButton
 )
 
-@(fi: String, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(fiName: String, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("electCrsContract.title"))) {
+@layout(pageTitle = title(form, messages("elections.crs.grossProceeds.title"))) {
 
-    @formHelper(action = routes.ElectCrsContractController.onSubmit(mode)) {
+    @formHelper(action = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onSubmit(mode), Symbol("autoComplete") -> "on") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -35,7 +35,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("electCrsContract.heading", fi)).asPageHeading().withCssClass("govuk-fieldset__legend--l govuk-!-display-block")
+                legend = LegendViewModel(messages("elections.crs.grossProceeds.heading", fiName)).asPageHeading()
             )
         )
 

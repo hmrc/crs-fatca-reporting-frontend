@@ -14,68 +14,69 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections.crs
 
 import base.SpecBase
-import forms.ElectCrsContractFormProvider
+import forms.ElectCrsCarfGrossProceedsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ElectCrsContractPage
+import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.ElectCrsContractView
+import views.html.elections.crs.ElectCrsCarfGrossProceedsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
+class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute  = Call("GET", "/foo")
+  val fiName       = "EFG Bank plc"
+  val currentYear  = LocalDate.now().getYear()
+  val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
+  val form         = formProvider(currentYear)
 
-  val formProvider = new ElectCrsContractFormProvider()
-  val form         = formProvider()
-  val fi           = "EFG Bank plc"
+  lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
 
-  lazy val electCrsContractRoute = routes.ElectCrsContractController.onPageLoad(NormalMode).url
-
-  "ElectCrsContract Controller" - {
+  "ElectCrsCarfGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, electCrsContractRoute)
+        val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ElectCrsContractView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fi, form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsContractPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsCarfGrossProceedsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, electCrsContractRoute)
+        val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
 
-        val view = application.injector.instanceOf[ElectCrsContractView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fi, form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +96,7 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, electCrsContractRoute)
+          FakeRequest(POST, electCrsCarfGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -111,17 +112,17 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, electCrsContractRoute)
+          FakeRequest(POST, electCrsCarfGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[ElectCrsContractView]
+        val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(fi, boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, currentYear, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }

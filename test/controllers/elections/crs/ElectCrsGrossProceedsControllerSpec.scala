@@ -14,68 +14,68 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.elections.crs
 
 import base.SpecBase
-import forms.DormantAccountsFormProvider
+import forms.ElectCrsGrossProceedsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.DormantAccountsPage
-import play.api.data.Form
+import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.DormantAccountsView
+import views.html.elections.crs.ElectCrsGrossProceedsView
 
 import scala.concurrent.Future
 
-class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
+class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute: Call = Call("GET", "/foo")
+  def onwardRoute = Call("GET", "/foo")
 
-  val formProvider                      = new DormantAccountsFormProvider()
-  val form: Form[Boolean]               = formProvider()
-  val fiName                            = "placeholderFIName"
-  lazy val dormantAccountsRoute: String = routes.DormantAccountsController.onPageLoad(NormalMode).url
+  val formProvider = new ElectCrsGrossProceedsFormProvider()
+  val form         = formProvider()
+  val fiName       = "EFG Bank plc"
 
-  "DormantAccounts Controller" - {
+  lazy val electCrsGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode).url
+
+  "ElectCrsGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, dormantAccountsRoute)
+        val request = FakeRequest(GET, electCrsGrossProceedsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(DormantAccountsPage, true).success.value
+      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsGrossProceedsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, dormantAccountsRoute)
+        val request = FakeRequest(GET, electCrsGrossProceedsRoute)
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -95,7 +95,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, dormantAccountsRoute)
+          FakeRequest(POST, electCrsGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -111,17 +111,17 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, dormantAccountsRoute)
+          FakeRequest(POST, electCrsGrossProceedsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[DormantAccountsView]
+        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, fiName)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiName, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }

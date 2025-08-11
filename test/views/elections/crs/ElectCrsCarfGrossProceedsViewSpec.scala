@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
@@ -27,7 +27,7 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
-import views.html.ElectCrsCarfGrossProceedsView
+import views.html.elections.crs.ElectCrsCarfGrossProceedsView
 
 class ElectCrsCarfGrossProceedsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
   private val view                                = app.injector.instanceOf[ElectCrsCarfGrossProceedsView]

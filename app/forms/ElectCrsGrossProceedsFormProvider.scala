@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object ElectCrsCarfGrossProceedsPage extends QuestionPage[Boolean] {
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ toString
+class ElectCrsGrossProceedsFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "electCrsCarfGrossProceeds"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("elections.crs.grossProceeds.error.required")
+    )
 }
