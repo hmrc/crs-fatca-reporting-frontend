@@ -56,7 +56,7 @@ POST       /report/elections/crs/gross-proceeds           controllers.elections.
 GET        /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode)
 POST       /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /report/elections/report-elections                        controllers.elections.crs.ReportElectionsController.onPageLoad(mode: Mode = NormalMode)
-POST       /report/elections/report-elections                        controllers.elections.crs.ReportElectionsController.onSubmit(mode: Mode = NormalMode)
-GET        /change/report/elections/report-elections                  controllers.elections.crs.ReportElectionsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change/report/elections/report-elections                  controllers.elections.crs.ReportElectionsController.onSubmit(mode: Mode = CheckMode)
+GET        /report/elections/report-elections                        controllers.elections.ReportElectionsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/report-elections                        controllers.elections.ReportElectionsController.onSubmit(mode: Mode = NormalMode)
+GET        /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onSubmit(mode: Mode = CheckMode)

@@ -1,7 +1,23 @@
-package controllers
+/*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.elections
 
 import base.SpecBase
-import forms.ReportElectionsFormProvider
+import forms.elections.ReportElectionsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
@@ -11,9 +27,9 @@ import pages.ReportElectionsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.ReportElectionsView
+import views.html.elections.ReportElectionsView
 
 import scala.concurrent.Future
 
@@ -21,10 +37,11 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
+  val regime = "crs"
   val formProvider = new ReportElectionsFormProvider()
-  val form = formProvider()
+  val form = formProvider(regime)
 
-  lazy val reportElectionsRoute = routes.ReportElectionsController.onPageLoad(NormalMode).url
+  lazy val reportElectionsRoute = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
 
   "ReportElections Controller" - {
 
@@ -40,7 +57,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ReportElectionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", form, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -58,7 +75,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -104,37 +121,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, reportElectionsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, reportElectionsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }

@@ -143,5 +143,6 @@ elections.crs.grossProceeds.error.required = Select yes if the financial institu
 
 reportElections.title = Do you want to make any elections for {0} for the {1} reporting period {2}?
 reportElections.heading = Do you want to make any elections for {0} for the {1} reporting period {2}?
-reportElections.error.CRS.required = Select yes if you want to make any elections for the financial institution for CRS
-reportElections.error.FATCA.required = Select yes if you want to make any elections for the financial institution for FATCA
+reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
+reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA
+reportElections.error.required = Select yes if you want to make any elections for the financial institution

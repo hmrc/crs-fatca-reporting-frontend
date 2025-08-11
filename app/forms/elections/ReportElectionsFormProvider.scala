@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package forms
-
-import javax.inject.Inject
+package forms.elections
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import javax.inject.Inject
 
 class ReportElectionsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Boolean] =
+  def apply(regime: String): Form[Boolean] = {
+    val errorKey = regime.toLowerCase match {
+      case "crs" => "reportElections.error.crs.required"
+      case "fatca" => "reportElections.error.fatca.required"
+      case _ => "reportElections.error.required"
+    }
+
     Form(
-      "value" -> boolean("reportElections.error.required")
+      "value" -> boolean(errorKey)
     )
+  }
 }
