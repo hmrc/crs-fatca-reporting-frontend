@@ -149,3 +149,7 @@ checkYourFileDetails.fiId.key = FI ID (SendingCompanyIN)
 checkYourFileDetails.financialInstitution.key = Financial institution (ReportingFI Name)
 checkYourFileDetails.fileInformation.change = Change file
 checkYourFileDetails.row5 = File information
+
+election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA
