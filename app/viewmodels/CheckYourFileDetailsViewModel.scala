@@ -22,7 +22,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 
 object CheckYourFileDetailsViewModel {
 
-  def getYourFileDetailsRows()(implicit messages: Messages): SummaryList = {
+  def getYourFileDetailsRows()(implicit messages: Messages): SummaryList =
     SummaryList(
       rows = Seq(
         SummaryListRow(
@@ -62,5 +62,4 @@ object CheckYourFileDetailsViewModel {
         )
       )
     )
-  }
 }

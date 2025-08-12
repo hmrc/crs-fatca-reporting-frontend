@@ -29,11 +29,11 @@ import viewmodels.CheckYourFileDetailsViewModel
 
 class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view: CheckYourFileDetailsView = app.injector.instanceOf[CheckYourFileDetailsView]
+  val view: CheckYourFileDetailsView                                    = app.injector.instanceOf[CheckYourFileDetailsView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "CheckYourFileDetailsView" - {
     "should render page components with a summary list" in {
@@ -42,7 +42,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       val summaryList = CheckYourFileDetailsViewModel.getYourFileDetailsRows()
 
       val renderedHtml: HtmlFormat.Appendable = view(summaryList, financialInstitutionName)
-      lazy val doc = Jsoup.parse(renderedHtml.body)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) mustEqual s"Check your details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"Check your details are correct for $financialInstitutionName"

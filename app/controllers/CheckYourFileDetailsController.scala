@@ -37,7 +37,6 @@ class CheckYourFileDetailsController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      
       Ok(view(getYourFileDetailsRows(), "Placeholder Name"))
   }
 }
