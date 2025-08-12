@@ -140,3 +140,12 @@ electCrsCarfGrossProceeds.error.required = Select yes if the financial instituti
 elections.crs.grossProceeds.title = Is the financial institution also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
+
+checkYourFileDetails.title = Check your details are correct for the financial institution
+checkYourFileDetails.heading = Check your details are correct for {0}
+checkYourFileDetails.fileId.key = File ID (MessageRefId)
+checkYourFileDetails.reportingRegime.key = Reporting regime (MessageType)
+checkYourFileDetails.fiId.key = FI ID (SendingCompanyIN)
+checkYourFileDetails.financialInstitution.key = Financial institution (ReportingFI Name)
+checkYourFileDetails.fileInformation.change = Change file
+checkYourFileDetails.row5 = File information
