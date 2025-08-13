@@ -141,7 +141,7 @@ elections.crs.grossProceeds.title = Is the financial institution also reporting 
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 
-reportElections.title = Do you want to make any elections for {0} for the {1} reporting period {2}?
+reportElections.title = Do you want to make any elections for the {0} reporting period {1}?
 reportElections.heading = Do you want to make any elections for {0} for the {1} reporting period {2}?
 reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
 reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA

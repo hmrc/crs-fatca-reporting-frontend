@@ -43,7 +43,7 @@ class ReportElectionsViewSpec extends SpecBase with ViewHelper {
   "ReportElectionsView" - {
 
     "should have title and heading" in {
-      val title: String   = "Do you want to make any elections for Placeholder name for the crs reporting period 2026?"
+      val title: String   = "Do you want to make any elections for the crs reporting period 2026?"
       val heading: String = "Do you want to make any elections for Placeholder name for the crs reporting period 2026?"
       getWindowTitle(doc) must include(title)
       getPageHeading(doc) mustEqual heading
