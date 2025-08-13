@@ -141,6 +141,23 @@ elections.crs.grossProceeds.title = Is the financial institution also reporting 
 elections.crs.grossProceeds.heading = Is {0} also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS?
 elections.crs.grossProceeds.error.required = Select yes if the financial institution is also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 
+checkYourFileDetails.title = Check your details are correct for the financial institution
+checkYourFileDetails.heading = Check your details are correct for {0}
+checkYourFileDetails.fileId.key = File ID (MessageRefId)
+checkYourFileDetails.reportingRegime.key = Reporting regime (MessageType)
+checkYourFileDetails.fiId.key = FI ID (SendingCompanyIN)
+checkYourFileDetails.financialInstitution.key = Financial institution (ReportingFI Name)
+checkYourFileDetails.fileInformation.change = Change file
+checkYourFileDetails.row5 = File information
+
+election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
+election.fatca.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA
+
+treasuryRegulations.title = Is the financial institution using due diligence procedures from US Treasury Regulations for FATCA?
+treasuryRegulations.heading = Is {0} using due diligence procedures from US Treasury Regulations for FATCA?
+treasuryRegulations.error.required = Select yes if the financial institution is using due diligence procedures from US Treasury Regulations for FATCA
+
 reportElections.title = Do you want to make any elections for the {0} reporting period {1}?
 reportElections.heading = Do you want to make any elections for {0} for the {1} reporting period {2}?
 reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
