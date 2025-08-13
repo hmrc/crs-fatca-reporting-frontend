@@ -43,7 +43,7 @@ class TreasuryRegulationsViewSpec extends SpecBase with ViewHelper {
   "TreasuryRegulationsView" - {
 
     "should have a title" in {
-      val title: String = "Are they using due diligence procedures from US Treasury Regulations for FATCA?"
+      val title: String = "Is the financial institution using due diligence procedures from US Treasury Regulations for FATCA?"
       getWindowTitle(doc) must include(title)
     }
     "should have a heading" in {
