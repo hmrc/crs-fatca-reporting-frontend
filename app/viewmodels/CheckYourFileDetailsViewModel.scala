@@ -16,8 +16,10 @@
 
 package viewmodels
 
+import controllers.routes
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import play.api.mvc.Results.Redirect
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 
 object CheckYourFileDetailsViewModel {
@@ -52,7 +54,7 @@ object CheckYourFileDetailsViewModel {
             Actions(
               items = Seq(
                 ActionItem(
-                  href = "#",
+                  href = routes.IndexController.onPageLoad().url,
                   content = Text(messages("checkYourFileDetails.fileInformation.change")),
                   visuallyHiddenText = Some(messages("checkYourFileDetails.fileInformation.change"))
                 )
