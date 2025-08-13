@@ -144,3 +144,7 @@ elections.crs.grossProceeds.error.required = Select yes if the financial institu
 election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.error.required = Select yes if the financial institution is applying thresholds to any of their accounts in their due diligence process for FATCA
+
+treasuryRegulations.title = Is the financial institution using due diligence procedures from US Treasury Regulations for FATCA?
+treasuryRegulations.heading = Is {0} using due diligence procedures from US Treasury Regulations for FATCA?
+treasuryRegulations.error.required = Select yes if the financial institution is using due diligence procedures from US Treasury Regulations for FATCA
