@@ -56,6 +56,8 @@ POST       /report/elections/crs/gross-proceeds           controllers.elections.
 GET        /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onPageLoad(mode: Mode = CheckMode)
 POST       /report/elections/crs/change-gross-proceeds    controllers.elections.crs.ElectCrsGrossProceedsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /report/check-your-file-details                controllers.CheckYourFileDetailsController.onPageLoad()
+
 GET        /report/elections/fatca/thresholds                   controllers.elections.fatca.ElectFatcaThresholdsController.onPageLoad(mode: Mode = NormalMode)
 POST       /report/elections/fatca/thresholds                   controllers.elections.fatca.ElectFatcaThresholdsController.onSubmit(mode: Mode = NormalMode)
 GET        /report/elections/fatca/change-thresholds            controllers.elections.fatca.ElectFatcaThresholdsController.onPageLoad(mode: Mode = CheckMode)
