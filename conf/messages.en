@@ -157,3 +157,9 @@ election.fatca.thresholds.error.required = Select yes if the financial instituti
 treasuryRegulations.title = Is the financial institution using due diligence procedures from US Treasury Regulations for FATCA?
 treasuryRegulations.heading = Is {0} using due diligence procedures from US Treasury Regulations for FATCA?
 treasuryRegulations.error.required = Select yes if the financial institution is using due diligence procedures from US Treasury Regulations for FATCA
+
+reportElections.title = Do you want to make any elections for the {0} reporting period {1}?
+reportElections.heading = Do you want to make any elections for {0} for the {1} reporting period {2}?
+reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
+reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA
+reportElections.error.required = Select yes if you want to make any elections for the financial institution
