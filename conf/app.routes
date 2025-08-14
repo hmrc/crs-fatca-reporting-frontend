@@ -62,3 +62,12 @@ GET        /report/elections/fatca/thresholds                   controllers.elec
 POST       /report/elections/fatca/thresholds                   controllers.elections.fatca.ElectFatcaThresholdsController.onSubmit(mode: Mode = NormalMode)
 GET        /report/elections/fatca/change-thresholds            controllers.elections.fatca.ElectFatcaThresholdsController.onPageLoad(mode: Mode = CheckMode)
 POST       /report/elections/fatca/chnage-thresholds            controllers.elections.fatca.ElectFatcaThresholdsController.onSubmit(mode: Mode = CheckMode)
+GET        /report/elections/fatca/us-treasury-regulations                         controllers.elections.fatca.TreasuryRegulationsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/fatca/us-treasury-regulations                         controllers.elections.fatca.TreasuryRegulationsController.onSubmit(mode: Mode = NormalMode)
+GET        /report/elections/fatca/change-us-treasury-regulations                  controllers.elections.fatca.TreasuryRegulationsController.onPageLoad(mode: Mode = CheckMode)
+POST       /report/elections/fatca/change-us-treasury-regulations                  controllers.elections.fatca.TreasuryRegulationsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /report/elections/report-elections                        controllers.elections.ReportElectionsController.onPageLoad(mode: Mode = NormalMode)
+POST       /report/elections/report-elections                        controllers.elections.ReportElectionsController.onSubmit(mode: Mode = NormalMode)
+GET        /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onSubmit(mode: Mode = CheckMode)
