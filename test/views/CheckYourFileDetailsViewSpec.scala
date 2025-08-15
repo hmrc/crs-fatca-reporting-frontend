@@ -44,8 +44,8 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       val renderedHtml: HtmlFormat.Appendable = view(summaryList, financialInstitutionName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
-      getWindowTitle(doc) mustEqual s"Check your details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
-      getPageHeading(doc) mustEqual s"Check your details are correct for $financialInstitutionName"
+      getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
+      getPageHeading(doc) mustEqual s"Check your file details are correct for $financialInstitutionName"
 
       doc.select(".govuk-summary-list").size() mustBe 1
       doc.select(".govuk-summary-list__row").size() mustBe 5
