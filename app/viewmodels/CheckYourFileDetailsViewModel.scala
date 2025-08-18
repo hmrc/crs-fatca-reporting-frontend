@@ -38,7 +38,7 @@ object CheckYourFileDetailsViewModel {
           classes = "no-border-bottom"
         ),
         SummaryListRow(
-          key = Key(content = Text(messages("FI ID (SendingCompanyIN)"))),
+          key = Key(content = Text(messages("checkYourFileDetails.fiId.key"))),
           value = Value(content = Text("ABC00000123")),
           classes = "no-border-bottom"
         ),
