@@ -39,7 +39,7 @@ object CheckYourFileDetailsViewModel {
         ),
         SummaryListRow(
           key = Key(content = Text(messages("checkYourFileDetails.fiId.key"))),
-          value = Value(content = Text("ABC00000123")),
+          value = Value(content = Text("ABC00000124")),
           classes = "no-border-bottom"
         ),
         SummaryListRow(
