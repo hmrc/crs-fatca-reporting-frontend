@@ -37,7 +37,7 @@ class GiinNotSentControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[GiinNotSentView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(None)(request, messages(application)).toString
       }
     }
   }
