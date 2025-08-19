@@ -53,6 +53,15 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key").text() mustBe "File ID (MessageRefId)"
       doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value").text() mustBe "MyFATCAReportMessageRefId234567890LONGONGLONGLONGLONG"
 
+      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key").text() mustBe "Reporting regime (MessageType)"
+      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value").text() mustBe "CRS"
+
+      doc.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__key").text() mustBe "FI ID (SendingCompanyIN)"
+      doc.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__value").text() mustBe "ABC00000124"
+
+      doc.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__key").text() mustBe "Financial institution (ReportingFI Name)"
+      doc.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__value").text() mustBe "EFG Bank plc"
+
       doc.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__key").text() mustBe "File information"
       doc.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value").text() mustBe "New information"
     }
