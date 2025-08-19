@@ -38,11 +38,12 @@ object CheckYourFileDetailsViewModel {
           classes = "no-border-bottom"
         ),
         SummaryListRow(
-          value = Value(content = Text("ABC00000123")),
+          key = Key(content = Text(messages("checkYourFileDetails.fiId.key"))),
+          value = Value(content = Text("ABC00000124")),
           classes = "no-border-bottom"
         ),
         SummaryListRow(
-          key = Key(content = Text(messages("Financial institution (ReportingFI Name)"))),
+          key = Key(content = Text(messages("checkYourFileDetails.financialInstitution.key"))),
           value = Value(content = Text("EFG Bank plc")),
           classes = "no-border-bottom"
         ),
