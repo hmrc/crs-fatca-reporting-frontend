@@ -13,14 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
+
 @this()
 
-@(content: String)
+@(content: Html, extraClasses: String = "")
 
-<div class="govuk-warning-text">
- <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
- <strong class="govuk-warning-text__text">
-  <span class="govuk-visually-hidden">Warning</span>
-  @content
- </strong>
-</div>
+<p class="govuk-body @extraClasses">@content</p>

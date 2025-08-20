@@ -18,9 +18,8 @@ package viewmodels
 
 import controllers.routes
 import play.api.i18n.Messages
-import play.api.mvc.Results.Redirect
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 
 object CheckYourFileDetailsViewModel {
 

@@ -166,10 +166,17 @@ reportElections.error.crs.required = Select yes if you want to make any election
 reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA
 reportElections.error.required = Select yes if you want to make any elections for the financial institution
 
+giinNotSent.title = We’re unable to receive your file
+giinNotSent.heading = We’re unable to receive your file
+giinNotSent.line.elections.success = We have received the elections for this financial institution, but have not been able to receive the GIIN. We need the GIIN to receive your file.
+giinNotSent.line.elections.none = We have not been able to receive the GIIN for this financial institution. We need the GIIN to receive your file.
+giinNotSent.line.elections.failed = We have not been able to receive the GIIN or elections for this financial institution. We need the GIIN to receive your file.
+giinNotSent.line.2 = Try sending your file again later.
+giinNotSent.warning = You must send your file later to complete the reporting process.
+
 report.elections.not.sent.title = There is a problem with sending the elections
 report.elections.not.sent.heading = There is a problem with sending the elections
 report.elections.not.sent.p1 = We have received the GIIN for this financial institution, but have not been able to receive the elections.
 report.elections.not.sent.p2 = You can still send your file without the elections, then add them after in the service.
 report.elections.not.sent.warning.text = You must finish sending your file to complete the reporting process.
 report.elections.not.sent.submit = Finish sending file
-
