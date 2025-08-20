@@ -165,3 +165,11 @@ reportElections.heading = Do you want to make any elections for {0} for the {1} 
 reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
 reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA
 reportElections.error.required = Select yes if you want to make any elections for the financial institution
+
+report.elections.not.sent.title = There is a problem with sending the elections
+report.elections.not.sent.heading = There is a problem with sending the elections
+report.elections.not.sent.p1 = We have received the GIIN for this financial institution, but have not been able to receive the elections.
+report.elections.not.sent.p2 = You can still send your file without the elections, then add them after in the service.
+report.elections.not.sent.warning.text = You must finish sending your file to complete the reporting process.
+report.elections.not.sent.submit = Finish sending file
+
