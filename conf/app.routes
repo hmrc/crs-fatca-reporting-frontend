@@ -25,6 +25,7 @@ GET         /report/problem/invalid-xml                     controllers.FileErro
 GET         /report/problem/data-errors                     controllers.DataErrorsController.onPageLoad()
 GET         /report/problem/fi-not-matching                 controllers.FINotMatchingController.onPageLoad()
 GET         /report/problem/reporting-period                controllers.ReportingPeriodErrorController.onPageLoad()
+GET         /report/problem/elections-not-sent              controllers.ElectionsNotSentController.onPageLoad()
 
 GET         /report/required-giin                           controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
 POST        /report/required-giin                           controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)
@@ -72,9 +73,7 @@ POST       /report/elections/report-elections                        controllers
 GET        /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onSubmit(mode: Mode = CheckMode)
 
-
 GET        /report/send-your-file                       controllers.SendYourFileController.onPageLoad()
 POST       /report/send-your-file                       controllers.SendYourFileController.onSubmit()
 
 GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
-
