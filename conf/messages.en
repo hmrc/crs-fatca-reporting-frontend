@@ -165,3 +165,13 @@ reportElections.heading = Do you want to make any elections for {0} for the {1} 
 reportElections.error.crs.required = Select yes if you want to make any elections for the financial institution for CRS
 reportElections.error.fatca.required = Select yes if you want to make any elections for the financial institution for FATCA
 reportElections.error.required = Select yes if you want to make any elections for the financial institution
+
+sendYourFile.title = Send your file
+sendYourFile.heading = Send your file
+sendYourFile.p1 = We will now automatically check your file for business rule errors and send you to another page once completed.
+sendYourFile.p1.giin = We'll also send your GIIN or let you know if there are any issues with sending it.
+sendYourFile.p1.elections = We'll also send your elections or let you know if there are any issues with sending them.
+sendYourFile.p1.both = We'll also send your GIIN and elections, or let you know if there are any issues with sending them.
+sendYourFile.p2 = By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.
+sendYourFile.btn.send = Confirm and send
+
