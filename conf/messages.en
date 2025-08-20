@@ -175,3 +175,11 @@ sendYourFile.p1.both = We'll also send your GIIN and elections, or let you know 
 sendYourFile.p2 = By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.
 sendYourFile.btn.send = Confirm and send
 
+giinNotSent.title = We’re unable to receive your file
+giinNotSent.heading = We’re unable to receive your file
+giinNotSent.line.elections.success = We have received the elections for this financial institution, but have not been able to receive the GIIN. We need the GIIN to receive your file.
+giinNotSent.line.elections.none = We have not been able to receive the GIIN for this financial institution. We need the GIIN to receive your file.
+giinNotSent.line.elections.failed = We have not been able to receive the GIIN or elections for this financial institution. We need the GIIN to receive your file.
+giinNotSent.line.2 = Try sending your file again later.
+giinNotSent.warning = You must send your file later to complete the reporting process.
+

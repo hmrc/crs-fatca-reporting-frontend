@@ -17,7 +17,6 @@
 package controllers.elections.fatca
 
 import base.SpecBase
-import controllers.routes
 import forms.elections.fatca.TreasuryRegulationsFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
