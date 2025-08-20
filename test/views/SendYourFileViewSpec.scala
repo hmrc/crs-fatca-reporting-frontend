@@ -43,11 +43,10 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getWindowTitle(doc) must include("Send your file")
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
-      allParagraphValues must include("We will now automatically check your file for business rule errors and send you to another page once completed.")
-      allParagraphValues must include("By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.")
-      allParagraphValues must not include "also send your GIIN or let you know if there are any issues with sending it."
-      allParagraphValues must not include "also send your elections or let you know if there are any issues with sending them."
-      allParagraphValues must not include "also send your GIIN and elections, or let you know if there are any issues with sending them."
+      validateNonDynamicParagraphs(allParagraphValues)
+      allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
+      allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
     }
 
@@ -58,8 +57,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getWindowTitle(doc) must include("Send your file")
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
-      allParagraphValues must include("We will now automatically check your file for business rule errors and send you to another page once completed.")
-      allParagraphValues must include("By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.")
+      validateNonDynamicParagraphs(allParagraphValues)
       allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
       allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
       allParagraphValues must include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
@@ -73,8 +71,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getWindowTitle(doc) must include("Send your file")
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
-      allParagraphValues must include("We will now automatically check your file for business rule errors and send you to another page once completed.")
-      allParagraphValues must include("By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.")
+      validateNonDynamicParagraphs(allParagraphValues)
       allParagraphValues must include("also send your GIIN or let you know if there are any issues with sending it.")
       allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
       allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
@@ -88,8 +85,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getWindowTitle(doc) must include("Send your file")
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
-      allParagraphValues must include("We will now automatically check your file for business rule errors and send you to another page once completed.")
-      allParagraphValues must include("By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.")
+      validateNonDynamicParagraphs(allParagraphValues)
       allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
       allParagraphValues must include("also send your elections or let you know if there are any issues with sending them.")
       allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
@@ -97,4 +93,8 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
     }
   }
 
+  private def validateNonDynamicParagraphs(allParagraphValues: String) = {
+    allParagraphValues must include("We will now automatically check your file for business rule errors and send you to another page once completed.")
+    allParagraphValues must include("By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.")
+  }
 }
