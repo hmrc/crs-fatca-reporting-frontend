@@ -28,6 +28,7 @@
 
     @formHelper(action = routes.SendYourFileController.onSubmit(), args= Symbol("id") -> "sendYourFileForm") {
 
+        <input type="hidden" id="processingMessage" value="@messages("sendYourFile.status.p1")" />
         <h1 class="govuk-heading-l">@messages("sendYourFile.heading")</h1>
 
         @extraParaCondition match {

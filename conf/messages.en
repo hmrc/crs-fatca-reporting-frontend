@@ -174,6 +174,7 @@ sendYourFile.p1.elections = We'll also send your elections or let you know if th
 sendYourFile.p1.both = We'll also send your GIIN and elections, or let you know if there are any issues with sending them.
 sendYourFile.p2 = By sending this file, you are confirming that the information is correct and complete to the best of your knowledge.
 sendYourFile.btn.send = Confirm and send
+sendYourFile.status.p1 = We are checking your file
 
 giinNotSent.title = We’re unable to receive your file
 giinNotSent.heading = We’re unable to receive your file
