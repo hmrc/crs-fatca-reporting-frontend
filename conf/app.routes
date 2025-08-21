@@ -73,3 +73,5 @@ GET        /change/report/elections/report-elections                  controller
 POST       /change/report/elections/report-elections                  controllers.elections.ReportElectionsController.onSubmit(mode: Mode = CheckMode)
 
 GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
+
+GET        /report/problem/virus-found                              controllers.VirusFoundController.onPageLoad()

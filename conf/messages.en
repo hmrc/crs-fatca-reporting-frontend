@@ -174,3 +174,9 @@ giinNotSent.line.elections.failed = We have not been able to receive the GIIN or
 giinNotSent.line.2 = Try sending your file again later.
 giinNotSent.warning = You must send your file later to complete the reporting process.
 
+
+virusFound.title = There is a virus in your file
+virusFound.heading = There is a virus in your file
+virusFound.p1 = We cannot accept this file as it contains a virus.
+virusFound.link1 = Upload a different file
+virusFound.link2 = Back to manage your CRS and FATCA reports
