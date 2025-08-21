@@ -11,17 +11,17 @@ import utils.ViewHelper
 import views.html.VirusFoundView
 
 class VirusFoundViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
-  val view: VirusFoundView = app.injector.instanceOf[VirusFoundView]
+  val view: VirusFoundView                                              = app.injector.instanceOf[VirusFoundView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "VirusFoundView" - {
 
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable = view()
-      lazy val doc = Jsoup.parse(renderedHtml.body)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       val paragraphValues = Seq(
         "We cannot accept this file as it contains a virus.",
@@ -35,7 +35,9 @@ class VirusFoundViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
       val linkElements = getAllElements(doc, ".govuk-link")
       linkElements.select(":contains(Upload a different file)").attr("href") mustEqual "/report-for-crs-and-fatca/report/upload-file"
-      linkElements.select(":contains(Back to manage your CRS and FATCA reports)").attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
+      linkElements
+        .select(":contains(Back to manage your CRS and FATCA reports)")
+        .attr("href") mustEqual "http://localhost:10033/manage-your-crs-and-fatca-financial-institutions"
 
     }
   }
