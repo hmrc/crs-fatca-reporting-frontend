@@ -19,14 +19,15 @@
         layout: templates.Layout,
         govukButton: GovukButton,
         link: components.Link,
-        appConfig: FrontendAppConfig
+        appConfig: FrontendAppConfig,
+        header: components.Heading
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("virusFound.title")), showBackLink = false) {
 
-    <h1 class="govuk-heading-l">@messages("virusFound.heading")</h1>
+    @header(headingContent = messages("virusFound.heading"))
 
     <p class="govuk-body">@messages("We cannot accept this file as it contains a virus.")</p>
 
