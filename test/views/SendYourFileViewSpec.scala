@@ -48,9 +48,9 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
       validateAllParaValues(allParagraphValues, paragraphValues)
-      allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
-      allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
-      allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN or let you know if there are any issues with sending it.")
+      allParagraphValues mustNot include("We'll also send your elections or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
     }
 
@@ -62,9 +62,9 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
       validateAllParaValues(allParagraphValues, paragraphValues)
-      allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
-      allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
-      allParagraphValues must include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN or let you know if there are any issues with sending it.")
+      allParagraphValues mustNot include("We'll also send your elections or let you know if there are any issues with sending them.")
+      allParagraphValues must include("We'll also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
     }
 
@@ -76,9 +76,9 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
       validateAllParaValues(allParagraphValues, paragraphValues)
-      allParagraphValues must include("also send your GIIN or let you know if there are any issues with sending it.")
-      allParagraphValues mustNot include("also send your elections or let you know if there are any issues with sending them.")
-      allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
+      allParagraphValues must include("We'll also send your GIIN or let you know if there are any issues with sending it.")
+      allParagraphValues mustNot include("We'll also send your elections or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
     }
 
@@ -90,9 +90,9 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       getPageHeading(doc) mustEqual "Send your file"
       val allParagraphValues = getAllParagraph(doc).text()
       validateAllParaValues(allParagraphValues, paragraphValues)
-      allParagraphValues mustNot include("also send your GIIN or let you know if there are any issues with sending it.")
-      allParagraphValues must include("also send your elections or let you know if there are any issues with sending them.")
-      allParagraphValues mustNot include("also send your GIIN and elections, or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN or let you know if there are any issues with sending it.")
+      allParagraphValues must include("We'll also send your elections or let you know if there are any issues with sending them.")
+      allParagraphValues mustNot include("We'll also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
     }
   }
