@@ -77,3 +77,5 @@ GET        /report/send-your-file                       controllers.SendYourFile
 POST       /report/send-your-file                       controllers.SendYourFileController.onSubmit()
 
 GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
+
+GET        /report/problem/virus-found                              controllers.VirusFoundController.onPageLoad()
