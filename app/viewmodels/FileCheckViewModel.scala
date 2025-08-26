@@ -17,8 +17,9 @@
 package viewmodels
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow, Value}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
 
 object FileCheckViewModel {
 
@@ -41,4 +42,5 @@ object FileCheckViewModel {
       )
     )
   }
+
 }
