@@ -21,15 +21,13 @@
         header: components.Heading
 )
 
-@(fileSummary: Seq[SummaryListRow], action: String)(implicit request: Request[_], messages: Messages)
+@(fileSummary: SummaryList, action: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("filePassedChecks.title")),showBackLink = false) {
 
     @header(headingContent = messages("filePassedChecks.heading"))
 
-    @govukSummaryList(
-    SummaryListViewModel(fileSummary)
-    )
+    @govukSummaryList(fileSummary)
 
     @govukButton(
     ButtonViewModel(Text(messages("filePassedChecks.btn"))).withAttribute( "id" -> "submit").asLink(action)

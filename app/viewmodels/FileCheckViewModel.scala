@@ -17,24 +17,28 @@
 package viewmodels
 
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.all.{FluentKey, FluentValue, ValueViewModel}
-import viewmodels.implicits.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
 
 object FileCheckViewModel {
 
-  def createFileSummary(fileName: String, fileStatus: String)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def createFileSummary(fileMessageRef: String, fileStatus: String)(implicit messages: Messages): SummaryList = {
 
     val displayTags = HtmlContent(s"<strong class='govuk-tag govuk-tag--${Messages(s"cssColour.$fileStatus")}'>${Messages(s"status.$fileStatus")}</strong>")
-    Seq(
-      SummaryListRow(
-        key = FluentKey("fileCheck.fileSummary.messageRefId").withCssClass("file-check-status-key"),
-        value = FluentValue(ValueViewModel(fileName)).withCssClass("file-check-status-value")
-      ),
-      SummaryListRow(
-        key = FluentKey("fileCheck.fileSummary.result").withCssClass("file-check-status-key"),
-        value = FluentValue(ValueViewModel(displayTags)).withCssClass("file-check-status-value")
+    SummaryList(
+      rows = Seq(
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("stillCheckingYourFile.fileId")),
+            classes = "govuk-summary-checking-file__key"
+          ),
+          value = Value(content = Text(fileMessageRef))
+        ),
+        SummaryListRow(
+          key = Key(content = Text(messages("stillCheckingYourFile.result"))),
+          value = Value(content = displayTags)
+        )
       )
     )
   }

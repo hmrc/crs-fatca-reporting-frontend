@@ -46,8 +46,8 @@ class FilePassedChecksViewSpec extends SpecBase with GuiceOneAppPerSuite with In
 
       getWindowTitle(doc) must include("Your file has passed our checks")
       getPageHeading(doc) mustEqual "Your file has passed our checks"
-      validateListValues(getAllElements(doc, ".file-check-status-key"), listOfKeys)
-      validateListValues(getAllElements(doc, ".file-check-status-value"), listOfValues)
+      validateListValues(getAllElements(doc, ".govuk-summary-list__key"), listOfKeys)
+      validateListValues(getAllElements(doc, ".govuk-summary-list__value"), listOfValues)
       elementText(doc, ".govuk-tag--green") mustEqual "Passed"
       elementText(doc, "#submit") mustEqual "Go to confirmation"
     }

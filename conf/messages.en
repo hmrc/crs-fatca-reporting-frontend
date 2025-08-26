@@ -200,8 +200,8 @@ virusFound.link2 = Back to manage your CRS and FATCA reports
 filePassedChecks.title = Your file has passed our checks
 filePassedChecks.heading = Your file has passed our checks
 filePassedChecks.btn = Go to confirmation
-fileCheck.fileSummary.messageRefId = File ID (MessageRefId)
-fileCheck.fileSummary.result = Result of automatic checks
+stillCheckingYourFile.fileId = File ID (MessageRefId)
+stillCheckingYourFile.result = Result of automatic checks
 
 cssColour.Rejected = red
 cssColour.Accepted = green
