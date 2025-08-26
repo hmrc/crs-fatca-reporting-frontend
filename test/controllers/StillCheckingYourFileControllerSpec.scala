@@ -37,8 +37,8 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[StillCheckingYourFileView]
-        
-        val messagesApi = messages(application)
+
+        val messagesApi         = messages(application)
         val expectedSummaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")(messagesApi)
 
         status(result) mustEqual OK

@@ -29,7 +29,7 @@ import views.html.{CheckYourFileDetailsView, StillCheckingYourFileView}
 
 class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view: StillCheckingYourFileView = app.injector.instanceOf[StillCheckingYourFileView]
+  val view: StillCheckingYourFileView                                   = app.injector.instanceOf[StillCheckingYourFileView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
@@ -45,7 +45,9 @@ class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite wi
       getWindowTitle(doc) mustEqual s"We need more time to check your file - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"We need more time to check your file"
       getParagraphText(doc, 1) mustEqual s"You need to refresh the page for updates on the status of our automatic checks."
-      getParagraphText(doc, 2) mustEqual s"If you have been refreshing for more than 10 minutes, you can sign out. We will email you and your contacts for EFG Bank plc if your file has passed the checks or you can sign in again later to check the results."
+      getParagraphText(doc,
+                       2
+      ) mustEqual s"If you have been refreshing for more than 10 minutes, you can sign out. We will email you and your contacts for EFG Bank plc if your file has passed the checks or you can sign in again later to check the results."
 
       doc.select(".govuk-summary-list").size() mustBe 1
       doc.select(".govuk-summary-list__row").size() mustBe 2
