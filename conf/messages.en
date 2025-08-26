@@ -196,3 +196,21 @@ virusFound.heading = There is a virus in your file
 virusFound.p1 = We cannot accept this file as it contains a virus.
 virusFound.link1 = Upload a different file
 virusFound.link2 = Back to manage your CRS and FATCA reports
+
+stillCheckingYourFile.title = We need more time to check your file
+stillCheckingYourFile.heading = We need more time to check your file
+stillCheckingYourFile.p1 = You need to refresh the page for updates on the status of our automatic checks.
+stillCheckingYourFile.p2 = If you have been refreshing for more than 10 minutes, {0}. We will email you and your contacts for EFG Bank plc if your file has passed the checks or you can sign in again later to check the results.
+stillCheckingYourFile.signOut = you can sign out
+stillCheckingYourFile.refresh = Refresh for updates
+stillCheckingYourFile.fileId = File ID (MessageRefId)
+stillCheckingYourFile.result = Result of automatic checks
+
+cssColour.Rejected = red
+cssColour.Accepted = green
+cssColour.Pending = yellow
+cssColour.Problem = purple
+status.Rejected = Failed
+status.Accepted = Passed
+status.Pending = Pending
+status.Problem = Problem
