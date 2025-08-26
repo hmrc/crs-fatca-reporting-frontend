@@ -42,7 +42,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
         val expectedSummaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")(messagesApi)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(expectedSummaryList, "")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(expectedSummaryList, "", true, "EFG Bank plc")(request, messages(application)).toString
       }
     }
   }

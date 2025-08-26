@@ -36,10 +36,10 @@ class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite wi
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "CheckYourFileDetailsView" - {
-    "should render page components with a summary list" in {
+    "should render page components with a summary list when fi = user" in {
       val summaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")
 
-      val renderedHtml: HtmlFormat.Appendable = view(summaryList, "")
+      val renderedHtml: HtmlFormat.Appendable = view(summaryList, "", true, "EFG Bank plc")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) mustEqual s"We need more time to check your file - Send a CRS or FATCA report - GOV.UK"
@@ -48,6 +48,29 @@ class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite wi
       getParagraphText(doc,
                        2
       ) mustEqual s"If you have been refreshing for more than 10 minutes, you can sign out. We will email you and your contacts for EFG Bank plc if your file has passed the checks or you can sign in again later to check the results."
+
+      doc.select(".govuk-summary-list").size() mustBe 1
+      doc.select(".govuk-summary-list__row").size() mustBe 2
+
+      doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key").text() mustBe "File ID (MessageRefId)"
+      doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value").text() mustBe "MyFATCAReportMessageRefId1234567890"
+
+      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key").text() mustBe "Result of automatic checks"
+      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value").text() mustBe "Pending"
+    }
+
+    "should render page components with a summary list when fi != user" in {
+      val summaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")
+
+      val renderedHtml: HtmlFormat.Appendable = view(summaryList, "", false, "")
+      lazy val doc = Jsoup.parse(renderedHtml.body)
+
+      getWindowTitle(doc) mustEqual s"We need more time to check your file - Send a CRS or FATCA report - GOV.UK"
+      getPageHeading(doc) mustEqual s"We need more time to check your file"
+      getParagraphText(doc, 1) mustEqual s"You need to refresh the page for updates on the status of our automatic checks."
+      getParagraphText(doc,
+        2
+      ) mustEqual s"If you have been refreshing for more than 10 minutes, you can sign out. We will email you if your file has passed the checks or you can sign in again later to check the results."
 
       doc.select(".govuk-summary-list").size() mustBe 1
       doc.select(".govuk-summary-list__row").size() mustBe 2

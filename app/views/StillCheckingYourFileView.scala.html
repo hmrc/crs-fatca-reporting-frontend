@@ -25,7 +25,7 @@
         appConfig: FrontendAppConfig
 )
 
-@(fileCheckTable: SummaryList, signOutLink: String)(implicit request: Request[_], messages: Messages)
+@(fileCheckTable: SummaryList, signOutLink: String, isFiUser: Boolean, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("stillCheckingYourFile.title")), showBackLink = false) {
 
@@ -33,8 +33,11 @@
 
     @paragraph(Html(messages("stillCheckingYourFile.p1")))
 
-    @paragraph(Html(messages("stillCheckingYourFile.p2", link("signOutLink", "stillCheckingYourFile.signOut"))))
-
+    @if(isFiUser == true) {
+        @paragraph(Html(messages("stillCheckingYourFile.p2", link("signOutLink", "stillCheckingYourFile.signOut"), fiName)))
+    } else {
+        @paragraph(Html(messages("stillCheckingYourFile.p3", link("signOutLink", "stillCheckingYourFile.signOut"))))
+    }
     <div class="govuk-form-group">
         @govukSummaryList(fileCheckTable)
     </div>
