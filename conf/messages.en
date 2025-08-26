@@ -196,3 +196,18 @@ virusFound.heading = There is a virus in your file
 virusFound.p1 = We cannot accept this file as it contains a virus.
 virusFound.link1 = Upload a different file
 virusFound.link2 = Back to manage your CRS and FATCA reports
+
+filePassedChecks.title = Your file has passed our checks
+filePassedChecks.heading = Your file has passed our checks
+filePassedChecks.btn = Go to confirmation
+fileCheck.fileSummary.messageRefId = File ID (MessageRefId)
+fileCheck.fileSummary.result = Result of automatic checks
+
+cssColour.Rejected = red
+cssColour.Accepted = green
+cssColour.Pending = yellow
+cssColour.Problem = purple
+status.Rejected = Failed
+status.Accepted = Passed
+status.Pending = Pending
+status.Problem = Problem
