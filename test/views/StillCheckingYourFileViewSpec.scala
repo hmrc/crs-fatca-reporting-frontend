@@ -63,13 +63,13 @@ class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite wi
       val summaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")
 
       val renderedHtml: HtmlFormat.Appendable = view(summaryList, "", false, "")
-      lazy val doc = Jsoup.parse(renderedHtml.body)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) mustEqual s"We need more time to check your file - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"We need more time to check your file"
       getParagraphText(doc, 1) mustEqual s"You need to refresh the page for updates on the status of our automatic checks."
       getParagraphText(doc,
-        2
+                       2
       ) mustEqual s"If you have been refreshing for more than 10 minutes, you can sign out. We will email you if your file has passed the checks or you can sign in again later to check the results."
 
       doc.select(".govuk-summary-list").size() mustBe 1

@@ -40,8 +40,8 @@ class StillCheckingYourFileController @Inject() (
     implicit request =>
       val placeHolderMessageRefID = "MyFATCAReportMessageRefId1234567890"
       val placeHolderFileStatus   = "Pending"
-      val placeHolderFIName = "EFG Bank plc"
-      val placeHolderIsFIUser = true
+      val placeHolderFIName       = "EFG Bank plc"
+      val placeHolderIsFIUser     = true
       Ok(view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), frontendAppConfig.signOutUrl, placeHolderIsFIUser, placeHolderFIName))
   }
 }
