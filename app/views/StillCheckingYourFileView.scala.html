@@ -1,0 +1,51 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton,
+        paragraph: components.Paragraph,
+        govukSummaryList: GovukSummaryList,
+        link: components.Link,
+        appConfig: FrontendAppConfig
+)
+
+@(fileCheckTable: SummaryList, signOutLink: String, isFiUser: Boolean, fiName: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("stillCheckingYourFile.title")), showBackLink = false) {
+
+    <h1 class="govuk-heading-l">@messages("stillCheckingYourFile.heading")</h1>
+
+    @paragraph(Html(messages("stillCheckingYourFile.p1")))
+
+    @if(isFiUser == true) {
+        @paragraph(Html(messages("stillCheckingYourFile.p2", link("signOutLink", "stillCheckingYourFile.signOut"), fiName)))
+    } else {
+        @paragraph(Html(messages("stillCheckingYourFile.p3", link("signOutLink", "stillCheckingYourFile.signOut"))))
+    }
+    <div class="govuk-form-group">
+        @govukSummaryList(fileCheckTable)
+    </div>
+
+    @govukButton(
+        ButtonViewModel(Text(messages("stillCheckingYourFile.refresh"))).withAttribute( "id" -> "submit").asLink(routes.StillCheckingYourFileController.onPageLoad().url)
+    )
+
+    @paragraph(link(appConfig.manageFI, "virusFound.link2"))
+
+}

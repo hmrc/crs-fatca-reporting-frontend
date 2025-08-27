@@ -80,4 +80,6 @@ GET        /report/problem/giin-not-sent                            controllers.
 
 GET        /report/problem/virus-found                              controllers.VirusFoundController.onPageLoad()
 
+GET        /report/still-checking-your-file                       controllers.StillCheckingYourFileController.onPageLoad()
+
 GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
