@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
 import org.scalactic.Prettifier.default
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -30,6 +31,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val appConfig = application.injector.instanceOf[FrontendAppConfig]
 
       running(application) {
         val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
@@ -42,7 +44,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
         val expectedSummaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")(messagesApi)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(expectedSummaryList, "", true, "EFG Bank plc")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(expectedSummaryList, appConfig.signOutUrl, true, "EFG Bank plc")(request, messages(application)).toString
       }
     }
   }
