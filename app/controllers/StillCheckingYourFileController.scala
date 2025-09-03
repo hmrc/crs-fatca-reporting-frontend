@@ -42,6 +42,6 @@ class StillCheckingYourFileController @Inject() (
       val placeHolderFileStatus   = "Pending"
       val placeHolderFIName       = "EFG Bank plc"
       val placeHolderIsFIUser     = true
-      Ok(view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), frontendAppConfig.signOutUrl, placeHolderIsFIUser, placeHolderFIName))
+      Ok(view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), controllers.auth.routes.AuthController.signOut().url, placeHolderIsFIUser, placeHolderFIName))
   }
 }
