@@ -83,3 +83,5 @@ GET        /report/problem/virus-found                              controllers.
 GET        /report/still-checking-your-file                       controllers.StillCheckingYourFileController.onPageLoad()
 
 GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
+
+GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
