@@ -46,6 +46,6 @@
         ButtonViewModel(Text(messages("stillCheckingYourFile.refresh"))).withAttribute( "id" -> "submit").asLink(routes.StillCheckingYourFileController.onPageLoad().url)
     )
 
-    @paragraph(link(appConfig.manageFI, "virusFound.link2"))
+    @paragraph(link(appConfig.manageFI, "virusFound.link2"), extraClasses = "govuk-!-padding-top-3")
 
 }
