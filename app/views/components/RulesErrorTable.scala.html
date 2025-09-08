@@ -1,0 +1,70 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@import models.fileDetails.BusinessRuleErrorCode.InvalidMessageRefIDFormat
+@import viewmodels.FileRejectedError
+
+@this(govukTable: GovukTable)
+
+@(validationErrors: Seq[FileRejectedError], regimentType: String)(implicit messages: Messages)
+
+@govukTable(Table(
+    classes= "rules-error-table",
+    caption = Some(messages("rulesError.tableCaption")),
+    captionClasses = "govuk-table__caption--m",
+    head = Some(Seq(
+        HeadCell(Text(messages("rulesError.code")), attributes = Map("style" -> "width: 7%;")),
+        HeadCell(Text(messages("rulesError.docRefId")), attributes = Map("style" -> "width: 40%;")),
+        HeadCell(Text(messages("rulesError.error")), attributes = Map("style" -> "width: 40%;"))
+    )),
+    rows = {
+        validationErrors.map { error =>
+            val errCode = error.errorCode
+            Seq(
+                TableRow(HtmlContent( s"${regimentType}<br/>${errCode.replaceAll("Error Code ", "")}  "), attributes = Map("id" -> s"code_$errCode")),
+                TableRow(HtmlContent(getDocRefId(error.docRefIds)), attributes = Map("id" -> s"docRefId_$errCode"), classes="doc-ref-ids"),
+                TableRow(HtmlContent(getErrorDescription(error.errorCode)), attributes = Map("id" -> s"errorMessage_$errCode"))
+            )
+        }
+    }
+))
+
+@getDocRefId(docRefIds: Seq[String]) = {@{
+    if (docRefIds.isEmpty) {
+        <p class="govuk-body">N/A</p>
+    }
+    else {
+        {docRefIds.map(refId => {
+            <p class="govuk-body">{refId}</p>
+        })}
+    }
+}}
+
+@getErrorDescription(code: String) = {@{
+val code2 = code.replaceAll("CRS Error Code ", "").replaceAll("FATCA Error Code ", "")
+    code2 match {
+        case InvalidMessageRefIDFormat.code =>
+            <p class="govuk-body">{messages("rulesError.50008.intro")}</p>
+            <ol class="govuk-list govuk-list--bullet">
+                <li>{messages("rulesError.50008.bullet1")}</li>
+            </ol>
+            <p class="govuk-body">{messages("rulesError.50008.example")}</p>
+        case _ =>
+            <p class="govuk-body">{messages(s"rulesError.$code2.value")}</p>
+        }
+}}
