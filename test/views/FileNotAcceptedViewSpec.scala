@@ -53,7 +53,7 @@ class FileNotAcceptedViewSpec extends SpecBase with GuiceOneAppPerSuite with Inj
 
     "should render page components when Regime = FATCA" in {
       val renderedHtml: HtmlFormat.Appendable = view("FATCA")
-      lazy val doc = Jsoup.parse(renderedHtml.body)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       val paragraphValues = Seq(
         "We have not accepted your file.",
