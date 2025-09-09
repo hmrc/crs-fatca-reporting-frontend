@@ -86,3 +86,5 @@ GET        /report/still-checking-your-file                       controllers.St
 GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
 
 GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
+
+GET        /report/problem/file-not-accepted                       controllers.FileNotAcceptedController.onPageLoad()
