@@ -35,7 +35,7 @@ class FileNotAcceptedViewSpec extends SpecBase with GuiceOneAppPerSuite with Inj
 
   "FileNotAcceptedView" - {
 
-    "should render page components" in {
+    "should render page components when Regime = CRS" in {
       val renderedHtml: HtmlFormat.Appendable = view("CRS")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
@@ -43,6 +43,22 @@ class FileNotAcceptedViewSpec extends SpecBase with GuiceOneAppPerSuite with Inj
         "We have not accepted your file.",
         "You must email aeoi.enquiries@hmrc.gov.uk so we can resolve the problem.",
         "Include the subject line ‘CRS file not accepted’."
+      )
+
+      getWindowTitle(doc) mustEqual "Sorry, there is a problem with the service - Send a CRS or FATCA report - GOV.UK"
+      getPageHeading(doc) mustEqual "Sorry, there is a problem with the service"
+      validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)
+
+    }
+
+    "should render page components when Regime = FATCA" in {
+      val renderedHtml: HtmlFormat.Appendable = view("FATCA")
+      lazy val doc = Jsoup.parse(renderedHtml.body)
+
+      val paragraphValues = Seq(
+        "We have not accepted your file.",
+        "You must email aeoi.enquiries@hmrc.gov.uk so we can resolve the problem.",
+        "Include the subject line ‘FATCA file not accepted’."
       )
 
       getWindowTitle(doc) mustEqual "Sorry, there is a problem with the service - Send a CRS or FATCA report - GOV.UK"
