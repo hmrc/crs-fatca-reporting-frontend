@@ -244,3 +244,10 @@ rulesError.50008.bullet1 = ‘GB’
 rulesError.50008.bullet1 =  the same value as the year in the MessageSpec ReportingPeriod in the format ‘YYYY’
 rulesError.50008.example = For example, ‘GB2022GBXACBC0000999999CBC40120230523T140000123456789’.
 rulesError.80002.value = The CorrDocRefId provided does not match any DocRefId in our records.
+
+fileNotAccepted.title = Sorry, there is a problem with the service
+fileNotAccepted.heading = Sorry, there is a problem with the service
+fileNotAccepted.p1 = We have not accepted your file.
+fileNotAccepted.p2 = You must email {0} so we can resolve the problem.
+fileNotAccepted.p3 = Include the subject line ‘{0} file not accepted’.
+fileNotAccepted.link = aeoi.enquiries@hmrc.gov.uk
