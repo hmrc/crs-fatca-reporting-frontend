@@ -251,3 +251,15 @@ fileNotAccepted.p1 = We have not accepted your file.
 fileNotAccepted.p2 = You must email {0} so we can resolve the problem.
 fileNotAccepted.p3 = Include the subject line ‘{0} file not accepted’.
 fileNotAccepted.link = aeoi.enquiries@hmrc.gov.uk
+
+pageNotFound.title = Page not found
+pageNotFound.heading = Page not found
+pageNotFound.para.1 = If you typed the web address, check it is correct.
+pageNotFound.para.2 = If you pasted the web address, check you copied the entire address.
+pageNotFound.para.3 = You can email {0} if you have any questions about this service.
+pageNotFound.para.email = aeoi.enquiries@hmrc.gov.uk
+
+thereIsAProblem.title = Sorry, there is a problem with the service
+thereIsAProblem.heading = Sorry, there is a problem with the service
+thereIsAProblem.paragraph.1 = Try again later.
+thereIsAProblem.paragraph.2 = You can email {0} if you need to contact someone about your CRS or FATCA reporting.
