@@ -226,5 +226,31 @@ fileFailedChecks.title = Your file has failed our checks
 fileFailedChecks.heading = Your file has failed our checks
 fileFailedChecks.warning.message = You must send another version. Not sending another report on time may result in a penalty for the financial institution.
 fileFailedChecks.submit = Check errors
+
+rulesError.tableCaption = Errors
+rulesError.title = There is a problem with your file data
+rulesError.heading = There is a problem with your file data
+rulesError.p1 = We cannot accept the file {0} because it does not meet the {1} business rules.
+rulesError.subHeading = What you can do next
+rulesError.linkText.1 = Refer to the CRS technical guidance for XML files
+rulesError.linkText.2 = Refer to the FATCA technical guidance for XML files
+rulesError.code = Code
+rulesError.docRefId = DocRefId
+rulesError.error = Error
+
+# These are example error codes used to create view before we get final list
+rulesError.50008.intro  = MessageRefId must be 100 characters or less and follow this structure in the order referenced:
+rulesError.50008.bullet1 = ‘GB’
+rulesError.50008.bullet1 =  the same value as the year in the MessageSpec ReportingPeriod in the format ‘YYYY’
+rulesError.50008.example = For example, ‘GB2022GBXACBC0000999999CBC40120230523T140000123456789’.
+rulesError.80002.value = The CorrDocRefId provided does not match any DocRefId in our records.
+
+fileNotAccepted.title = Sorry, there is a problem with the service
+fileNotAccepted.heading = Sorry, there is a problem with the service
+fileNotAccepted.p1 = We have not accepted your file.
+fileNotAccepted.p2 = You must email {0} so we can resolve the problem.
+fileNotAccepted.p3 = Include the subject line ‘{0} file not accepted’.
+fileNotAccepted.link = aeoi.enquiries@hmrc.gov.uk
+
 pageUnavailable.title = This page is no longer available
 pageUnavailable.heading = This page is no longer available
