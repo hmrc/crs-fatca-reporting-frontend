@@ -28,11 +28,11 @@ import views.html.PageNotFoundView
 
 class PageNotFoundViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view1: PageNotFoundView = app.injector.instanceOf[PageNotFoundView]
+  val view1: PageNotFoundView                                           = app.injector.instanceOf[PageNotFoundView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "UploadXMLView" - {
     "should render page components" in {

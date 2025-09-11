@@ -28,7 +28,7 @@ import views.html.ThereIsAProblemView
 
 class ThereIsAProblemViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
-  val view1: ThereIsAProblemView                                              = app.injector.instanceOf[ThereIsAProblemView]
+  val view1: ThereIsAProblemView                                        = app.injector.instanceOf[ThereIsAProblemView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
