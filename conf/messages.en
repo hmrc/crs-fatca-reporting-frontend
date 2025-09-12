@@ -228,3 +228,4 @@ fileFailedChecks.warning.message = You must send another version. Not sending an
 fileFailedChecks.submit = Check errors
 pageUnavailable.title = This page is no longer available
 pageUnavailable.heading = This page is no longer available
+pageUnavailable.link.text = Back to manage your CRS and FATCA reports
