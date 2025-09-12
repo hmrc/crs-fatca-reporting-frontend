@@ -251,3 +251,7 @@ fileNotAccepted.p1 = We have not accepted your file.
 fileNotAccepted.p2 = You must email {0} so we can resolve the problem.
 fileNotAccepted.p3 = Include the subject line ‘{0} file not accepted’.
 fileNotAccepted.link = aeoi.enquiries@hmrc.gov.uk
+
+pageUnavailable.title = This page is no longer available
+pageUnavailable.heading = This page is no longer available
+pageUnavailable.link.text = Back to manage your CRS and FATCA reports
