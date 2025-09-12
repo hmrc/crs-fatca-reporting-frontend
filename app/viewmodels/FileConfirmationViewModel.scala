@@ -39,13 +39,15 @@ object FileConfirmationViewModel {
             classes = "govuk-file-confirmation__key"
           ),
           value = Value(content = Text(receivedFileDetails.messageType))
-        ),SummaryListRow(
+        ),
+        SummaryListRow(
           key = Key(
             content = Text(messages("fileConfirmation.reportingFIName.key")),
             classes = "govuk-file-confirmation__key"
           ),
           value = Value(content = Text(receivedFileDetails.reportingEntityName))
-        ),SummaryListRow(
+        ),
+        SummaryListRow(
           key = Key(
             content = Text(messages("fileConfirmation.fileInformation.key")),
             classes = "govuk-file-confirmation__key"
@@ -55,21 +57,18 @@ object FileConfirmationViewModel {
       )
     )
 
-  def getEmailParagraphForNonFI(regFirstEmail: String, regSecondEmail: Option[String],
-                                fiFirstEmail: String, fiSecondEmail: Option[String]): String = {
+  def getEmailParagraphForNonFI(regFirstEmail: String, regSecondEmail: Option[String], fiFirstEmail: String, fiSecondEmail: Option[String]): String =
     (regSecondEmail, fiSecondEmail) match {
       case (Some(regSecEmail), Some(fiSecEmail)) => s"$regFirstEmail, $regSecEmail, $fiFirstEmail and $fiSecEmail"
-      case (Some(regSecEmail), None) => s"$regFirstEmail, $regSecEmail and $fiFirstEmail"
-      case (None, Some(fiSecEmail)) => s"$regFirstEmail, $fiFirstEmail and $fiSecEmail"
-      case (None, None) => s"$regFirstEmail and $fiFirstEmail"
+      case (Some(regSecEmail), None)             => s"$regFirstEmail, $regSecEmail and $fiFirstEmail"
+      case (None, Some(fiSecEmail))              => s"$regFirstEmail, $fiFirstEmail and $fiSecEmail"
+      case (None, None)                          => s"$regFirstEmail and $fiFirstEmail"
     }
-  }
 
-  def getEmailParagraphForFI(regFirstEmail: String, regSecondEmail: Option[String]): String = {
+  def getEmailParagraphForFI(regFirstEmail: String, regSecondEmail: Option[String]): String =
     regSecondEmail match {
       case Some(regSecEmail) => s"$regFirstEmail and $regSecEmail"
-      case None => s"$regFirstEmail"
+      case None              => s"$regFirstEmail"
     }
-  }
 
 }

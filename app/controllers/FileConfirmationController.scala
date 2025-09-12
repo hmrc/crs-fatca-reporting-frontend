@@ -43,16 +43,16 @@ class FileConfirmationController @Inject() (
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
       val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-      val date = submittedTime.format(dateFormatterForFileConfirmation())
-      val time = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
-      val fileDetails = FileDetails("name.xml", "c-8-new-f-va","CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
-      val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
+      val date          = submittedTime.format(dateFormatterForFileConfirmation())
+      val time          = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
+      val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
+      val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",Some("user2@email.com"),"fi1@email.com",Some("f12@email.com"))
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",Some("user2@email.com"),"fi1@email.com",None)
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",Some("f12@email.com"))
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",None)
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",Some("user2@email.com"))
-      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",None)
-      Ok(view(fileSummary,paraContent,date,time,true))
+      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
+      Ok(view(fileSummary, paraContent, date, time, true))
   }
 }

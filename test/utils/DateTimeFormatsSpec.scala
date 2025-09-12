@@ -51,7 +51,7 @@ class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
 
       "must format dates" in {
         val formatter = dateFormatterForFileConfirmation()
-        val result = LocalDate.of(2023, 1, 1).format(formatter)
+        val result    = LocalDate.of(2023, 1, 1).format(formatter)
         result mustEqual "1 January 2023"
       }
 

@@ -41,15 +41,15 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
 
     "should render page components" in {
       val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-      val date = "12 September 2025"
-      val time = "12:01am"
-      val fileDetails = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
-      val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
-      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",None)
-      val listOfKeys = Seq("File ID (MessageRefId)", "Reporting regime (MessageType)",
-        "Financial institution (ReportingFI Name)","File information")
-      val listOfValues = Seq("c-8-new-f-va", "CRS", "EFG Bank plc", "New information")
-      val listOfPara = Seq(s"We have sent a confirmation email to $paraContent.",
+      val date          = "12 September 2025"
+      val time          = "12:01am"
+      val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
+      val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
+      val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
+      val listOfKeys    = Seq("File ID (MessageRefId)", "Reporting regime (MessageType)", "Financial institution (ReportingFI Name)", "File information")
+      val listOfValues  = Seq("c-8-new-f-va", "CRS", "EFG Bank plc", "New information")
+      val listOfPara = Seq(
+        s"We have sent a confirmation email to $paraContent.",
         "You can make any elections for EFG Bank plc in the service.",
         "We will contact you if we have any questions about your report.",
         "Your feedback helps us make our service better.",
@@ -61,29 +61,28 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
         "Back to manage your CRS and FATCA reports"
       )
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary,paraContent,date,time,true)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, true)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("File successfully sent")
       getPageHeading(doc) mustEqual "File successfully sent"
-      getSubheadingText(doc,0) mustEqual "What happens next"
-      getSubheadingText(doc,1) mustEqual "Before you go"
+      getSubheadingText(doc, 0) mustEqual "What happens next"
+      getSubheadingText(doc, 1) mustEqual "Before you go"
       validateListValues(getAllElements(doc, ".govuk-summary-list__key"), listOfKeys)
       validateListValues(getAllElements(doc, ".govuk-summary-list__value"), listOfValues)
-      validateAllParaValues(getAllParagraph(doc).text(),listOfPara)
+      validateAllParaValues(getAllParagraph(doc).text(), listOfPara)
       validateListValues(getAllElements(doc, ".govuk-list"), listValues)
     }
 
     "should not render election para components" in {
       val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-      val date = "12 September 2025"
-      val time = "12:01am"
-      val fileDetails = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
-      val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
-      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",None)
+      val date          = "12 September 2025"
+      val time          = "12:01am"
+      val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
+      val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
+      val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
 
-
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary,paraContent,date,time,false)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getAllParagraph(doc).text() mustNot include("You can make any elections for EFG Bank plc in the service.")
