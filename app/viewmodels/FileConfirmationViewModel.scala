@@ -56,8 +56,7 @@ object FileConfirmationViewModel {
     )
 
   def getEmailParagraphForNonFI(regFirstEmail: String, regSecondEmail: Option[String],
-                                fiFirstEmail: String, fiSecondEmail: Option[String])
-                               (implicit messages: Messages): String = {
+                                fiFirstEmail: String, fiSecondEmail: Option[String]): String = {
     (regSecondEmail, fiSecondEmail) match {
       case (Some(regSecEmail), Some(fiSecEmail)) => s"$regFirstEmail, $regSecEmail, $fiFirstEmail and $fiSecEmail"
       case (Some(regSecEmail), None) => s"$regFirstEmail, $regSecEmail and $fiFirstEmail"
@@ -66,8 +65,7 @@ object FileConfirmationViewModel {
     }
   }
 
-  def getEmailParagraphForFI(regFirstEmail: String, regSecondEmail: Option[String])
-                               (implicit messages: Messages): String = {
+  def getEmailParagraphForFI(regFirstEmail: String, regSecondEmail: Option[String]): String = {
     regSecondEmail match {
       case Some(regSecEmail) => s"$regFirstEmail and $regSecEmail"
       case None => s"$regFirstEmail"
