@@ -43,3 +43,22 @@ $hmrc-assets-path: "/disclose-cross-border-arrangements/upload/assets/lib/hmrc-f
 .govuk-summary-checking-file__key {
     width: 15% !important;
 }
+
+.rules-error-table p {
+    overflow-wrap: anywhere;
+    word-wrap: anywhere;
+}
+
+.rules-error-table .govuk-body,
+.rules-error-table .govuk-list {
+    margin-bottom: 0.4em;
+}
+
+.rules-error-table .doc-ref-ids .govuk-body {
+    margin-bottom: 1em;
+}
+
+.rules-error-table td > .govuk-body:last-child,
+.rules-error-table td > .govuk-list:last-child {
+    margin-bottom: 0;
+}

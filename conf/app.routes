@@ -26,6 +26,7 @@ GET         /report/problem/data-errors                     controllers.DataErro
 GET         /report/problem/fi-not-matching                 controllers.FINotMatchingController.onPageLoad()
 GET         /report/problem/reporting-period                controllers.ReportingPeriodErrorController.onPageLoad()
 GET         /report/problem/elections-not-sent              controllers.ElectionsNotSentController.onPageLoad()
+GET         /report/problem/rules-errors                    controllers.RulesErrorController.onPageLoad()
 GET         /report/problem/page-unavailable                controllers.PageUnavailableController.onPageLoad()
 
 GET         /report/required-giin                           controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
@@ -86,3 +87,5 @@ GET        /report/still-checking-your-file                       controllers.St
 GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
 
 GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
+
+GET        /report/problem/file-not-accepted                       controllers.FileNotAcceptedController.onPageLoad()

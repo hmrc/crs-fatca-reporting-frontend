@@ -39,6 +39,8 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val manageFI: String         = configuration.get[String]("urls.manageFI")
   val yourFIs: String          = configuration.get[String]("urls.yourFIs")
 
+  val emailEnquiries: String = configuration.get[String]("urls.emailEnquiries")
+
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/report-for-crs-and-fatca"
 
