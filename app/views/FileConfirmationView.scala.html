@@ -49,12 +49,12 @@ content = HtmlContent(s"${messages("fileConfirmation.ChecksCompleted.prefix")}<b
 
 <p class="govuk-body">@messages("fileConfirmation.p4")</p>
 
-<p class="govuk-body">@Html(messages("fileConfirmation.p5", link("#", "fileConfirmation.p5.link.text")))</p> <!--TODO : Add link to survey-->
+<p class="govuk-body">@Html(messages("fileConfirmation.p5", link(href = "#", key = "fileConfirmation.p5.link.text", classes = "govuk-link print-url")))</p> <!--TODO : Add link to survey-->
 
 <ul class="govuk-!-padding-top-3 govuk-list govuk-!-display-none-print">
-    <li>@printLink("fileError.list.l8")</li>
-    <li>@link(routes.IndexController.onPageLoad().url,"fileConfirmation.list.l2")</li>
-    <li>@link(appConfig.manageFI,"fileError.list.l10")</li>
+    <li class="govuk-!-margin-bottom-1">@printLink("fileError.list.l8")</li>
+    <li class="govuk-!-margin-bottom-1">@link(routes.IndexController.onPageLoad().url,"fileConfirmation.list.l2")</li>
+    <li class="govuk-!-margin-bottom-1">@link(appConfig.manageFI,"fileError.list.l10")</li>
 </ul>
 
 }
