@@ -48,6 +48,7 @@ class FileConfirmationController @Inject() (
       val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
       val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
       val paraContent   = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), "fi1@email.com", Some("f12@email.com"))
+//      below commented code is for testers to test different test data and will be removed once we integrate with technical story
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",Some("user2@email.com"),"fi1@email.com",None)
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",Some("f12@email.com"))
 //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",None)
