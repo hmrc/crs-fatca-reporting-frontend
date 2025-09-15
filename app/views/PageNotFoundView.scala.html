@@ -15,19 +15,21 @@
  *@
 
 @import components._
+@import config.FrontendAppConfig
 
 @this(
     layout: templates.Layout,
     govukButton: GovukButton,
     heading: Heading,
     para: Paragraph,
-    link: Link
+    link: Link,
+    appConfig: FrontendAppConfig
 )
 
 
-@(emailLink: String)(implicit request: RequestHeader, messages: Messages)
+@()(implicit request: RequestHeader, messages: Messages)
 
-    @emailLink = {@link(href="mailto:$emailLink", "pageNotFound.para.email", openInNewWindow = true)}
+    @emailLink = {@link(href=s"mailto:${appConfig.emailEnquiries}", "pageNotFound.para.email", openInNewWindow = true)}
 
     @layout(pageTitle = titleNoForm(messages("pageNotFound.title"))) {
 

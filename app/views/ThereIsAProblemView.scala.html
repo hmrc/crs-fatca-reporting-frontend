@@ -28,7 +28,7 @@
 
 @()(implicit request: RequestHeader, messages: Messages)
 
-    @emailLink = {@link(href="mailto:$emailLink", "pageNotFound.para.email", openInNewWindow = true)}
+    @emailLink = {@link(href=s"mailto:${appConfig.emailEnquiries}", "pageNotFound.para.email", openInNewWindow = true)}
 
     @layout(pageTitle = titleNoForm(messages("thereIsAProblem.title")), showBackLink = false) {
 
