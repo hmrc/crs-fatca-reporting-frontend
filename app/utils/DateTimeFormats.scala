@@ -18,12 +18,14 @@ package utils
 
 import play.api.i18n.Lang
 
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object DateTimeFormats {
 
-  private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  private val dateTimeFormatter                = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mma")
 
   private val localisedDateTimeFormatters = Map(
     "en" -> dateTimeFormatter,
@@ -35,4 +37,17 @@ object DateTimeFormats {
 
   val dateTimeHintFormat: DateTimeFormatter =
     DateTimeFormatter.ofPattern("d M yyyy")
+
+  def dateFormatterForFileConfirmation(): DateTimeFormatter = dateTimeFormatter
+
+  def formatTimeForFileConfirmation(localDateTime: LocalDateTime): String = {
+    val result = localDateTime.format(timeFormatter).toLowerCase()
+    if (result.equalsIgnoreCase("12:00am")) {
+      "midnight"
+    } else if (result.equalsIgnoreCase("12:00pm")) {
+      "midday"
+    } else {
+      result
+    }
+  }
 }
