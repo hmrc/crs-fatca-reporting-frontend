@@ -37,7 +37,7 @@ class PageNotFoundViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
   "UploadXMLView" - {
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable =
-        view1("aeoi.enquiries@hmrc.gov.uk")
+        view1()
       lazy val doc = Jsoup.parse(renderedHtml.body)
       val paragraphValues = Seq(
         "If you typed the web address, check it is correct.",

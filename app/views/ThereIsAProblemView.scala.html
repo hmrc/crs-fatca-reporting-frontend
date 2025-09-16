@@ -19,7 +19,6 @@
 
 @this(
     layout: templates.Layout,
-    govukButton: GovukButton,
     link: components.Link,
     appConfig: FrontendAppConfig,
     heading: Heading,
@@ -28,7 +27,7 @@
 
 @()(implicit request: RequestHeader, messages: Messages)
 
-    @emailLink = {@link(href="mailto:$emailLink", "pageNotFound.para.email", openInNewWindow = true)}
+    @emailLink = {@link(href=s"mailto:${appConfig.emailEnquiries}", "pageNotFound.para.email", openInNewWindow = false)}
 
     @layout(pageTitle = titleNoForm(messages("thereIsAProblem.title")), showBackLink = false) {
 
