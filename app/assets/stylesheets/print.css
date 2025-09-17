@@ -36,6 +36,11 @@
      pointer-events: none;
   }
 
+    a.print-url[href]::after {
+      content: " (" attr(href) ")" !important;
+      display: inline !important;
+    }
+
  .manage-reports-link-print-hidden {
       display: none !important;
   }

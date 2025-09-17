@@ -1,0 +1,60 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+
+@this(
+        layout: templates.Layout,
+        govukButton: GovukButton,
+        govukPanel: GovukPanel,
+        govukSummaryList: GovukSummaryList,
+        link: components.Link,
+        printLink: components.PrintLink,
+        appConfig: FrontendAppConfig
+)
+
+@(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("fileConfirmation.title")), showBackLink = false) {
+
+@govukPanel(
+Panel(title = Text(messages("fileConfirmation.heading")),
+content = HtmlContent(s"${messages("fileConfirmation.ChecksCompleted.prefix")}<br><strong>${messages("fileConfirmation.ChecksCompleted.time", date, time)}</strong>")
+))
+<div class="govuk-form-group">
+    @govukSummaryList(fileSummary)
+</div>
+<p class="govuk-body">@messages("fileConfirmation.p1", paraContent)</p>
+@if(isElectionFailed){
+<p class="govuk-body">@Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text")))</p> <!--TODO : Add link to elections-->
+}
+<h2 class="govuk-heading-m">@messages("fileConfirmation.subheading1")</h2>
+
+<p class="govuk-body">@messages("fileConfirmation.p3")</p>
+
+<h2 class="govuk-heading-m">@messages("fileConfirmation.subheading2")</h2>
+
+<p class="govuk-body">@messages("fileConfirmation.p4")</p>
+
+<p class="govuk-body">@Html(messages("fileConfirmation.p5", link(href = "#", key = "fileConfirmation.p5.link.text", classes = "govuk-link print-url")))</p> <!--TODO : Add link to survey-->
+
+<ul class="govuk-!-padding-top-3 govuk-list govuk-!-display-none-print">
+    <li class="govuk-!-margin-bottom-1">@printLink("fileError.list.l8")</li>
+    <li class="govuk-!-margin-bottom-1">@link(routes.IndexController.onPageLoad().url,"fileConfirmation.list.l2")</li>
+    <li class="govuk-!-margin-bottom-1">@link(appConfig.manageFI,"fileError.list.l10")</li>
+</ul>
+
+}
