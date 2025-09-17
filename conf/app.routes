@@ -27,6 +27,7 @@ GET         /report/problem/fi-not-matching                 controllers.FINotMat
 GET         /report/problem/reporting-period                controllers.ReportingPeriodErrorController.onPageLoad()
 GET         /report/problem/elections-not-sent              controllers.ElectionsNotSentController.onPageLoad()
 GET         /report/problem/rules-errors                    controllers.RulesErrorController.onPageLoad()
+GET         /report/problem/page-unavailable                controllers.PageUnavailableController.onPageLoad()
 
 GET         /report/required-giin                           controllers.RequiredGiinController.onPageLoad(mode: Mode = NormalMode)
 POST        /report/required-giin                           controllers.RequiredGiinController.onSubmit(mode: Mode = NormalMode)

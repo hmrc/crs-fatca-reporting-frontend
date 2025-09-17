@@ -282,3 +282,7 @@ fileConfirmation.p4 = Your feedback helps us make our service better.
 fileConfirmation.p5 = {0} to share your feedback on this service.
 fileConfirmation.p5.link.text = Take a short survey
 fileConfirmation.list.l2 = Upload another file for a financial institution
+
+pageUnavailable.title = This page is no longer available
+pageUnavailable.heading = This page is no longer available
+pageUnavailable.link.text = Back to manage your CRS and FATCA reports
