@@ -38,6 +38,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val signOutUrl: String       = configuration.get[String]("urls.signOut")
   val manageFI: String         = configuration.get[String]("urls.manageFI")
   val yourFIs: String          = configuration.get[String]("urls.yourFIs")
+  lazy val registerUrl: String = configuration.get[String]("urls.register")
 
   val emailEnquiries: String = configuration.get[String]("urls.emailEnquiries")
 
@@ -54,6 +55,8 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val timeout: Int   = configuration.get[Int]("timeout-dialog.timeout")
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
+
+  val enrolmentKey: String = configuration.get[String]("keys.enrolmentKey.crsFatca")
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
 }

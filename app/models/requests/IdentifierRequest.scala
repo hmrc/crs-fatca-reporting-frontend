@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,15 @@
 
 package models.requests
 
+import models.UniqueTaxpayerReference
 import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.auth.core.{AffinityGroup, Enrolment}
 
-case class IdentifierRequest[A](request: Request[A], userId: String) extends WrappedRequest[A](request)
+case class IdentifierRequest[A](request: Request[A],
+                                userId: String,
+                                fatcaId: String,
+                                userType: AffinityGroup,
+                                enrolments: Set[Enrolment] = Set.empty,
+                                autoMatched: Boolean = false,
+                                ctutr: Option[UniqueTaxpayerReference] = None
+                               ) extends WrappedRequest[A](request)
