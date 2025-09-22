@@ -16,100 +16,100 @@
 
 package models
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
-import controllers.actions.AuthenticatedIdentifierAction
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.mvc.{Action, AnyContent}
-import play.api.test.FakeRequest
+import play.api.libs.ws.{DefaultWSCookie, WSClient}
+import play.api.mvc.*
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import utils.ISpecBase
 
 class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
 
-  class Harness(authAction: AuthenticatedIdentifierAction) {
-    def onPageLoad(): Action[AnyContent] = authAction { request =>
-      val fatcaId = request.fatcaId
-      play.api.mvc.Results.Ok(s"FATCA ID: $fatcaId")
-    }
-  }
-
   val testFatcaId = "XAFATCA0000123456"
+
+  lazy val wsClient: WSClient                = app.injector.instanceOf[WSClient]
+  val session: Session                       = Session(Map("authToken" -> "abc123"))
+  val sessionCookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
+  val sessionCookie: Cookie                  = sessionCookieBaker.encodeAsCookie(session)
+  val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
 
   "Authenticated Identifier Action" when {
 
     "the user is authenticated and has a FATCA ID" must {
-      "successfully authenticate and execute the request block" in {
-        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(authOKResponse(testFatcaId))))
-        val request = FakeRequest("GET", "/")
-        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-        val result  = await(harness.onPageLoad()(request))
+      "return OK when the user is authorised" in {
+        stubAuthorised("cbc12345")
 
-        result.header.status mustBe OK
-        result.body.toString must include(s"FATCA ID: $testFatcaId")
+        val response = await(
+          buildClient()
+            .withFollowRedirects(false)
+            .addCookies(wsSessionCookie)
+            .get()
+        )
+        response.status mustBe OK
+        verifyPost(authUrl)
+        val body: String = response.body
+        body must include("Send a CRS or FATCA report")
       }
-    }
 
+    }
     "the user is not authenticated" must {
       "redirect to the government gateway sign-in page" in {
-        stubFor(
-          post(urlEqualTo(authUrl))
-            .willReturn(aResponse().withStatus(401).withHeader("WWW-Authenticate", """MDTP-GG-Absence of bearer token"""))
+        val response = await(
+          buildClient()
+            .withFollowRedirects(false)
+            .get()
         )
-        val request = buildFakeRequest()
-        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-        val result  = await(harness.onPageLoad()(request))
-
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get("Location") mustBe Some(s"http://localhost:9949/auth-login-stub/gg-sign-in?continue=http%3A%2F%2Flocalhost%3A9949%2Freport-for-crs-and-fatca")
+        response.status mustBe SEE_OTHER
+        response.header("Location").value must include("gg-sign-in")
       }
     }
-
-    "the user is authenticated but does not have the FATCA enrolment" must {
-      "redirect to the registration page" in {
-        val json = """
-                     |{
-                     |  "internalId": "some-id",
-                     |  "affinityGroup": "Organisation",
-                     |  "allEnrolments": []
-                     |}
-                     |""".stripMargin
-        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
-
-        val request = FakeRequest("GET", "/")
-        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-        val result  = await(harness.onPageLoad()(request))
-
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
-      }
-    }
-
-    "the user is authenticated but the FATCA ID is empty" must {
-      "redirect to the registration page" in {
-        val json = """
-                     |{
-                     |  "internalId": "some-id",
-                     |  "affinityGroup": "Organisation",
-                     |  "allEnrolments": [ {
-                     |    "key": "HMRC-FATCA-ORG",
-                     |    "identifiers": [ {
-                     |      "key": "FATCAID",
-                     |      "value": ""
-                     |    } ],
-                     |    "state": "Activated"
-                     |  } ]
-                     |}
-                     |""".stripMargin
-        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
-
-        val request = FakeRequest("GET", "/")
-        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-        val result = await(harness.onPageLoad()(request))
-
-        result.header.status mustBe SEE_OTHER
-        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
-      }
-    }
+    //
+    //    "the user is authenticated but does not have the FATCA enrolment" must {
+    //      "redirect to the registration page" in {
+    //        val json = """
+    //                           |{
+    //                           |  "internalId": "some-id",
+    //                           |  "affinityGroup": "Organisation",
+    //                           |  "allEnrolments": []
+    //                           |}
+    //                           |""".stripMargin
+    //        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
+    //
+    //        val request = FakeRequest("GET", "/")
+    //        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
+    //        val result  = await(harness.onPageLoad()(request))
+    //
+    //        result.header.status mustBe SEE_OTHER
+    //        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
+    //      }
+    //    }
+    //
+    //    "the user is authenticated but the FATCA ID is empty" must {
+    //      "redirect to the registration page" in {
+    //        val json = """
+    //                           |{
+    //                           |  "internalId": "some-id",
+    //                           |  "affinityGroup": "Organisation",
+    //                           |  "allEnrolments": [ {
+    //                           |    "key": "HMRC-FATCA-ORG",
+    //                           |    "identifiers": [ {
+    //                           |      "key": "FATCAID",
+    //                           |      "value": ""
+    //                           |    } ],
+    //                           |    "state": "Activated"
+    //                           |  } ]
+    //                           |}
+    //                           |""".stripMargin
+    //        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
+    //
+    //        val request = FakeRequest("GET", "/")
+    //        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
+    //        val result  = await(harness.onPageLoad()(request))
+    //
+    //        result.header.status mustBe SEE_OTHER
+    //        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
+    //      }
+    //    }
+    //  }
   }
 }

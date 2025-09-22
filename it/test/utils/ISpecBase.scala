@@ -37,16 +37,14 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   def config: Map[String, String] = Map(
     "microservice.services.auth.host"                         -> WireMockConstants.stubHost,
     "microservice.services.auth.port"                         -> WireMockConstants.stubPort.toString,
-    "microservice.services.country-by-country-reporting.host" -> WireMockConstants.stubHost,
-    "microservice.services.country-by-country-reporting.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri"                                             -> mongoUri
   )
 
   def buildClient(): WSRequest =
-    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca")
+    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file ")
 
   def buildFakeRequest() =
-    FakeRequest("GET", s"http://localhost:$port/report-for-crs-and-fatca").withSession("authToken" -> "my-token")
+    FakeRequest("GET", s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file").withSession("authToken" -> "my-token")
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(scaled(Span(20, Seconds)))
 
