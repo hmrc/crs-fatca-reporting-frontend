@@ -41,7 +41,7 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   )
 
   def buildClient(): WSRequest =
-    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file ")
+    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file")
 
   def buildFakeRequest() =
     FakeRequest("GET", s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file").withSession("authToken" -> "my-token")

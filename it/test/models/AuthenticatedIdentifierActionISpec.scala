@@ -63,53 +63,57 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
         response.header("Location").value must include("gg-sign-in")
       }
     }
-    //
-    //    "the user is authenticated but does not have the FATCA enrolment" must {
-    //      "redirect to the registration page" in {
-    //        val json = """
-    //                           |{
-    //                           |  "internalId": "some-id",
-    //                           |  "affinityGroup": "Organisation",
-    //                           |  "allEnrolments": []
-    //                           |}
-    //                           |""".stripMargin
-    //        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
-    //
-    //        val request = FakeRequest("GET", "/")
-    //        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-    //        val result  = await(harness.onPageLoad()(request))
-    //
-    //        result.header.status mustBe SEE_OTHER
-    //        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
-    //      }
-    //    }
-    //
-    //    "the user is authenticated but the FATCA ID is empty" must {
-    //      "redirect to the registration page" in {
-    //        val json = """
-    //                           |{
-    //                           |  "internalId": "some-id",
-    //                           |  "affinityGroup": "Organisation",
-    //                           |  "allEnrolments": [ {
-    //                           |    "key": "HMRC-FATCA-ORG",
-    //                           |    "identifiers": [ {
-    //                           |      "key": "FATCAID",
-    //                           |      "value": ""
-    //                           |    } ],
-    //                           |    "state": "Activated"
-    //                           |  } ]
-    //                           |}
-    //                           |""".stripMargin
-    //        stubFor(post(urlEqualTo(authUrl)).willReturn(aResponse().withStatus(OK).withBody(json)))
-    //
-    //        val request = FakeRequest("GET", "/")
-    //        val harness = new Harness(app.injector.instanceOf[AuthenticatedIdentifierAction])
-    //        val result  = await(harness.onPageLoad()(request))
-    //
-    //        result.header.status mustBe SEE_OTHER
-    //        result.header.headers.get("Location") mustBe Some("http://localhost:10031/crs-fatca-registration")
-    //      }
-    //    }
-    //  }
+    "the user is authenticated but does not have the FATCA enrolment" must {
+      "redirect to the registration page" in {
+        val json = """
+                     |{
+                     |  "internalId": "some-id",
+                     |  "affinityGroup": "Organisation",
+                     |  "allEnrolments": []
+                     |}
+                     |""".stripMargin
+        stubPost(authUrl, OK, authRequest, json)
+
+        val response = await(
+          buildClient()
+            .withFollowRedirects(false)
+            .addCookies(wsSessionCookie)
+            .get()
+        )
+
+        response.status mustBe SEE_OTHER
+        response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
+      }
+    }
+    "the user is authenticated but the FATCA ID is empty" must {
+      "redirect to the registration page" in {
+        val json =
+          """
+            |{
+            |  "internalId": "some-id",
+            |  "affinityGroup": "Organisation",
+            |  "allEnrolments": [ {
+            |    "key": "HMRC-FATCA-ORG",
+            |    "identifiers": [ {
+            |      "key": "FATCAID",
+            |      "value": ""
+            |    } ],
+            |    "state": "Activated"
+            |  } ]
+            |}
+            |""".stripMargin
+        stubPost(authUrl, OK, authRequest, json)
+
+        val response = await(
+          buildClient()
+            .withFollowRedirects(false)
+            .addCookies(wsSessionCookie)
+            .get()
+        )
+
+        response.status mustBe SEE_OTHER
+        response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
+      }
+    }
   }
 }
