@@ -36,11 +36,11 @@ import scala.concurrent.{ExecutionContext, Future}
 trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent] with ActionFunction[Request, IdentifierRequest]
 
 class AuthenticatedIdentifierAction @Inject() (
-                                                override val authConnector: AuthConnector,
-                                                config: FrontendAppConfig,
-                                                val parser: BodyParsers.Default
-                                              )(implicit val executionContext: ExecutionContext)
-  extends IdentifierAction
+  override val authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends IdentifierAction
     with AuthorisedFunctions
     with Logging {
 
@@ -67,7 +67,7 @@ class AuthenticatedIdentifierAction @Inject() (
                                    internalId: String,
                                    affinityGroup: AffinityGroup,
                                    block: IdentifierRequest[A] => Future[Result]
-                                  ): Future[Result] = {
+  ): Future[Result] = {
     val subscriptionId: Option[String] = for {
       enrolment      <- enrolments.getEnrolment(config.enrolmentKey)
       id             <- enrolment.getIdentifier(IdentifierType.FATCAID)

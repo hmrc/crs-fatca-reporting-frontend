@@ -32,12 +32,12 @@ import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
-  implicit val hc: HeaderCarrier         = HeaderCarrier()
+  implicit val hc: HeaderCarrier    = HeaderCarrier()
 
   def config: Map[String, String] = Map(
-    "microservice.services.auth.host"                         -> WireMockConstants.stubHost,
-    "microservice.services.auth.port"                         -> WireMockConstants.stubPort.toString,
-    "mongodb.uri"                                             -> mongoUri
+    "microservice.services.auth.host" -> WireMockConstants.stubHost,
+    "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
+    "mongodb.uri"                     -> mongoUri
   )
 
   def buildClient(): WSRequest =

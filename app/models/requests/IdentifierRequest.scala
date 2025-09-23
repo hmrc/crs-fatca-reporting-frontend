@@ -27,4 +27,4 @@ case class IdentifierRequest[A](request: Request[A],
                                 enrolments: Set[Enrolment] = Set.empty,
                                 autoMatched: Boolean = false,
                                 ctutr: Option[UniqueTaxpayerReference] = None
-                               ) extends WrappedRequest[A](request)
+) extends WrappedRequest[A](request)

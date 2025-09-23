@@ -21,7 +21,7 @@ import play.api.http.Status.OK
 
 trait AuthStubs { this: Suite =>
 
-  val authUrl = "/auth/authorise"
+  val authUrl            = "/auth/authorise"
   val testAuthInternalId = "internalId"
 
   val authRequest =
