@@ -39,7 +39,7 @@ trait SpecBase
     with GuiceOneAppPerSuite
     with Injecting {
 
-  val userAnswersId: String = "id"
+  val userAnswersId: String = "FATCAID"
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
