@@ -14,20 +14,28 @@
  * limitations under the License.
  *@
 
+@import models.upscan.UpscanInitiateResponse
+
 @this(
     layout: templates.Layout,
+    govukErrorSummary: GovukErrorSummary,
     govukFileUpload: GovukFileUpload,
     govukButton: GovukButton
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], upscanInitiateResponse: UpscanInitiateResponse)(implicit request: Request[_], messages: Messages)
 
 @layout(
     pageTitle    = titleNoForm(messages("uploadXML.title")),
     showBackLink = true
 ) {
 
-<form method="post" id="uploadForm" enctype="multipart/form-data" novalidate>
+<form action="@upscanInitiateResponse.postTarget" method="post" id="uploadForm" enctype="multipart/form-data" novalidate>
+
+    @if(form.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummaryViewModel(form))
+    }
+
     <h1 class="govuk-label-wrapper">
         <label class="govuk-label govuk-label--l" for="file-upload">
             @messages("uploadXML.heading")
@@ -36,7 +44,10 @@
 
     <p class="govuk-body">@messages("uploadXML.p1")</p>
 
-
+    @for((key, value) <- upscanInitiateResponse.formFields){
+    <input type="hidden" name="@key" value="@value" />
+    }
+    <input type="hidden" id="upScanErrorRedirectUrl" value="/report-for-crs-and-fatca/report/error" />
     <div id="file-upload-container" class="js-visible mt-3">
 
         @govukFileUpload(

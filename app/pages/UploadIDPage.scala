@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package forms.mappings
+package pages
 
-import play.api.data.Form
+import models.upscan.UploadId
+import play.api.libs.json.JsPath
 
-import javax.inject.Inject
+case object UploadIDPage extends QuestionPage[UploadId] {
 
-class UploadXMLFormProvider @Inject() extends Mappings {
+  override def path: JsPath = JsPath \ toString
 
-  def apply(): Form[String] =
-    Form(
-      "file-upload" -> text()
-    )
+  override def toString: String = "uploadID"
+
 }

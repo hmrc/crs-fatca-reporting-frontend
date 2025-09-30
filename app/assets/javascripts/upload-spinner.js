@@ -4,12 +4,14 @@
 $("#uploadForm").submit(function (e) {
     e.preventDefault();
     const fileLength = $("#file-upload")[0].files.length;
+    var errorRequestId = $("[name='x-amz-meta-request-id']").val();
     if (fileLength === 0) {
-        var errorRequestId = $("#x-amz-meta-request-id").val();
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=FileNotSelected&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
-    } else if (isFileNameInvalid()) {
-        var errorRequestId = $("[name='x-amz-meta-request-id']").val();
+    } else if (isFileEmpty()){
+        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=FileIsEmpty&errorRequestId=" + errorRequestId;
+        window.location = errorUrl;
+    }else if (isFileNameInvalid()) {
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=InvalidFileNameLength&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else {
@@ -28,6 +30,7 @@ $("#uploadForm").submit(function (e) {
 
         addUploadSpinner();
         setTimeout(function () {
+            this.submit();
             disableFileUpload();
         }.bind(this), 0);
     }
@@ -37,10 +40,15 @@ $("#uploadForm").submit(function (e) {
 function isFileNameInvalid() {
     var fileName = $("#file-upload")[0].files[0].name;
     var trimmedFileName = fileName.replace(".xml", "");
-    if (trimmedFileName.length > 100) {
+    if (trimmedFileName.length > 170) {
         return true;
     }
     return false;
+}
+
+function isFileEmpty() {
+    var fileSize = $("#file-upload")[0].files[0].size;
+    return fileSize === 0;
 }
 
 $(document).ready(function () {

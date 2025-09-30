@@ -17,7 +17,8 @@
 package views
 
 import base.SpecBase
-import forms.mappings.UploadXMLFormProvider
+import forms.UploadXMLFormProvider
+import models.upscan.{Reference, UpscanInitiateResponse}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
@@ -40,7 +41,7 @@ class UploadXMLViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting
   "UploadXMLView" - {
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable =
-        view1(form)
+        view1(form,UpscanInitiateResponse(Reference(""), "target", Map.empty))
       lazy val doc = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Upload an XML file for CRS or FATCA")
