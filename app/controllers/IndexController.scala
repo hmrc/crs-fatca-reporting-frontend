@@ -63,32 +63,21 @@ class IndexController @Inject() (
   def showError(errorCode: String, errorMessage: String, errorRequestId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val form = formProvider()
-      errorCode match {
-        case "EntityTooLarge" =>
-          val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.size.large")
-          toResponse(formWithErrors)
-        case "VirusFile" =>
-          val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.content.virus")
-          toResponse(formWithErrors)
+      val formWithErrors: Form[String] = errorCode match {
+        case "EntityTooLarge" => form.withError("file-upload", "uploadFile.error.file.size.large")
+        case "VirusFile" => form.withError("file-upload", "uploadFile.error.file.content.virus")
         case "InvalidArgument" | "OctetStream" =>
-          if (errorMessage.equalsIgnoreCase("InvalidFileNameLength")) {
-            val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.name.length")
-            toResponse(formWithErrors)
-          } else if (errorMessage.equalsIgnoreCase("typeMismatch")) {
-            val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.type.invalid")
-            toResponse(formWithErrors)
-          } else if (errorMessage.equalsIgnoreCase("FileIsEmpty")) {
-            val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.content.empty")
-            toResponse(formWithErrors)
-          } else {
-            val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.select")
-            toResponse(formWithErrors)
+          errorMessage.toLowerCase match {
+            case "invalidfilenamelength" => form.withError("file-upload", "uploadFile.error.file.name.length")
+            case "typemismatch" => form.withError("file-upload", "uploadFile.error.file.type.invalid")
+            case "fileisempty" => form.withError("file-upload", "uploadFile.error.file.content.empty")
+            case _ => form.withError("file-upload", "uploadFile.error.file.select")
           }
         case _ =>
           logger.warn(s"Upscan error $errorCode: $errorMessage, requestId is $errorRequestId")
-          val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.content.unknown")
-          toResponse(formWithErrors)
+          form.withError("file-upload", "uploadFile.error.file.content.unknown")
       }
+      toResponse(formWithErrors)
   }
 
   private def toResponse(preparedForm: Form[String])(implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Result] = {
@@ -135,7 +124,7 @@ class IndexController @Inject() (
           case Some(_) =>
             Redirect(routes.IndexController.getStatus(uploadId).url)
           case None =>
-            logger.warn("Unable to retrieve file upload status from Upscan")
+            logger.error("Unable to retrieve file upload status from Upscan")
             Redirect(routes.IndexController.showError("UploadFailed", "", "").url)
         }
       }
