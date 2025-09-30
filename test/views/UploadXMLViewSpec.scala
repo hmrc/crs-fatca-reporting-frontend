@@ -41,7 +41,7 @@ class UploadXMLViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting
   "UploadXMLView" - {
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable =
-        view1(form,UpscanInitiateResponse(Reference(""), "target", Map.empty))
+        view1(form, UpscanInitiateResponse(Reference(""), "target", Map.empty))
       lazy val doc = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Upload an XML file for CRS or FATCA")

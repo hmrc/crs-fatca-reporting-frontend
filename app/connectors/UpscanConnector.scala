@@ -32,7 +32,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UpscanConnector @Inject()(configuration: FrontendAppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext) extends Logging {
+class UpscanConnector @Inject() (configuration: FrontendAppConfig, httpClient: HttpClientV2)(implicit ec: ExecutionContext) extends Logging {
 
   private val headers = Map(
     HeaderNames.CONTENT_TYPE -> "application/json"
@@ -59,7 +59,8 @@ class UpscanConnector @Inject()(configuration: FrontendAppConfig, httpClient: Ht
 
   def requestUpload(uploadId: UploadId, fileReference: Reference)(implicit hc: HeaderCarrier): Future[UploadId] = {
     val uploadUrl = url"$backendUrl/upscan/upload"
-    httpClient.post(uploadUrl)
+    httpClient
+      .post(uploadUrl)
       .withBody(Json.toJson(UpscanIdentifiers(uploadId, fileReference)))
       .execute[http.HttpResponse] map {
       _ => uploadId

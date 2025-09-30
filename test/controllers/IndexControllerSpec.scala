@@ -38,7 +38,7 @@ class IndexControllerSpec extends SpecBase {
 
   "Index Controller" - {
 
-    val FileSize = 20L
+    val FileSize           = 20L
     val uploadId: UploadId = UploadId("12345")
 
     val fakeUpscanConnector: FakeUpscanConnector = app.injector.instanceOf[FakeUpscanConnector]
@@ -61,7 +61,7 @@ class IndexControllerSpec extends SpecBase {
 
         running(application) {
           val formProvider = new UploadXMLFormProvider()
-          val form = formProvider()
+          val form         = formProvider()
 
           val request = FakeRequest(GET, routes.IndexController.onPageLoad().url)
 
@@ -76,8 +76,8 @@ class IndexControllerSpec extends SpecBase {
           verify(mockSessionRepository).set(argThat {
             ua =>
               ua.get(FileReferencePage).isDefined &&
-                ua.get(UploadIDPage).isDefined &&
-                ua.get(ValidXMLPage).isEmpty
+              ua.get(UploadIDPage).isDefined &&
+              ua.get(ValidXMLPage).isEmpty
           })
         }
       }
@@ -130,10 +130,10 @@ class IndexControllerSpec extends SpecBase {
         }
 
         verifyResult(InProgress, Some(routes.IndexController.getStatus(uploadId).url))
-        verifyResult(Quarantined, Some(routes.IndexController.showError("VirusFile","","").url))
-        verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("InvalidArgument","typeMismatch","").url))
-        verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("OctetStream","REJECTED","").url))
-        verifyResult(Failed, Some(routes.IndexController.showError("UploadFailed","","").url))
+        verifyResult(Quarantined, Some(routes.IndexController.showError("VirusFile", "", "").url))
+        verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("InvalidArgument", "typeMismatch", "").url))
+        verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("OctetStream", "REJECTED", "").url))
+        verifyResult(Failed, Some(routes.IndexController.showError("UploadFailed", "", "").url))
         verifyResult(UploadedSuccessfully("name", "downloadUrl", FileSize, "MD5:123"), Some(routes.IndexController.onPageLoad().url))
 
       }
@@ -153,7 +153,7 @@ class IndexControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.IndexController.showError("UploadFailed","","").url)
+        redirectLocation(result) mustBe Some(routes.IndexController.showError("UploadFailed", "", "").url)
         application.stop()
       }
     }
@@ -168,7 +168,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("EntityTooLarge", "", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file must be smaller than 250MB")
@@ -183,7 +183,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("VirusFile", "", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file contains a virus")
@@ -198,7 +198,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "InvalidFileNameLength", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("File name must be 170 characters or less")
@@ -213,7 +213,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "FileIsEmpty", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file is empty")
@@ -228,7 +228,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "typeMismatch", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file must be an XML")
@@ -243,7 +243,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("Select a file")
@@ -258,7 +258,7 @@ class IndexControllerSpec extends SpecBase {
           .build()
 
         val request = FakeRequest(GET, routes.IndexController.showError("UnknownError", "", "").url)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file could not be uploaded")

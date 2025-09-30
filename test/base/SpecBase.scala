@@ -50,7 +50,7 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  final val mockSessionRepository: SessionRepository     = mock[SessionRepository]
+  final val mockSessionRepository: SessionRepository = mock[SessionRepository]
 
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()

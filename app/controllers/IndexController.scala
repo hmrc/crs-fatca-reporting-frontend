@@ -74,13 +74,13 @@ class IndexController @Inject() (
           if (errorMessage.equalsIgnoreCase("InvalidFileNameLength")) {
             val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.name.length")
             toResponse(formWithErrors)
-          } else if(errorMessage.equalsIgnoreCase("typeMismatch")){
+          } else if (errorMessage.equalsIgnoreCase("typeMismatch")) {
             val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.type.invalid")
             toResponse(formWithErrors)
-          }else if(errorMessage.equalsIgnoreCase("FileIsEmpty")){
+          } else if (errorMessage.equalsIgnoreCase("FileIsEmpty")) {
             val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.content.empty")
             toResponse(formWithErrors)
-          }else {
+          } else {
             val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.select")
             toResponse(formWithErrors)
           }
@@ -95,7 +95,7 @@ class IndexController @Inject() (
     val uploadId: UploadId = UploadId.generate
     (for {
       upscanInitiateResponse <- upscanConnector.getUpscanFormData(uploadId)
-      uploadId <- upscanConnector.requestUpload(uploadId, upscanInitiateResponse.fileReference)
+      uploadId               <- upscanConnector.requestUpload(uploadId, upscanInitiateResponse.fileReference)
       updatedAnswers <- Future.fromTry(
         request.userAnswers
           .set(UploadIDPage, uploadId)
@@ -103,7 +103,7 @@ class IndexController @Inject() (
           .flatMap(_.remove(ValidXMLPage))
       )
       _ <- sessionRepository.set(updatedAnswers)
-    } yield Ok(view(preparedForm,upscanInitiateResponse)))
+    } yield Ok(view(preparedForm, upscanInitiateResponse)))
       .recover {
         case e: Exception =>
           logger.error(s"UploadFileController: An exception occurred when contacting Upscan: $e")

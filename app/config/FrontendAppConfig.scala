@@ -61,11 +61,11 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
 
-  val upscanInitiateHost: String = servicesConfig.baseUrl("upscan")
-  val upscanBucketHost: String = servicesConfig.baseUrl("upscan")
-  val upscanProtocol: String = servicesConfig.getConfString("upscan.protocol", "https")
-  val upscanRedirectBase: String = configuration.get[String]("microservice.services.upscan.redirect-base")
+  val upscanInitiateHost: String        = servicesConfig.baseUrl("upscan")
+  val upscanBucketHost: String          = servicesConfig.baseUrl("upscan")
+  val upscanProtocol: String            = servicesConfig.getConfString("upscan.protocol", "https")
+  val upscanRedirectBase: String        = configuration.get[String]("microservice.services.upscan.redirect-base")
   val upscanCallbackDelayInSeconds: Int = configuration.get[Int]("microservice.services.upscan.callbackDelayInSeconds")
-  val upscanMaxFileSize: Int = configuration.get[Int]("microservice.services.upscan.max-file-size-in-mb")
-  val crsUrl: String = servicesConfig.baseUrl("crs-fatca-reporting")
+  val upscanMaxFileSize: Int            = configuration.get[Int]("microservice.services.upscan.max-file-size-in-mb")
+  val crsUrl: String                    = servicesConfig.baseUrl("crs-fatca-reporting")
 }
