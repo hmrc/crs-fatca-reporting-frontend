@@ -45,7 +45,7 @@ class RulesErrorController @Inject() (
       Ok(view(fileName, regimentType, errorLength, createFileRejectedViewModel()))
   }
 
-  //Todo This will be replaced with real data from the connector when the backend is done
+  // Todo This will be replaced with real data from the connector when the backend is done
   // Keeping this here to allow the view to be completed
   private def createFileRejectedViewModel() = {
     val fileErrors: Seq[FileErrors] = Seq(FileErrors(CorrDocRefIdUnknown, None))

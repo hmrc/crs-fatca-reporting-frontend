@@ -16,13 +16,11 @@
 
 package controllers.actions
 
-import javax.inject.Inject
-import controllers.routes
 import models.UserAnswers
-import models.requests.{DataRequest, IdentifierRequest, OptionalDataRequest}
-import play.api.mvc.Results.Redirect
-import play.api.mvc.{ActionRefiner, ActionTransformer, Result}
+import models.requests.{DataRequest, OptionalDataRequest}
+import play.api.mvc.ActionTransformer
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataCreationActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends DataCreationAction {

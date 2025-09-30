@@ -21,6 +21,9 @@ import connectors.UpscanConnector
 import controllers.Execution.trampoline
 import controllers.actions.{DataCreationAction, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.UploadXMLFormProvider
+import models.{ErrorCode, InvalidArgumentErrorMessage}
+import models.ErrorCode.*
+import models.InvalidArgumentErrorMessage.{FileIsEmpty, InvalidFileNameLength, TypeMismatch}
 import models.requests.DataRequest
 import models.upscan.*
 import org.apache.pekko
@@ -63,15 +66,16 @@ class IndexController @Inject() (
   def showError(errorCode: String, errorMessage: String, errorRequestId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val form = formProvider()
-      val formWithErrors: Form[String] = errorCode match {
-        case "EntityTooLarge" => form.withError("file-upload", "uploadFile.error.file.size.large")
-        case "VirusFile" => form.withError("file-upload", "uploadFile.error.file.content.virus")
-        case "InvalidArgument" | "OctetStream" =>
-          errorMessage.toLowerCase match {
-            case "invalidfilenamelength" => form.withError("file-upload", "uploadFile.error.file.name.length")
-            case "typemismatch" => form.withError("file-upload", "uploadFile.error.file.type.invalid")
-            case "fileisempty" => form.withError("file-upload", "uploadFile.error.file.content.empty")
-            case _ => form.withError("file-upload", "uploadFile.error.file.select")
+
+      val formWithErrors: Form[String] = ErrorCode.fromCode(errorCode) match {
+        case Some(ErrorCode.EntityTooLarge) => form.withError("file-upload", "uploadFile.error.file.size.large")
+        case Some(VirusFile)                => form.withError("file-upload", "uploadFile.error.file.content.virus")
+        case Some(InvalidArgument | OctetStream) =>
+          InvalidArgumentErrorMessage.fromMessage(errorMessage) match {
+            case Some(InvalidFileNameLength) => form.withError("file-upload", "uploadFile.error.file.name.length")
+            case Some(TypeMismatch)          => form.withError("file-upload", "uploadFile.error.file.type.invalid")
+            case Some(FileIsEmpty)           => form.withError("file-upload", "uploadFile.error.file.content.empty")
+            case None                        => form.withError("file-upload", "uploadFile.error.file.select")
           }
         case _ =>
           logger.warn(s"Upscan error $errorCode: $errorMessage, requestId is $errorRequestId")
@@ -111,13 +115,13 @@ class IndexController @Inject() (
             if (r.details.message.contains("octet-stream")) {
               logger.warn(s"Show errorForm on rejection $r")
               val errorReason = r.details.failureReason
-              Redirect(routes.IndexController.showError("OctetStream", errorReason, "").url)
+              Redirect(routes.IndexController.showError(OctetStream.code, errorReason.toLowerCase, "").url)
             } else {
               logger.warn(s"Upload rejected. Error details: ${r.details}")
-              Redirect(routes.IndexController.showError("InvalidArgument", "typeMismatch", "").url)
+              Redirect(routes.IndexController.showError(InvalidArgument.code, TypeMismatch.message, "").url)
             }
           case Some(Quarantined) =>
-            Redirect(routes.IndexController.showError("VirusFile", "", "").url)
+            Redirect(routes.IndexController.showError(VirusFile.code, "", "").url)
           case Some(Failed) =>
             logger.warn("File upload returned failed status")
             Redirect(routes.IndexController.showError("UploadFailed", "", "").url)

@@ -36,7 +36,7 @@ class GiinNotSentController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val electionsSent: Option[Boolean] = None //placeholder
+      val electionsSent: Option[Boolean] = None // placeholder
       Ok(view(electionsSent))
   }
 }

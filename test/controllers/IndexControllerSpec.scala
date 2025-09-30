@@ -130,9 +130,9 @@ class IndexControllerSpec extends SpecBase {
         }
 
         verifyResult(InProgress, Some(routes.IndexController.getStatus(uploadId).url))
-        verifyResult(Quarantined, Some(routes.IndexController.showError("VirusFile", "", "").url))
-        verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("InvalidArgument", "typeMismatch", "").url))
-        verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("OctetStream", "REJECTED", "").url))
+        verifyResult(Quarantined, Some(routes.IndexController.showError("virusfile", "", "").url))
+        verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("invalidargument", "typemismatch", "").url))
+        verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("octetstream", "rejected", "").url))
         verifyResult(Failed, Some(routes.IndexController.showError("UploadFailed", "", "").url))
         verifyResult(UploadedSuccessfully("name", "downloadUrl", FileSize, "MD5:123"), Some(routes.IndexController.onPageLoad().url))
 

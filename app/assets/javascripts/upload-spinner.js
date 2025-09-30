@@ -6,13 +6,13 @@ $("#uploadForm").submit(function (e) {
     const fileLength = $("#file-upload")[0].files.length;
     var errorRequestId = $("[name='x-amz-meta-request-id']").val();
     if (fileLength === 0) {
-        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=FileNotSelected&errorRequestId=" + errorRequestId;
+        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=filenotselected&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else if (isFileEmpty()){
-        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=FileIsEmpty&errorRequestId=" + errorRequestId;
+        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=fileisempty&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     }else if (isFileNameInvalid()) {
-        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=InvalidArgument&errorMessage=InvalidFileNameLength&errorRequestId=" + errorRequestId;
+        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=invalidfilenamelength&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else {
         function disableFileUpload() {
