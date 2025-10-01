@@ -25,7 +25,7 @@ import models.upscan.*
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
-import pages.{FileReferencePage, UploadIDPage, ValidXMLPage}
+import pages.{FileReferencePage, UploadIDPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -76,8 +76,7 @@ class IndexControllerSpec extends SpecBase {
           verify(mockSessionRepository).set(argThat {
             ua =>
               ua.get(FileReferencePage).isDefined &&
-              ua.get(UploadIDPage).isDefined &&
-              ua.get(ValidXMLPage).isEmpty
+              ua.get(UploadIDPage).isDefined
           })
         }
       }

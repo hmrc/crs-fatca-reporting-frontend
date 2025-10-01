@@ -28,7 +28,7 @@ import models.requests.DataRequest
 import models.upscan.*
 import org.apache.pekko
 import org.apache.pekko.actor.ActorSystem
-import pages.{FileReferencePage, UploadIDPage, ValidXMLPage}
+import pages.{FileReferencePage, UploadIDPage}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.i18n.Lang.logger
@@ -93,13 +93,12 @@ class IndexController @Inject() (
         request.userAnswers
           .set(UploadIDPage, uploadId)
           .flatMap(_.set(FileReferencePage, upscanInitiateResponse.fileReference))
-          .flatMap(_.remove(ValidXMLPage))
       )
       _ <- sessionRepository.set(updatedAnswers)
     } yield Ok(view(preparedForm, upscanInitiateResponse)))
       .recover {
         case e: Exception =>
-          logger.error(s"UploadFileController: An exception occurred when contacting Upscan: $e")
+          logger.error("UploadFileController: An exception occurred when contacting Upscan ", e)
           Redirect(routes.IndexController.onPageLoad())
       }
   }
