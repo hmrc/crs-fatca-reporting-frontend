@@ -109,7 +109,7 @@ class IndexController @Inject() (
       pekko.pattern.after(config.upscanCallbackDelayInSeconds.seconds, actorSystem.scheduler) {
         upscanConnector.getUploadStatus(uploadId) map {
           case Some(uploadedSuccessfully: UploadedSuccessfully) =>
-            val isFileNameInvalid = uploadedSuccessfully.name.length > 170
+            val isFileNameInvalid = uploadedSuccessfully.name.length > config.upscanMaxFileNameLength
             if (isFileNameInvalid) {
               Redirect(routes.IndexController.showError(InvalidArgument.code, InvalidFileNameLength.message, "").url)
             } else {
