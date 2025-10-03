@@ -21,11 +21,11 @@ import connectors.UpscanConnector
 import controllers.Execution.trampoline
 import controllers.actions.{DataCreationAction, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.UploadXMLFormProvider
-import models.{ErrorCode, InvalidArgumentErrorMessage}
 import models.ErrorCode.*
 import models.InvalidArgumentErrorMessage.{FileIsEmpty, InvalidFileNameLength, TypeMismatch}
 import models.requests.DataRequest
 import models.upscan.*
+import models.{ErrorCode, InvalidArgumentErrorMessage}
 import org.apache.pekko
 import org.apache.pekko.actor.ActorSystem
 import pages.{FileReferencePage, UploadIDPage}
@@ -99,7 +99,7 @@ class IndexController @Inject() (
       .recover {
         case e: Exception =>
           logger.error("UploadFileController: An exception occurred when contacting Upscan ", e)
-          Redirect(routes.IndexController.onPageLoad())
+          Redirect(routes.JourneyRecoveryController.onPageLoad())
       }
   }
 
@@ -108,8 +108,13 @@ class IndexController @Inject() (
       // Delay the call to make sure the backend db has been populated by the upscan callback first
       pekko.pattern.after(config.upscanCallbackDelayInSeconds.seconds, actorSystem.scheduler) {
         upscanConnector.getUploadStatus(uploadId) map {
-          case Some(_: UploadedSuccessfully) =>
-            Redirect(routes.IndexController.onPageLoad().url)
+          case Some(uploadedSuccessfully: UploadedSuccessfully) =>
+            val isFileNameInvalid = uploadedSuccessfully.name.length > 170
+            if (isFileNameInvalid) {
+              Redirect(routes.IndexController.showError(InvalidArgument.code, InvalidFileNameLength.message, "").url)
+            } else {
+              Redirect(routes.IndexController.onPageLoad().url)
+            }
           case Some(r: UploadRejected) =>
             if (r.details.message.contains("octet-stream")) {
               logger.warn(s"Show errorForm on rejection $r")

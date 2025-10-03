@@ -17,6 +17,7 @@
 package base
 
 import controllers.actions.*
+import generators.Generators
 import helpers.FakeUpscanConnector
 import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -42,6 +43,7 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience
     with GuiceOneAppPerSuite
+    with Generators
     with Injecting {
 
   val userAnswersId: String = "FATCAID"
