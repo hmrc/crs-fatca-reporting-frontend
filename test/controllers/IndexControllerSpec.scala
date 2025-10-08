@@ -270,6 +270,21 @@ class IndexControllerSpec extends SpecBase {
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file could not be uploaded")
       }
+
+      "must show returned error when JS is disabled & Upscan return field not found" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[UpscanConnector].toInstance(fakeUpscanConnector)
+          )
+          .build()
+
+        val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "file\\'field not found", "").url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) must include("Select a file that’s not empty")
+      }
     }
 
   }
