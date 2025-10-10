@@ -25,7 +25,6 @@ import models.upscan.*
 import org.mockito.ArgumentMatchers.{any, argThat}
 import org.mockito.Mockito
 import org.mockito.Mockito.{verify, when}
-import org.scalacheck.Gen
 import pages.{FileReferencePage, UploadIDPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -129,17 +128,17 @@ class IndexControllerSpec extends SpecBase {
           application.stop()
         }
 
-        val InvalidFileName = stringWithNCharacter(171).sample
-        val validFileName   = stringWithNCharacter(170).sample
+        val invalidFileName = stringWithNCharacter(171).sample.get.concat(".xml")
+        val validFileName   = stringWithNCharacter(170).sample.get.concat(".xml")
 
         verifyResult(InProgress, Some(routes.IndexController.getStatus(uploadId).url))
         verifyResult(Quarantined, Some(routes.IndexController.showError("virusfile", "", "").url))
         verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("invalidargument", "typemismatch", "").url))
         verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("octetstream", "rejected", "").url))
         verifyResult(Failed, Some(routes.IndexController.showError("UploadFailed", "", "").url))
-        verifyResult(UploadedSuccessfully(validFileName.get, "downloadUrl", FileSize, "MD5:123"), Some(routes.IndexController.onPageLoad().url))
+        verifyResult(UploadedSuccessfully(validFileName, "downloadUrl", FileSize, "MD5:123"), Some(routes.IndexController.onPageLoad().url))
         verifyResult(
-          UploadedSuccessfully(InvalidFileName.get, "downloadUrl", FileSize, "MD5:123"),
+          UploadedSuccessfully(invalidFileName, "downloadUrl", FileSize, "MD5:123"),
           Some(routes.IndexController.showError("invalidargument", "invalidfilenamelength", "").url)
         )
 
