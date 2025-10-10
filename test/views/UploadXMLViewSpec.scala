@@ -17,9 +17,11 @@
 package views
 
 import base.SpecBase
-import forms.mappings.UploadXMLFormProvider
+import forms.UploadXMLFormProvider
+import models.upscan.{Reference, UpscanInitiateResponse}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.data.Form
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
@@ -40,13 +42,22 @@ class UploadXMLViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting
   "UploadXMLView" - {
     "should render page components" in {
       val renderedHtml: HtmlFormat.Appendable =
-        view1(form)
+        view1(form, UpscanInitiateResponse(Reference(""), "target", Map.empty))
       lazy val doc = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Upload an XML file for CRS or FATCA")
       getPageHeading(doc) mustEqual "Upload an XML file for CRS or FATCA"
       getAllParagraph(doc).text() must include("We will automatically check the formatting of the file and send you to another page once completed.")
       elementText(doc, "#submit") mustEqual "Continue"
+    }
+
+    "should render page components with error" in {
+      val formWithErrors: Form[String] = form.withError("file-upload", "uploadFile.error.file.size.large")
+      val renderedHtml: HtmlFormat.Appendable =
+        view1(formWithErrors, UpscanInitiateResponse(Reference(""), "target", Map.empty))
+      lazy val doc = Jsoup.parse(renderedHtml.body)
+
+      getAllParagraph(doc).text() must include("The selected file must be smaller than 250MB")
     }
   }
 

@@ -16,8 +16,11 @@
 
 package models
 
+import connectors.UpscanConnector
+import models.upscan.{PreparedUpload, Reference, UploadForm}
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.libs.json.Json
 import play.api.libs.ws.{DefaultWSCookie, WSClient}
 import play.api.mvc.*
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
@@ -32,12 +35,16 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
   val sessionCookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
   val sessionCookie: Cookie                  = sessionCookieBaker.encodeAsCookie(session)
   val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
+  lazy val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
 
   "Authenticated Identifier Action" when {
 
     "the user is authenticated and has a FATCA ID" must {
       "return OK when the user is authorised" in {
         stubAuthorised("cbc12345")
+        val upscanBody = PreparedUpload(Reference("Reference"), UploadForm("downloadUrl", Map("formKey" -> "formValue")))
+
+        stubPostResponse("/upscan/v2/initiate", OK, Json.toJson(upscanBody).toString())
 
         val response = await(
           buildClient()

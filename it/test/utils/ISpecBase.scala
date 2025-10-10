@@ -35,6 +35,8 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   implicit val hc: HeaderCarrier    = HeaderCarrier()
 
   def config: Map[String, String] = Map(
+    "microservice.services.upscan.port" -> WireMockConstants.stubPort.toString,
+    "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "microservice.services.auth.host" -> WireMockConstants.stubHost,
     "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri"                     -> mongoUri
