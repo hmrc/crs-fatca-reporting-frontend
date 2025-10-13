@@ -17,17 +17,23 @@
 package base
 
 import controllers.actions.*
+import generators.Generators
+import helpers.FakeUpscanConnector
 import models.UserAnswers
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
+import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Writes
 import play.api.test.{FakeRequest, Injecting}
+import queries.Settable
+import repositories.SessionRepository
 
 trait SpecBase
     extends AnyFreeSpec
@@ -37,6 +43,7 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience
     with GuiceOneAppPerSuite
+    with Generators
     with Injecting {
 
   val userAnswersId: String = "FATCAID"
@@ -45,6 +52,8 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
+  final val mockSessionRepository: SessionRepository = mock[SessionRepository]
+
   protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
@@ -52,4 +61,11 @@ trait SpecBase
         bind[IdentifierAction].to[FakeIdentifierAction],
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
+
+  implicit class UserAnswersExtension(userAnswers: UserAnswers) {
+
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
+      userAnswers.set(page, value).success.value
+
+  }
 }

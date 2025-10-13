@@ -91,3 +91,7 @@ GET        /report/file-failed-checks                      controllers.FileFaile
 GET        /report/problem/file-not-accepted                       controllers.FileNotAcceptedController.onPageLoad()
 
 GET        /report/file-confirmation                       controllers.FileConfirmationController.onPageLoad()
+
+GET        /report/status                                  controllers.IndexController.getStatus(uploadId: upscan.UploadId)
+
+GET        /report/error                                   controllers.IndexController.showError(errorCode: String, errorMessage: String, errorRequestId: String)

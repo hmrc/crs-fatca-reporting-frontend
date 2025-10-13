@@ -118,4 +118,7 @@ trait Generators extends ModelGenerators {
         Instant.ofEpochMilli(millis).atOffset(ZoneOffset.UTC).toLocalDate
     }
   }
+
+  def stringWithNCharacter(n: Int): Gen[String] =
+    Gen.listOfN(n, Gen.alphaChar).map(_.mkString)
 }
