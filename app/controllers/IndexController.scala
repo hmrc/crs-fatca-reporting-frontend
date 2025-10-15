@@ -69,18 +69,14 @@ class IndexController @Inject() (
 
       val formWithErrors: Form[String] = ErrorCode.fromCode(errorCode) match {
         case Some(ErrorCode.EntityTooLarge) => form.withError("file-upload", "uploadFile.error.file.size.large")
+        case Some(ErrorCode.EntityTooSmall) => form.withError("file-upload", "uploadFile.error.file.content.empty")
         case Some(VirusFile)                => form.withError("file-upload", "uploadFile.error.file.content.virus")
         case Some(InvalidArgument | OctetStream) =>
           InvalidArgumentErrorMessage.fromMessage(errorMessage) match {
             case Some(InvalidFileNameLength) => form.withError("file-upload", "uploadFile.error.file.name.length")
             case Some(TypeMismatch)          => form.withError("file-upload", "uploadFile.error.file.type.invalid")
             case Some(FileIsEmpty)           => form.withError("file-upload", "uploadFile.error.file.content.empty")
-            case None =>
-              if (errorMessage.toLowerCase.contains(config.upscanErrorFileNotFound)) {
-                form.withError("file-upload", "uploadFile.error.file.invalid")
-              } else {
-                form.withError("file-upload", "uploadFile.error.file.select")
-              }
+            case None                        => form.withError("file-upload", "uploadFile.error.file.select")
           }
         case _ =>
           logger.warn(s"Upscan error $errorCode: $errorMessage, requestId is $errorRequestId")

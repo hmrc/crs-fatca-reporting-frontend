@@ -44,7 +44,7 @@ class UpscanConnector @Inject() (configuration: FrontendAppConfig, httpClient: H
       callbackUrl,
       Some(upscanRedirectBase + controllers.routes.IndexController.getStatus(uploadId).url),
       Some(s"$upscanRedirectBase/report-for-crs-and-fatca/report/error"),
-      None,
+      Some(upscanMinSize),
       Some(upscanMaxSize * 1048576),
       Some("text/xml")
     )
@@ -111,4 +111,5 @@ class UpscanConnector @Inject() (configuration: FrontendAppConfig, httpClient: H
   private val upscanInitiateUrl                      = s"${configuration.upscanInitiateHost}$upscanInitiatePath"
   private val upscanRedirectBase                     = configuration.upscanRedirectBase
   private val upscanMaxSize                          = configuration.upscanMaxFileSize
+  private val upscanMinSize                          = configuration.upscanMinFileSize
 }
