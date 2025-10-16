@@ -69,7 +69,6 @@ class IndexController @Inject() (
 
       val formWithErrors: Form[String] = ErrorCode.fromCode(errorCode) match {
         case Some(ErrorCode.EntityTooLarge) => form.withError("file-upload", "uploadFile.error.file.size.large")
-        case Some(ErrorCode.EntityTooSmall) => form.withError("file-upload", "uploadFile.error.file.content.empty")
         case Some(VirusFile)                => form.withError("file-upload", "uploadFile.error.file.content.virus")
         case Some(InvalidArgument | OctetStream) =>
           InvalidArgumentErrorMessage.fromMessage(errorMessage) match {
@@ -112,6 +111,8 @@ class IndexController @Inject() (
           case Some(uploadedSuccessfully: UploadedSuccessfully) =>
             if (isFileNameInValid(uploadedSuccessfully.name)) {
               Redirect(routes.IndexController.showError(InvalidArgument.code, InvalidFileNameLength.message, "").url)
+            } else if (isFileEmpty(uploadedSuccessfully.size)) {
+              Redirect(routes.IndexController.showError(InvalidArgument.code, FileIsEmpty.message, "").url)
             } else {
               Redirect(routes.IndexController.onPageLoad().url)
             }
@@ -139,4 +140,6 @@ class IndexController @Inject() (
   }
 
   private def isFileNameInValid(name: String): Boolean = name.stripSuffix(".xml").length > config.upscanMaxFileNameLength
+
+  private def isFileEmpty(size: Long): Boolean = size == 0L
 }

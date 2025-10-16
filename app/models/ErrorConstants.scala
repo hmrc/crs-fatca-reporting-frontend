@@ -18,7 +18,6 @@ package models
 
 enum ErrorCode(val code: String):
   case EntityTooLarge extends ErrorCode("entitytoolarge")
-  case EntityTooSmall extends ErrorCode("entitytoosmall")
   case VirusFile extends ErrorCode("virusfile")
   case InvalidArgument extends ErrorCode("invalidargument")
   case OctetStream extends ErrorCode("octetstream")
