@@ -141,6 +141,10 @@ class IndexControllerSpec extends SpecBase {
           UploadedSuccessfully(invalidFileName, "downloadUrl", FileSize, "MD5:123"),
           Some(routes.IndexController.showError("invalidargument", "invalidfilenamelength", "").url)
         )
+        verifyResult(
+          UploadedSuccessfully(validFileName, "downloadUrl", 0L, "MD5:123"),
+          Some(routes.IndexController.showError("invalidargument", "fileisempty", "").url)
+        )
 
       }
 
@@ -178,21 +182,6 @@ class IndexControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) must include("The selected file must be smaller than 250MB")
-      }
-
-      "must show returned error when file size is less than 1kb - Upscan Error" in {
-
-        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[UpscanConnector].toInstance(fakeUpscanConnector)
-          )
-          .build()
-
-        val request = FakeRequest(GET, routes.IndexController.showError("EntityTooSmall", "", "").url)
-        val result  = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) must include("The selected file is empty")
       }
 
       "must show returned error when file not selected - Upscan Error" in {
