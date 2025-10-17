@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package models.requests
+package pages
 
-import play.api.mvc.{Request, WrappedRequest}
-import models.UserAnswers
+import models.GenericError
+import play.api.libs.json.JsPath
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers], fatcaId: String) extends WrappedRequest[A](request)
+object GenericErrorPage extends QuestionPage[Seq[GenericError]] {
 
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String) extends WrappedRequest[A](request)
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "errors"
+}

@@ -136,7 +136,7 @@ class IndexControllerSpec extends SpecBase {
         verifyResult(UploadRejected(ErrorDetails("REJECTED", "message")), Some(routes.IndexController.showError("invalidargument", "typemismatch", "").url))
         verifyResult(UploadRejected(ErrorDetails("REJECTED", "octet-stream")), Some(routes.IndexController.showError("octetstream", "rejected", "").url))
         verifyResult(Failed, Some(routes.IndexController.showError("UploadFailed", "", "").url))
-        verifyResult(UploadedSuccessfully(validFileName, "downloadUrl", FileSize, "MD5:123"), Some(routes.IndexController.onPageLoad().url))
+        verifyResult(UploadedSuccessfully(validFileName, "downloadUrl", FileSize, "MD5:123"), Some(routes.FileValidationController.onPageLoad().url))
         verifyResult(
           UploadedSuccessfully(invalidFileName, "downloadUrl", FileSize, "MD5:123"),
           Some(routes.IndexController.showError("invalidargument", "invalidfilenamelength", "").url)

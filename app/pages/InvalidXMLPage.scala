@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package models.requests
+package pages
 
-import play.api.mvc.{Request, WrappedRequest}
 import models.UserAnswers
+import play.api.libs.json.JsPath
 
-case class OptionalDataRequest[A](request: Request[A], userId: String, userAnswers: Option[UserAnswers], fatcaId: String) extends WrappedRequest[A](request)
+import scala.util.Try
 
-case class DataRequest[A](request: Request[A], userId: String, userAnswers: UserAnswers, fatcaId: String) extends WrappedRequest[A](request)
+case object InvalidXMLPage extends QuestionPage[String] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "invalidXML"
+
+  override def cleanup(value: Option[String], userAnswers: UserAnswers): Try[UserAnswers] =
+    value match {
+      case Some(_) =>
+        userAnswers
+          .remove(ValidXMLPage)
+      case _ => super.cleanup(value, userAnswers)
+    }
+
+}
