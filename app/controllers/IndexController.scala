@@ -117,7 +117,7 @@ class IndexController @Inject() (
             if (isFileNameInValid(uploadedSuccessfully.name)) {
               Redirect(routes.IndexController.showError(InvalidArgument.code, InvalidFileNameLength.message, "").url)
             } else {
-              Redirect(routes.IndexController.onPageLoad().url)
+              Redirect(routes.FileValidationController.onPageLoad().url)
             }
           case Some(r: UploadRejected) =>
             if (r.details.message.contains("octet-stream")) {

@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package utils
 
-import models.UserAnswers
-import models.requests.{IdentifierRequest, OptionalDataRequest}
-
-import scala.concurrent.{ExecutionContext, Future}
-
-class FakeDataRetrievalAction(dataToReturn: Option[UserAnswers]) extends DataRetrievalAction {
-
-  override protected def transform[A](request: IdentifierRequest[A]): Future[OptionalDataRequest[A]] =
-    Future(OptionalDataRequest(request.request, request.userId, dataToReturn, request.fatcaId))
-
-  implicit override protected val executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
+object CRSFATCAConstants {
+  val maxFileNameLength           = 100
+  val invalidArgumentErrorMessage = "InvalidArgument"
+  val invalidFileNameLength       = "InvalidFileNameLength"
 }
