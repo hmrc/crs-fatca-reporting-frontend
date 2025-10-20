@@ -27,7 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CRSFATCAConstants.{invalidArgumentErrorMessage, invalidFileNameLength, maxFileNameLength}
+import utils.CRSFATCAConstants.{invalidArgumentErrorMessage, invalidFileNameLength}
 import views.html.ThereIsAProblemView
 
 import javax.inject.Inject
@@ -102,8 +102,6 @@ class FileValidationController @Inject() (
       )
     )
   }
-
-  private def isFileNameInvalid(fileName: String) = fileName.replace(".xml", "").length > maxFileNameLength
 
   private def handleFileValidation(
     downloadDetails: ExtractedFileStatus,

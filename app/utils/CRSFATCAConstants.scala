@@ -17,7 +17,6 @@
 package utils
 
 object CRSFATCAConstants {
-  val maxFileNameLength           = 100
   val invalidArgumentErrorMessage = "InvalidArgument"
   val invalidFileNameLength       = "InvalidFileNameLength"
 }
