@@ -81,7 +81,6 @@ class FileValidationController @Inject() (
           }
 
         case None =>
-          // todo ensure test coverage for this branch
           logger.error("Missing Upload ID or File Reference from user answers")
           Future.successful(InternalServerError(errorView()))
       }
@@ -107,7 +106,6 @@ class FileValidationController @Inject() (
 
   private def navigateToErrorPage(uploadId: UploadId, fileName: String) = {
     logger.error(s"file name length is more than allowed limit : $fileName")
-    // TODO invalidArgumentErrorMessage changes
     Future.successful(
       Redirect(
         routes.IndexController
