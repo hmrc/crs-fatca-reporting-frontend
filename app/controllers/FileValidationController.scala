@@ -74,7 +74,6 @@ class FileValidationController @Inject() (
                   if (isFileNameInvalid(fileName)) {
                     navigateToErrorPage(uploadId, fileName)
                   } else {
-                    // Future.successful(Redirect(routes.IndexController.onPageLoad()))
                     handleFileValidation(downloadDetails, uploadId, fileReference, downloadUrl)
                   }
               }
@@ -135,24 +134,6 @@ class FileValidationController @Inject() (
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
           } yield Redirect(routes.IndexController.onPageLoad())
-        case Left(SchemaValidationErrors(validationErrors)) =>
-          for {
-            updatedAnswers           <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
-            updatedAnswersWithErrors <- Future.fromTry(updatedAnswers.set(GenericErrorPage, validationErrors.errors))
-            _                        <- sessionRepository.set(updatedAnswersWithErrors)
-          } yield Redirect(routes.RulesErrorController.onPageLoad())
-
-        case Left(FIIDNotMatchingError) =>
-          Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
-        case Left(ReportingPeriodError) =>
-          Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
-        case Left(IncorrectMessageTypeError) =>
-          Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
-        case Left(InvalidXmlFileError) =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.FileErrorController.onPageLoad())
         case Left(_) =>
           Future.successful(InternalServerError(errorView()))
       }
