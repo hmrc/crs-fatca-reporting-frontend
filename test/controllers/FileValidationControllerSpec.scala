@@ -19,26 +19,13 @@ package controllers
 import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
-import models.{
-  CRS,
-  FIIDNotMatchingError,
-  GenericError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  Message,
-  MessageSpecData,
-  ReportingPeriodError,
-  SchemaValidationErrors,
-  UserAnswers,
-  ValidatedFileData,
-  ValidationErrors
-}
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
+import models.{CRS, MessageSpecData, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.scalatest.BeforeAndAfterEach
 import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import pages.{FileReferencePage, UploadIDPage}
 import play.api
 import play.api.inject
@@ -46,9 +33,8 @@ import play.api.inject.bind
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{route, GET}
-import repositories.SessionRepository
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import views.html.ThereIsAProblemView
 
 import java.time.LocalDate
@@ -119,27 +105,6 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual expectedData
 
-    }
-
-    "must redirect to Upload File error page for a file name greater than 100 characters" in {
-      val uploadDetails = UploadSessionDetails(
-        new ObjectId(),
-        uploadId,
-        Reference("123"),
-        UploadedSuccessfully("FileNameMoreThan100ChFileNameMoreThan100ChFileNameMoreThan100ChFileNameMoreThan100ChFileNameMoreThan1.xml",
-                             downloadURL,
-                             FileSize,
-                             "MD5:123"
-        )
-      )
-
-      fakeUpscanConnector.setDetails(uploadDetails)
-
-      val request                = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
-      val result: Future[Result] = route(application, request).value
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustEqual routes.IndexController.showError("InvalidArgument", "InvalidFileNameLength", "123").url
     }
 
     "must return ThereIsAProblemPage when a valid UploadId cannot be found" in {

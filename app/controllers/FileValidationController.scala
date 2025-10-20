@@ -63,11 +63,8 @@ class FileValidationController @Inject() (
                 downloadDetails =>
                   val downloadUrl = downloadDetails.downloadUrl
                   val fileName    = downloadDetails.name
-                  if (isFileNameInvalid(fileName)) {
-                    navigateToErrorPage(uploadId, fileName)
-                  } else {
-                    handleFileValidation(downloadDetails, uploadId, fileReference, downloadUrl)
-                  }
+
+                  handleFileValidation(downloadDetails, uploadId, fileReference, downloadUrl)
               }
           }
 
