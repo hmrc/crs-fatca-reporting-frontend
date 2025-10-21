@@ -27,7 +27,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CRSFATCAConstants.{invalidArgumentErrorMessage, invalidFileNameLength}
 import views.html.ThereIsAProblemView
 
 import javax.inject.Inject
@@ -91,17 +90,6 @@ class FileValidationController @Inject() (
         }
       case _ => None
     }
-
-  private def navigateToErrorPage(uploadId: UploadId, fileName: String) = {
-    logger.error(s"file name length is more than allowed limit : $fileName")
-    Future.successful(
-      Redirect(
-        routes.IndexController
-          .showError(invalidArgumentErrorMessage, invalidFileNameLength, uploadId.value)
-          .url
-      )
-    )
-  }
 
   private def handleFileValidation(
     downloadDetails: ExtractedFileStatus,
