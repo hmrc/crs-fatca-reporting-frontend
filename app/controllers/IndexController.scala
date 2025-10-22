@@ -75,12 +75,7 @@ class IndexController @Inject() (
             case Some(InvalidFileNameLength) => form.withError("file-upload", "uploadFile.error.file.name.length")
             case Some(TypeMismatch)          => form.withError("file-upload", "uploadFile.error.file.type.invalid")
             case Some(FileIsEmpty)           => form.withError("file-upload", "uploadFile.error.file.content.empty")
-            case None =>
-              if (errorMessage.toLowerCase.contains(config.upscanErrorFileNotFound)) {
-                form.withError("file-upload", "uploadFile.error.file.invalid")
-              } else {
-                form.withError("file-upload", "uploadFile.error.file.select")
-              }
+            case None                        => form.withError("file-upload", "uploadFile.error.file.select")
           }
         case _ =>
           logger.warn(s"Upscan error $errorCode: $errorMessage, requestId is $errorRequestId")
@@ -116,6 +111,8 @@ class IndexController @Inject() (
           case Some(uploadedSuccessfully: UploadedSuccessfully) =>
             if (isFileNameInValid(uploadedSuccessfully.name)) {
               Redirect(routes.IndexController.showError(InvalidArgument.code, InvalidFileNameLength.message, "").url)
+            } else if (isFileEmpty(uploadedSuccessfully.size)) {
+              Redirect(routes.IndexController.showError(InvalidArgument.code, FileIsEmpty.message, "").url)
             } else {
               Redirect(routes.FileValidationController.onPageLoad().url)
             }
@@ -143,4 +140,6 @@ class IndexController @Inject() (
   }
 
   private def isFileNameInValid(name: String): Boolean = name.stripSuffix(".xml").length > config.upscanMaxFileNameLength
+
+  private def isFileEmpty(size: Long): Boolean = size == 0L
 }

@@ -37,7 +37,6 @@ uploadFile.error.file.type.invalid = The selected file must be an XML
 uploadFile.error.file.content.virus = The selected file contains a virus
 uploadFile.error.file.content.empty = The selected file is empty
 uploadFile.error.file.content.unknown = The selected file could not be uploaded
-uploadFile.error.file.invalid = Select a file that’s not empty
 
 fileCheck.p1 = We are checking your file
 

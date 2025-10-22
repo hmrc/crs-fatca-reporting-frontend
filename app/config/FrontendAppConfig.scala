@@ -69,5 +69,4 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val upscanMaxFileSize: Int            = configuration.get[Int]("microservice.services.upscan.max-file-size-in-mb")
   val upscanMaxFileNameLength: Int      = configuration.get[Int]("microservice.services.upscan.max-file-name-length")
   val crsUrl: String                    = servicesConfig.baseUrl("crs-fatca-reporting")
-  val upscanErrorFileNotFound: String   = configuration.get[String]("upscan-errors.file-not-found")
 }
