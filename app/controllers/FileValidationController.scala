@@ -20,7 +20,8 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{FIIDNotMatchingError, UserAnswers, ValidatedFileData}
+import models.{IncorrectMessageTypeError, UserAnswers, ValidatedFileData}
+import models.{FIIDNotMatchingError, IncorrectMessageTypeError, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -111,6 +112,8 @@ class FileValidationController @Inject() (
           } yield Redirect(routes.IndexController.onPageLoad())
         case Left(FIIDNotMatchingError) =>
           Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
+        case Left(IncorrectMessageTypeError) =>
+          Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
         case Left(_) =>
           Future.successful(InternalServerError(errorView()))
       }
