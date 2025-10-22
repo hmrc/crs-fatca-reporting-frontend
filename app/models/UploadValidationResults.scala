@@ -72,7 +72,7 @@ object SubmissionValidationSuccess {
   implicit val format: OFormat[SubmissionValidationSuccess] = Json.format[SubmissionValidationSuccess]
 }
 
-case class SubmissionValidationFailure(validationErrors: ValidationErrors) extends SubmissionValidationResult
+case class SubmissionValidationFailure(validationErrors: ValidationErrors, messageType: String) extends SubmissionValidationResult
 
 object SubmissionValidationFailure {
   implicit val format: OFormat[SubmissionValidationFailure] = Json.format[SubmissionValidationFailure]

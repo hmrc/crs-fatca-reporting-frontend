@@ -20,7 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{UserAnswers, ValidatedFileData}
+import models.{SchemaValidationErrors, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -109,8 +109,12 @@ class FileValidationController @Inject() (
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
           } yield Redirect(routes.IndexController.onPageLoad())
-        case Left(_) =>
-          Future.successful(InternalServerError(errorView()))
+        case Left(SchemaValidationErrors(validationErrors)) =>
+          for {
+            updatedAnswers           <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
+            updatedAnswersWithErrors <- Future.fromTry(updatedAnswers.set(GenericErrorPage, validationErrors.errors))
+            _                        <- sessionRepository.set(updatedAnswersWithErrors)
+          } yield Redirect(routes.DataErrorsController.onPageLoad())
       }
 
 }
