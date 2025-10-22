@@ -55,7 +55,8 @@ class UploadValidationResultSpec extends SpecBase {
     }
 
     "deserialize SubmissionValidationFailure with ValidationErrors correctly" in {
-      val json = Json.parse("""
+      val json = Json.parse(
+        """
           |{
           |  "validationErrors": {
           |    "errors": [
@@ -79,21 +80,22 @@ class UploadValidationResultSpec extends SpecBase {
           |      }
           |    ]
           |  },
+          |  "messageType": "CRS",
           |  "type": "ValidationFailure"
           |}
-
         """.stripMargin)
 
       val result = json.validate[SubmissionValidationResult]
       result.isSuccess shouldBe true
       result.get mustEqual SubmissionValidationFailure(
-        ValidationErrors(
+        validationErrors = ValidationErrors(
           errors = Seq(
             GenericError(176, Message("xml.empty.field", List("Entity"))),
             GenericError(258, Message("xml.add.a.element", List("Summary")))
           ),
-          None
-        )
+          boolean = None
+        ),
+        messageType = "CRS"
       )
     }
 

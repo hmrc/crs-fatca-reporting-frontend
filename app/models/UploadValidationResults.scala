@@ -167,4 +167,4 @@ case object InvalidXmlFileError extends Errors
 case object ReportingPeriodError extends Errors
 case object FIIDNotMatchingError extends Errors
 case object IncorrectMessageTypeError extends Errors
-case class SchemaValidationErrors(validationErrors: ValidationErrors) extends Errors
+case class SchemaValidationErrors(validationErrors: ValidationErrors, messageType: String) extends Errors

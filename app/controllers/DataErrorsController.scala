@@ -18,7 +18,7 @@ package controllers
 
 import controllers.actions.*
 import models.{GenericError, Message}
-import pages.{GenericErrorPage, InvalidXMLPage}
+import pages.{GenericErrorPage, InvalidXMLPage, MessageTypePage} // <-- ADD MessageTypePage HERE
 import play.api.i18n.Lang.logger
 
 import javax.inject.Inject
@@ -42,23 +42,25 @@ class DataErrorsController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-      def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
-        implicit request =>
-          (request.userAnswers.get(GenericErrorPage), request.userAnswers.get(InvalidXMLPage)) match {
-            case (Some(errors), Some(fileName)) =>
-              val xmlErrors = for {
-                error <- errors.sorted
-              } yield error
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    implicit request =>
+      (request.userAnswers.get(GenericErrorPage), request.userAnswers.get(InvalidXMLPage), request.userAnswers.get(MessageTypePage)) match { // <-- MATCH ON 3 VALUES
+        case (Some(errors), Some(fileName), Some(messageType)) => // <-- EXTRACT ALL 3
+          val xmlErrors = for {
+            error <- errors.sorted
+          } yield error
 
-              val errorLength: Int = xmlErrors.length
-              val fileName: String = "PlaceHolder file name"
-              val regimeType: String = "CRS"
-              val regimeTypeMessage: String = if (regimeType == "CRS") "dataErrors.listCRSLink" else "dataErrors.listFATCALink"
+          val errorLength: Int        = xmlErrors.length
+          val messageTypeLink: String = if (messageType == "CRS") "dataErrors.listCRSLink" else "dataErrors.listFATCALink"
+          Ok(view(errorViewHelper.generateTable(xmlErrors), fileName, messageTypeLink, messageType, errorLength))
 
-              Ok(view(errorViewHelper.generateTable(xmlErrors), fileName, regimeTypeMessage, regimeType, errorLength))
-            case _ =>
-              logger.warn("FileDataErrorController: Unable to retrieve either Invalid XML information or GenericErrors from UserAnswers")
-              InternalServerError(errorView())
-          }
+        case (Some(errors), Some(fileName), None) =>
+          logger.warn("DataErrorsController: Missing MessageType from UserAnswers")
+          InternalServerError(errorView())
+
+        case _ =>
+          logger.warn("DataErrorsController: Unable to retrieve required information (Errors, FileName, or MessageType) from UserAnswers")
+          InternalServerError(errorView())
       }
+  }
 }

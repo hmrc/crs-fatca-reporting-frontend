@@ -109,12 +109,17 @@ class FileValidationController @Inject() (
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
           } yield Redirect(routes.IndexController.onPageLoad())
-        case Left(SchemaValidationErrors(validationErrors)) =>
+
+        case Left(SchemaValidationErrors(validationErrors, messageType)) =>
           for {
-            updatedAnswers           <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
-            updatedAnswersWithErrors <- Future.fromTry(updatedAnswers.set(GenericErrorPage, validationErrors.errors))
-            _                        <- sessionRepository.set(updatedAnswersWithErrors)
+            updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
+            updatedAnswersWithMsgType <- Future.fromTry(updatedAnswers.set(MessageTypePage, messageType))
+            updatedAnswersWithErrors  <- Future.fromTry(updatedAnswersWithMsgType.set(GenericErrorPage, validationErrors.errors))
+            _                         <- sessionRepository.set(updatedAnswersWithErrors)
           } yield Redirect(routes.DataErrorsController.onPageLoad())
+        case Left(_) =>
+          logger.error("Other validation error occurred during file validation")
+          Future.successful(InternalServerError(errorView()))
       }
 
 }
