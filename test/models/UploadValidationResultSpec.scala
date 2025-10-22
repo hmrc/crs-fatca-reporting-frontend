@@ -55,8 +55,7 @@ class UploadValidationResultSpec extends SpecBase {
     }
 
     "deserialize SubmissionValidationFailure with ValidationErrors correctly" in {
-      val json = Json.parse(
-        """
+      val json = Json.parse("""
           |{
           |  "validationErrors": {
           |    "errors": [

@@ -52,7 +52,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
       )
     }
 
-    "must return schemavalidationErrors when status is okay  response is for schemavalidation errors" in new TestContext {
+    "must return schemavalidationErrors when status is okay response is for schemavalidation errors" in new TestContext {
       val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
@@ -63,7 +63,16 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
       val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
-      result.left.getOrElse(fail("Expecting value in left")) mustBe SchemaValidationErrors(ValidationErrors(List(GenericError(176, Message("xml.empty.field", List("Entity"))), GenericError(258, Message("xml.add.a.element", List("Summary")))),None))
+      result.left.getOrElse(fail("Expecting value in left")) mustBe SchemaValidationErrors(
+        ValidationErrors(
+          List(
+            GenericError(176, Message("xml.empty.field", List("Entity"))),
+            GenericError(258, Message("xml.add.a.element", List("Summary")))
+          ),
+          None
+        ),
+        "CRS"
+      )
     }
 
     "must return FIIDNotMatchingError when status is okay and response is for fiid not matching errors" in new TestContext {
@@ -180,6 +189,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
         |      }
         |    ]
         |  },
+        |  "messageType": "CRS",
         |  "type": "ValidationFailure"
         |}
         """.stripMargin

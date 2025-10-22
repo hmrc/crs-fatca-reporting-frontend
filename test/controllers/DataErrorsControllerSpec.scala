@@ -25,15 +25,22 @@ import play.api.test.Helpers.*
 class DataErrorsControllerSpec extends SpecBase {
 
   val testFileName = "test_file.xml"
+
   val testErrors = Seq(
     GenericError(1, Message("Test Message", List("Arg")))
   )
   val testMessageType = "CRS"
 
   val populatedUserAnswers: UserAnswers = emptyUserAnswers
-    .set(InvalidXMLPage, testFileName).success.value
-    .set(GenericErrorPage, testErrors).success.value
-    .set(MessageTypePage, testMessageType).success.value
+    .set(InvalidXMLPage, testFileName)
+    .success
+    .value
+    .set(GenericErrorPage, testErrors)
+    .success
+    .value
+    .set(MessageTypePage, testMessageType)
+    .success
+    .value
 
   "DataErrors Controller" - {
 
