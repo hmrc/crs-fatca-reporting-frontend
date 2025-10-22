@@ -20,7 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{UserAnswers, ValidatedFileData}
+import models.{ReportingPeriodError, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -109,6 +109,8 @@ class FileValidationController @Inject() (
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
           } yield Redirect(routes.IndexController.onPageLoad())
+        case Left(ReportingPeriodError) =>
+          Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
         case Left(_) =>
           Future.successful(InternalServerError(errorView()))
       }
