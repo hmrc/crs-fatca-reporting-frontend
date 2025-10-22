@@ -17,11 +17,9 @@
 package controllers
 
 import controllers.actions.*
-import models.{GenericError, Message}
-import pages.{GenericErrorPage, InvalidXMLPage, MessageTypePage} // <-- ADD MessageTypePage HERE
+import models.GenericError
+import pages.{GenericErrorPage, InvalidXMLPage, MessageTypePage}
 import play.api.i18n.Lang.logger
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -29,13 +27,14 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ErrorViewHelper
 import views.html.{DataErrorsView, ThereIsAProblemView}
 
+import javax.inject.Inject
+
 class DataErrorsController @Inject() (
   override val messagesApi: MessagesApi,
   errorViewHelper: ErrorViewHelper,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  sessionRepository: SessionRepository,
   val controllerComponents: MessagesControllerComponents,
   view: DataErrorsView,
   errorView: ThereIsAProblemView
@@ -44,8 +43,8 @@ class DataErrorsController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      (request.userAnswers.get(GenericErrorPage), request.userAnswers.get(InvalidXMLPage), request.userAnswers.get(MessageTypePage)) match { // <-- MATCH ON 3 VALUES
-        case (Some(errors), Some(fileName), Some(messageType)) => // <-- EXTRACT ALL 3
+      (request.userAnswers.get(GenericErrorPage), request.userAnswers.get(InvalidXMLPage), request.userAnswers.get(MessageTypePage)) match {
+        case (Some(errors), Some(fileName), Some(messageType)) =>
           val xmlErrors = for {
             error <- errors.sorted
           } yield error
