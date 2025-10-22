@@ -24,6 +24,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Application
@@ -37,6 +38,7 @@ import repositories.SessionRepository
 
 trait SpecBase
     extends AnyFreeSpec
+    with MockitoSugar
     with Matchers
     with TryValues
     with OptionValues

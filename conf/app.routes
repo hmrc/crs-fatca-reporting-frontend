@@ -95,3 +95,5 @@ GET        /report/file-confirmation                       controllers.FileConfi
 GET        /report/status                                  controllers.IndexController.getStatus(uploadId: upscan.UploadId)
 
 GET        /report/error                                   controllers.IndexController.showError(errorCode: String, errorMessage: String, errorRequestId: String)
+
+GET        /file-validation                                controllers.FileValidationController.onPageLoad()
