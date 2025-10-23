@@ -20,7 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{ReportingPeriodError, FIIDNotMatchingError, IncorrectMessageTypeError, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -111,6 +111,10 @@ class FileValidationController @Inject() (
           } yield Redirect(routes.IndexController.onPageLoad())
         case Left(ReportingPeriodError) =>
           Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
+        case Left(FIIDNotMatchingError) =>
+          Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
+        case Left(IncorrectMessageTypeError) =>
+          Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
         case Left(_) =>
           Future.successful(InternalServerError(errorView()))
       }
