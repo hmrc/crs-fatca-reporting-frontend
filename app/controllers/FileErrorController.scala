@@ -17,24 +17,33 @@
 package controllers
 
 import controllers.actions.*
+import pages.InvalidXMLPage
+import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.FileErrorView
+import views.html.{FileErrorView, ThereIsAProblemView}
 
 import javax.inject.Inject
 
 class FileErrorController @Inject() (override val messagesApi: MessagesApi,
                                      identify: IdentifierAction,
                                      getData: DataRetrievalAction,
+                                     requireData: DataRequiredAction,
                                      val controllerComponents: MessagesControllerComponents,
-                                     view: FileErrorView
+                                     view: FileErrorView,
+                                     errorView: ThereIsAProblemView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val fileName = "filename.xml"
-      Ok(view(fileName))
+      request.userAnswers.get(InvalidXMLPage) match {
+        case Some(fileName) =>
+          Ok(view(fileName))
+        case _ =>
+          logger.warn("FileErrorController: Unable to retrieve required information FileName from UserAnswers")
+          InternalServerError(errorView())
+      }
   }
 }
