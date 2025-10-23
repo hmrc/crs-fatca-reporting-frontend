@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, MessageSpecData, ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, MessageSpecData, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -182,6 +182,25 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustEqual routes.FINotMatchingController.onPageLoad().url
+    }
+
+    "must redirect to file error page if XML parser fails" in {
+
+      val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val expectedData                                   = Json.obj("invalidXML" -> "afile", "uploadID" -> UploadId("123"), "FileReference" -> fileReferenceId)
+
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Left(InvalidXmlFileError)))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+      val controller             = application.injector.instanceOf[FileValidationController]
+      val result: Future[Result] = controller.onPageLoad()(FakeRequest("", ""))
+
+      status(result) mustBe SEE_OTHER
+      verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
+      redirectLocation(result) mustBe Some(routes.FileErrorController.onPageLoad().url)
+      userAnswersCaptor.getValue.data mustEqual expectedData
     }
   }
 }
