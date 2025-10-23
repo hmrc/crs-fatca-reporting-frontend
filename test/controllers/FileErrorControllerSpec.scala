@@ -39,7 +39,7 @@ class FileErrorControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(populatedUserAnswers)).build()
 
       running(application) {
-        val view = application.injector.instanceOf[FileErrorView]
+        val view    = application.injector.instanceOf[FileErrorView]
         val request = FakeRequest(GET, routes.FileErrorController.onPageLoad().url)
 
         val result = route(application, request).value
@@ -56,7 +56,7 @@ class FileErrorControllerSpec extends SpecBase {
 
       running(application) {
         val errorView = application.injector.instanceOf[ThereIsAProblemView]
-        val request = FakeRequest(GET, routes.FileErrorController.onPageLoad().url)
+        val request   = FakeRequest(GET, routes.FileErrorController.onPageLoad().url)
 
         val result = route(application, request).value
 
