@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{CRS, ReportingPeriodError, FIIDNotMatchingError, IncorrectMessageTypeError, MessageSpecData, UserAnswers, ValidatedFileData}
+import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, MessageSpecData, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
