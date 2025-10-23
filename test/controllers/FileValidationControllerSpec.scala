@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{CRS, MessageSpecData, UserAnswers, ValidatedFileData}
+import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, MessageSpecData, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -107,6 +107,19 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     }
 
+    "must redirect to invalid reporting period page if an invalid reporting period is provided" in {
+
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Left(ReportingPeriodError)))
+
+      val controller             = application.injector.instanceOf[FileValidationController]
+      val result: Future[Result] = controller.onPageLoad()(FakeRequest("", ""))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.ReportingPeriodErrorController.onPageLoad().url
+    }
+
     "must return ThereIsAProblemPage when a valid UploadId cannot be found" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -129,6 +142,19 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
+    "must redirect to invalid message type if an invalid message type is provided" in {
+
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Left(IncorrectMessageTypeError)))
+
+      val controller             = application.injector.instanceOf[FileValidationController]
+      val result: Future[Result] = controller.onPageLoad()(FakeRequest("", ""))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.InvalidMessageTypeErrorController.onPageLoad().url
+    }
+
     "must return ThereIsAProblemPage when meta data cannot be found" in {
 
       fakeUpscanConnector.resetDetails()
@@ -143,6 +169,19 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         status(result) mustEqual INTERNAL_SERVER_ERROR
         contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
+    }
+
+    "must redirect to fi not found page when an FI ID not matching error returned from backend" in {
+
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Left(FIIDNotMatchingError)))
+
+      val controller             = application.injector.instanceOf[FileValidationController]
+      val result: Future[Result] = controller.onPageLoad()(FakeRequest("", ""))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.FINotMatchingController.onPageLoad().url
     }
   }
 }

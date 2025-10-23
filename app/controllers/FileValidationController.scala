@@ -20,7 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{SchemaValidationErrors, UserAnswers, ValidatedFileData}
+import models.{FIIDNotMatchingError, SchemaValidationErrors, IncorrectMessageTypeError, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -109,7 +109,6 @@ class FileValidationController @Inject() (
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
           } yield Redirect(routes.IndexController.onPageLoad())
-
         case Left(SchemaValidationErrors(validationErrors, messageType)) =>
           for {
             updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
@@ -117,6 +116,12 @@ class FileValidationController @Inject() (
             updatedAnswersWithErrors  <- Future.fromTry(updatedAnswersWithMsgType.set(GenericErrorPage, validationErrors.errors))
             _                         <- sessionRepository.set(updatedAnswersWithErrors)
           } yield Redirect(routes.DataErrorsController.onPageLoad())
+        case Left(ReportingPeriodError) =>
+          Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
+        case Left(FIIDNotMatchingError) =>
+          Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
+        case Left(IncorrectMessageTypeError) =>
+          Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
         case Left(_) =>
           logger.error("Other validation error occurred during file validation")
           Future.successful(InternalServerError(errorView()))
