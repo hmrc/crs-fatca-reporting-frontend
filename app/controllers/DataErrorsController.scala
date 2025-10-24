@@ -17,36 +17,49 @@
 package controllers
 
 import controllers.actions.*
-import models.{GenericError, Message}
-
-import javax.inject.Inject
+import models.GenericError
+import pages.{GenericErrorPage, InvalidXMLPage, MessageTypePage}
+import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ErrorViewHelper
-import views.html.DataErrorsView
+import views.html.{DataErrorsView, ThereIsAProblemView}
+
+import javax.inject.Inject
 
 class DataErrorsController @Inject() (
   override val messagesApi: MessagesApi,
   errorViewHelper: ErrorViewHelper,
   identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: DataErrorsView
+  view: DataErrorsView,
+  errorView: ThereIsAProblemView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = identify {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      // Pass file errors
-      val errors: Seq[GenericError] = Seq(GenericError(12345, Message("error1")), GenericError(2, Message("error2")))
-      val errorLength: Int          = errors.length
-      // Pass file name
-      val fileName: String = "PlaceHolder file name"
-      // compare regimeTypes and pass "CRS" or "FATCA"
-      val regimeType: String = "CRS"
-      // compare regimeTypes and pass messageKey listCRSLink | listFATCALink
-      val regimeTypeMessage: String = if (regimeType == "CRS") "dataErrors.listCRSLink" else "dataErrors.listFATCALink"
+      (request.userAnswers.get(GenericErrorPage), request.userAnswers.get(InvalidXMLPage), request.userAnswers.get(MessageTypePage)) match {
+        case (Some(errors), Some(fileName), Some(messageType)) =>
+          val xmlErrors = for {
+            error <- errors.sorted
+          } yield error
 
-      Ok(view(errorViewHelper.generateTable(errors), fileName, regimeTypeMessage, regimeType, errorLength))
+          val errorLength: Int        = xmlErrors.length
+          val messageTypeLink: String = if (messageType == "CRS") "dataErrors.listCRSLink" else "dataErrors.listFATCALink"
+          Ok(view(errorViewHelper.generateTable(xmlErrors), fileName, messageTypeLink, messageType, errorLength))
+
+        case (Some(errors), Some(fileName), None) =>
+          logger.warn("DataErrorsController: Missing MessageType from UserAnswers")
+          InternalServerError(errorView())
+
+        case _ =>
+          logger.warn("DataErrorsController: Unable to retrieve required information (Errors, FileName, or MessageType) from UserAnswers")
+          InternalServerError(errorView())
+      }
   }
 }
