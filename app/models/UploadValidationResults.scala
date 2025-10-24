@@ -72,7 +72,7 @@ object SubmissionValidationSuccess {
   implicit val format: OFormat[SubmissionValidationSuccess] = Json.format[SubmissionValidationSuccess]
 }
 
-case class SubmissionValidationFailure(validationErrors: ValidationErrors) extends SubmissionValidationResult
+case class SubmissionValidationFailure(validationErrors: ValidationErrors, messageType: String) extends SubmissionValidationResult
 
 object SubmissionValidationFailure {
   implicit val format: OFormat[SubmissionValidationFailure] = Json.format[SubmissionValidationFailure]
@@ -167,4 +167,4 @@ case object InvalidXmlFileError extends Errors
 case object ReportingPeriodError extends Errors
 case object FIIDNotMatchingError extends Errors
 case object IncorrectMessageTypeError extends Errors
-case class SchemaValidationErrors(validationErrors: ValidationErrors) extends Errors
+case class SchemaValidationErrors(validationErrors: ValidationErrors, messageType: String) extends Errors

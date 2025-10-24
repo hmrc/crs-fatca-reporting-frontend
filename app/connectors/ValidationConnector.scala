@@ -62,7 +62,7 @@ class ValidationConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
                 case x: SubmissionValidationSuccess =>
                   Right(x.messageSpecData)
                 case x: SubmissionValidationFailure =>
-                  Left(SchemaValidationErrors(x.validationErrors))
+                  Left(SchemaValidationErrors(x.validationErrors, x.messageType))
                 case _: FIIDDoesNotMatchSendCompanyInError =>
                   Left(FIIDNotMatchingError)
                 case _: InvalidReportingPeriodError =>
