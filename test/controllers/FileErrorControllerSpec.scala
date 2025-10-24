@@ -17,24 +17,51 @@
 package controllers
 
 import base.SpecBase
+import models.UserAnswers
+import pages.InvalidXMLPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import views.html.{FileErrorView, ThereIsAProblemView}
 
 class FileErrorControllerSpec extends SpecBase {
 
   "FileError Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    val testFileName = "test_file.xml"
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    val populatedUserAnswers: UserAnswers = emptyUserAnswers
+      .set(InvalidXMLPage, testFileName)
+      .success
+      .value
+
+    "must return OK and the correct view with the file name for a GET when data is available" in {
+
+      val application = applicationBuilder(userAnswers = Some(populatedUserAnswers)).build()
 
       running(application) {
+        val view    = application.injector.instanceOf[FileErrorView]
         val request = FakeRequest(GET, routes.FileErrorController.onPageLoad().url)
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) must include("We cannot accept the file filename.xml because there is a problem with its formatting.")
+        contentAsString(result) mustEqual view(testFileName)(request, messages(application)).toString
+        contentAsString(result) must include(testFileName)
+      }
+    }
+
+    "must return InternalServerError and the 'There is a problem' view for a GET when file name data is missing" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val errorView = application.injector.instanceOf[ThereIsAProblemView]
+        val request   = FakeRequest(GET, routes.FileErrorController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+        contentAsString(result) mustEqual errorView()(request, messages(application)).toString
       }
     }
   }
