@@ -82,7 +82,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         messageRefId = "messageRefId",
         reportingFIName = "reportingFIName",
         reportingPeriod = LocalDate.of(2024, 1, 1),
-        giin = Some("giin")
+        giin = Some("giin"),
+        fiName = "fi-name"
       )
 
       val expectedData: JsObject = Json.obj(
