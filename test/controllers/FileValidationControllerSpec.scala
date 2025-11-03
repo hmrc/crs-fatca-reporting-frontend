@@ -20,13 +20,13 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, MessageSpecData, ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, MessageSpecData, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import pages.{FileReferencePage, UploadIDPage}
+import pages.{FileReferencePage, UploadIDPage, URLPage, ValidXMLPage}
 import play.api
 import play.api.inject
 import play.api.inject.bind
@@ -46,6 +46,9 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
   val fakeUpscanConnector: FakeUpscanConnector     = app.injector.instanceOf[FakeUpscanConnector]
 
   implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
+
+  val currentYear = 2025
+  val reportingPeriodLowerBound = currentYear - 12
 
   override def beforeEach(): Unit = {
     reset(mockSessionRepository)
@@ -74,23 +77,27 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       UploadedSuccessfully("afile", downloadURL, FileSize, "MD5:123")
     )
 
-    "must redirect to Check your answers and present the correct view for a GET" in {
+    "must redirect to ReportElectionsController and save data for a valid file with a valid reporting period" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val reportingPeriod = LocalDate.of(currentYear - 1, 1, 1)
+
       val messageSpecData = MessageSpecData(
         messageType = CRS,
         sendingCompanyIN = "sendingCompanyIN",
         messageRefId = "messageRefId",
         reportingFIName = "reportingFIName",
-        reportingPeriod = LocalDate.of(2024, 1, 1),
+        reportingPeriod = reportingPeriod,
         giin = Some("giin"),
         fiNameFromFim = "fi-name"
       )
 
+      val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
+
       val expectedData: JsObject = Json.obj(
-        "uploadID"      -> uploadId,
-        "FileReference" -> fileReferenceId,
-        "validXML"      -> ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123"),
-        "url"           -> downloadURL
+        UploadIDPage.toString      -> uploadId,
+        FileReferencePage.toString -> fileReferenceId,
+        ValidXMLPage.toString      -> validatedFileData,
+        URLPage.toString           -> downloadURL
       )
 
       when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Right(messageSpecData)))
@@ -101,14 +108,49 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val result: Future[Result] = route(application, request).value
 
       status(result) mustBe SEE_OTHER
-      // TODO redirecting to index for this card.
+      redirectLocation(result).value mustEqual controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
+      verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
+      userAnswersCaptor.getValue.data mustEqual expectedData
+    }
+
+    "must redirect to IndexController and save data for a valid file with an invalid reporting period (outside 12-year window)" in {
+      val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+      val reportingPeriod = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
+
+      val messageSpecData = MessageSpecData(
+        messageType = CRS,
+        sendingCompanyIN = "sendingCompanyIN",
+        messageRefId = "messageRefId",
+        reportingFIName = "reportingFIName",
+        reportingPeriod = reportingPeriod,
+        giin = Some("giin"),
+        fiNameFromFim = "fi-name"
+      )
+
+      val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
+
+      val expectedData: JsObject = Json.obj(
+        UploadIDPage.toString      -> uploadId,
+        FileReferencePage.toString -> fileReferenceId,
+        ValidXMLPage.toString      -> validatedFileData,
+        URLPage.toString           -> downloadURL
+      )
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Right(messageSpecData)))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      val request                = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val result: Future[Result] = route(application, request).value
+
+      status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustEqual routes.IndexController.onPageLoad().url
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual expectedData
-
     }
 
-    "must redirect to invalid reporting period page if an invalid reporting period is provided" in {
+
+    "must redirect to invalid reporting period page if an invalid reporting period error is returned" in {
 
       fakeUpscanConnector.setDetails(uploadDetails)
 
@@ -143,7 +185,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
     }
 
-    "must redirect to invalid message type if an invalid message type is provided" in {
+    "must redirect to invalid message type if an invalid message type error is returned" in {
 
       fakeUpscanConnector.setDetails(uploadDetails)
 
@@ -188,7 +230,11 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
     "must redirect to file error page if XML parser fails" in {
 
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val expectedData                                   = Json.obj("invalidXML" -> "afile", "uploadID" -> UploadId("123"), "FileReference" -> fileReferenceId)
+      val expectedData = Json.obj(
+        "invalidXML" -> "afile",
+        UploadIDPage.toString -> UploadId("123"),
+        FileReferencePage.toString -> fileReferenceId
+      )
 
       fakeUpscanConnector.setDetails(uploadDetails)
 

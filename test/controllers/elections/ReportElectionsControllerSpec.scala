@@ -18,36 +18,63 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.ReportElectionsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{CRS, FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ReportElectionsPage
+import pages.{ReportElectionsPage, ValidXMLPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
+import views.html.ThereIsAProblemView
 import views.html.elections.ReportElectionsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  val reportingPeriodYear = 2024
+  val reportingPeriod = reportingPeriodYear.toString
+  val fileName = "test-file.xml"
+  val FileSize = 100L
+  val FileChecksum = "checksum"
+  val expectedFiName = "fi-name"
 
-  val regime       = "crs"
+  val crsMessageSpec = MessageSpecData(
+    messageType = CRS,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+    giin = Some("giin"),
+    fiNameFromFim = expectedFiName
+  )
+  val crsValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsUserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
+  val crsRegime = crsMessageSpec.messageType.toString
+
+  val fatcaMessageSpec = crsMessageSpec.copy(messageType = FATCA)
+  val fatcaValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
+  val fatcaUserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
+  val fatcaRegime = fatcaMessageSpec.messageType.toString
+
   val formProvider = new ReportElectionsFormProvider()
-  val form         = formProvider(regime)
+  val crsForm = formProvider(crsRegime)
 
   lazy val reportElectionsRoute = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
 
+  lazy val fatcaOnwardRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
+  lazy val crsOnwardRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
+
   "ReportElections Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET when ValidXMLPage data exists (CRS)" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, reportElectionsRoute)
@@ -57,13 +84,13 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ReportElectionsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, crsForm, NormalMode)(request, messages(application)).toString
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must populate the view correctly on a GET when the question has previously been answered (CRS)" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ReportElectionsPage, true).success.value
+      val userAnswers = crsUserAnswers.set(ReportElectionsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -75,20 +102,32 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, crsForm.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must return Internal Server Error when ValidXMLPage data is missing on GET" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, reportElectionsRoute)
+
+        val result = route(application, request).value
+        val view = application.injector.instanceOf[ThereIsAProblemView]
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+        contentAsString(result) mustEqual view()(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to ElectCRSContractConroller on submission when regime is CRS" in {
 
       val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(crsUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -101,27 +140,74 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual crsOnwardRoute
+      }
+    }
+
+    "must redirect to TreasuryRegulationsController on submission when regime is FATCA" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, reportElectionsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual fatcaOnwardRoute
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, reportElectionsRoute)
             .withFormUrlEncodedBody(("value", ""))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = crsForm.bind(Map("value" -> ""))
 
         val view = application.injector.instanceOf[ReportElectionsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view("2026", regime, "Placeholder name", boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must return Internal Server Error when ValidXMLPage data is missing on POST" in {
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, reportElectionsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+        val view = application.injector.instanceOf[ThereIsAProblemView]
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+        contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
   }

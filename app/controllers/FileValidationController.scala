@@ -20,15 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{
-  FIIDNotMatchingError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  ReportingPeriodError,
-  SchemaValidationErrors,
-  UserAnswers,
-  ValidatedFileData
-}
+import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,6 +29,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ThereIsAProblemView
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -69,7 +62,7 @@ class FileValidationController @Inject() (
               } {
                 downloadDetails =>
                   val downloadUrl = downloadDetails.downloadUrl
-                  val fileName    = downloadDetails.name
+                  val fileName = downloadDetails.name
 
                   handleFileValidation(downloadDetails, uploadId, fileReference, downloadUrl)
               }
@@ -82,9 +75,16 @@ class FileValidationController @Inject() (
 
   }
 
+  private def isReportingYearValid(reportingYear: Int): Boolean = {
+    val currentYear = LocalDate.now().getYear
+    reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+  }
+
+  private def hasElectionsHappened(): Boolean = false
+
   private def extractIds(answers: UserAnswers): Option[(UploadId, Reference)] =
     for {
-      uploadId      <- answers.get(UploadIDPage)
+      uploadId <- answers.get(UploadIDPage)
       fileReference <- answers.get(FileReferencePage)
     } yield (uploadId, fileReference)
 
@@ -112,11 +112,18 @@ class FileValidationController @Inject() (
       .flatMap {
         case Right(messageSpecData) =>
           val validatedFileData = ValidatedFileData(downloadDetails.name, messageSpecData, downloadDetails.size, downloadDetails.checksum)
+          val reportingYear = messageSpecData.reportingPeriod.getYear
           for {
-            updatedAnswers        <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
-            _                     <- sessionRepository.set(updatedAnswersWithURL)
-          } yield Redirect(routes.IndexController.onPageLoad())
+            _ <- sessionRepository.set(updatedAnswersWithURL)
+          } yield {
+            if (isReportingYearValid(reportingYear) && !hasElectionsHappened()) {
+              Redirect(controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode))
+            } else {
+              Redirect(routes.IndexController.onPageLoad())
+            }
+          }
         case Left(SchemaValidationErrors(validationErrors, messageType)) =>
           for {
             updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
