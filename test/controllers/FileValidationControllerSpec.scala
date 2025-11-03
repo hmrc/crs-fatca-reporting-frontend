@@ -20,13 +20,23 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{CRS, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, MessageSpecData, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{
+  CRS,
+  FIIDNotMatchingError,
+  IncorrectMessageTypeError,
+  InvalidXmlFileError,
+  MessageSpecData,
+  NormalMode,
+  ReportingPeriodError,
+  UserAnswers,
+  ValidatedFileData
+}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import pages.{FileReferencePage, UploadIDPage, URLPage, ValidXMLPage}
+import pages.{FileReferencePage, URLPage, UploadIDPage, ValidXMLPage}
 import play.api
 import play.api.inject
 import play.api.inject.bind
@@ -47,7 +57,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   implicit val ec: ExecutionContextExecutor = scala.concurrent.ExecutionContext.global
 
-  val currentYear = 2025
+  val currentYear               = 2025
   val reportingPeriodLowerBound = currentYear - 12
 
   override def beforeEach(): Unit = {
@@ -79,7 +89,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to ReportElectionsController and save data for a valid file with a valid reporting period" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val reportingPeriod = LocalDate.of(currentYear - 1, 1, 1)
+      val reportingPeriod                                = LocalDate.of(currentYear - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
         messageType = CRS,
@@ -115,7 +125,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to IndexController and save data for a valid file with an invalid reporting period (outside 12-year window)" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val reportingPeriod = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
+      val reportingPeriod                                = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
         messageType = CRS,
@@ -148,7 +158,6 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual expectedData
     }
-
 
     "must redirect to invalid reporting period page if an invalid reporting period error is returned" in {
 
@@ -231,8 +240,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       val expectedData = Json.obj(
-        "invalidXML" -> "afile",
-        UploadIDPage.toString -> UploadId("123"),
+        "invalidXML"               -> "afile",
+        UploadIDPage.toString      -> UploadId("123"),
         FileReferencePage.toString -> fileReferenceId
       )
 

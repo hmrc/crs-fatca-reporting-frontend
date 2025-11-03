@@ -33,18 +33,18 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReportElectionsController @Inject() (
-                                            override val messagesApi: MessagesApi,
-                                            sessionRepository: SessionRepository,
-                                            navigator: Navigator,
-                                            identify: IdentifierAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
-                                            formProvider: ReportElectionsFormProvider,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: ReportElectionsView,
-                                            errorView: ThereIsAProblemView
-                                          )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  formProvider: ReportElectionsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ReportElectionsView,
+  errorView: ThereIsAProblemView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private def getValidatedFileData(userAnswers: UserAnswers): Option[ValidatedFileData] =
@@ -87,16 +87,14 @@ class ReportElectionsController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportElectionsPage, value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield {
-                  regime match {
-                    case "FATCA" =>
-                      Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
-                    case "CRS" =>
-                      Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
-                    case unknownRegime =>
-                      logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
-                      InternalServerError(errorView())
-                  }
+                } yield regime match {
+                  case "FATCA" =>
+                    Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
+                  case "CRS" =>
+                    Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
+                  case unknownRegime =>
+                    logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
+                    InternalServerError(errorView())
                 }
             )
         case None =>

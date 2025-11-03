@@ -19,13 +19,11 @@ package controllers.elections
 import base.SpecBase
 import forms.elections.ReportElectionsFormProvider
 import models.{CRS, FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
-import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{ReportElectionsPage, ValidXMLPage}
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -38,11 +36,11 @@ import scala.concurrent.Future
 class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
   val reportingPeriodYear = 2024
-  val reportingPeriod = reportingPeriodYear.toString
-  val fileName = "test-file.xml"
-  val FileSize = 100L
-  val FileChecksum = "checksum"
-  val expectedFiName = "fi-name"
+  val reportingPeriod     = reportingPeriodYear.toString
+  val fileName            = "test-file.xml"
+  val FileSize            = 100L
+  val FileChecksum        = "checksum"
+  val expectedFiName      = "fi-name"
 
   val crsMessageSpec = MessageSpecData(
     messageType = CRS,
@@ -54,21 +52,21 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
     fiNameFromFim = expectedFiName
   )
   val crsValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
-  val crsUserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
-  val crsRegime = crsMessageSpec.messageType.toString
+  val crsUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
+  val crsRegime            = crsMessageSpec.messageType.toString
 
-  val fatcaMessageSpec = crsMessageSpec.copy(messageType = FATCA)
+  val fatcaMessageSpec       = crsMessageSpec.copy(messageType = FATCA)
   val fatcaValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
-  val fatcaUserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
-  val fatcaRegime = fatcaMessageSpec.messageType.toString
+  val fatcaUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
+  val fatcaRegime            = fatcaMessageSpec.messageType.toString
 
   val formProvider = new ReportElectionsFormProvider()
-  val crsForm = formProvider(crsRegime)
+  val crsForm      = formProvider(crsRegime)
 
   lazy val reportElectionsRoute = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
 
   lazy val fatcaOnwardRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
-  lazy val crsOnwardRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
+  lazy val crsOnwardRoute   = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
 
   "ReportElections Controller" - {
 
@@ -102,7 +100,9 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, crsForm.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, crsForm.fill(true), NormalMode)(request,
+                                                                                                                           messages(application)
+        ).toString
       }
     }
 
@@ -113,7 +113,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, reportElectionsRoute)
 
         val result = route(application, request).value
-        val view = application.injector.instanceOf[ThereIsAProblemView]
+        val view   = application.injector.instanceOf[ThereIsAProblemView]
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         contentAsString(result) mustEqual view()(request, messages(application)).toString
@@ -204,7 +204,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
-        val view = application.injector.instanceOf[ThereIsAProblemView]
+        val view   = application.injector.instanceOf[ThereIsAProblemView]
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         contentAsString(result) mustEqual view()(request, messages(application)).toString
