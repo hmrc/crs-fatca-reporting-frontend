@@ -16,30 +16,26 @@
 
 package navigation
 
-import javax.inject.{Inject, Singleton}
-
-import play.api.mvc.Call
 import controllers.routes
-import pages._
-import models._
+import models.*
+import pages.*
+import play.api.mvc.Call
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
 
-  val normalRoutes: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
+  private val normalRoutes: Page => UserAnswers => Call = {
+    case ValidXMLPage => userAnswers => routes.RequiredGiinController.onPageLoad(NormalMode)
+  }
 
   val checkRouteMap: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
 
-  private def checkRoutes(mode: Mode): PartialFunction[Page, UserAnswers => Call] = mode match {
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
-      normalRoutes orElse {
-        case _ => _ => routes.IndexController.onPageLoad()
-      }
+      normalRoutes(page)(userAnswers)
     case CheckMode =>
-      checkRouteMap orElse {
-        case _ => _ => routes.CheckYourAnswersController.onPageLoad()
-      }
+      checkRouteMap(page)(userAnswers)
   }
-
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = checkRoutes(mode)(page)(userAnswers)
 }

@@ -18,8 +18,11 @@ package navigation
 
 import base.SpecBase
 import controllers.routes
-import pages._
-import models._
+import models.*
+import org.scalatestplus.play.PlaySpec
+import pages.*
+
+import java.time.LocalDate
 
 class NavigatorSpec extends SpecBase {
 
@@ -35,6 +38,30 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
     }
+
+    "must go from /upload-file" -
+      "to /required-giin" - {
+        "when message type is FATCA and GIIN is not held" in {
+          val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
+
+        }
+        "to /report-elections" - {
+          "when message type is CRS" in {
+            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val vfd = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.ReportElectionsController.onPageLoad(NormalMode)
+          }
+          "when message type is FATCA and GIIN is held" in {}
+
+        }
+
+      }
 
     "in Check mode" - {
 

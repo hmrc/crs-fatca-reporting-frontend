@@ -20,15 +20,8 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{
-  FIIDNotMatchingError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  ReportingPeriodError,
-  SchemaValidationErrors,
-  UserAnswers,
-  ValidatedFileData
-}
+import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
+import navigation.Navigator
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -49,6 +42,7 @@ class FileValidationController @Inject() (
   upscanConnector: UpscanConnector,
   requireData: DataRequiredAction,
   validationConnector: ValidationConnector,
+  navigator: Navigator,
   errorView: ThereIsAProblemView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
