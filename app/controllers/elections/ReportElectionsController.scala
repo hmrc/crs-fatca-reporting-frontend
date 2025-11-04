@@ -87,15 +87,19 @@ class ReportElectionsController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportElectionsPage, value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield regime match {
-                  case "FATCA" =>
-                    Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
-                  case "CRS" =>
-                    Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
-                  case unknownRegime =>
-                    logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
-                    InternalServerError(errorView())
-                }
+                } yield
+                  if (!value) {
+                    Redirect(controllers.routes.CheckYourFileDetailsController.onPageLoad())
+                  } else
+                    regime match {
+                      case "FATCA" =>
+                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
+                      case "CRS" =>
+                        Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
+                      case unknownRegime =>
+                        logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
+                        InternalServerError(errorView())
+                    }
             )
         case None =>
           Future.successful(InternalServerError(errorView()))
