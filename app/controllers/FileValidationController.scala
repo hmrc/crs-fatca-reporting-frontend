@@ -20,16 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{
-  FIIDNotMatchingError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  NormalMode,
-  ReportingPeriodError,
-  SchemaValidationErrors,
-  UserAnswers,
-  ValidatedFileData
-}
+import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,7 +29,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ThereIsAProblemView
 
-import java.time.LocalDate
+import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -85,7 +76,7 @@ class FileValidationController @Inject() (
   }
 
   private def isReportingYearValid(reportingYear: Int): Boolean = {
-    val currentYear = LocalDate.now().getYear
+    val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
     reportingYear >= (currentYear - 12) && reportingYear <= currentYear
   }
 
