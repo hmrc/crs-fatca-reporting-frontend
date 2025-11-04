@@ -20,7 +20,7 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
+import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
 import navigation.Navigator
 import pages.*
 import play.api.Logging
@@ -110,7 +110,7 @@ class FileValidationController @Inject() (
             updatedAnswers        <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
-          } yield Redirect(routes.IndexController.onPageLoad())
+          } yield Redirect(navigator.nextPage(ValidXMLPage, NormalMode, updatedAnswersWithURL))
         case Left(SchemaValidationErrors(validationErrors, messageType)) =>
           for {
             updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))

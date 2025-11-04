@@ -37,31 +37,54 @@ class NavigatorSpec extends SpecBase {
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
-    }
 
-    "must go from /upload-file" -
-      "to /required-giin" - {
-        "when message type is FATCA and GIIN is not held" in {
-          val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
-          val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+      "must go from /file-validation" - {
 
-          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
+        "to /required-giin" - {
+          "when message type is FATCA and GIIN is not held" in {
+            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
 
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
+          }
         }
+
         "to /report-elections" - {
-          "when message type is CRS" in {
-            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          "when message type is FATCA and GIIN is held and requires an election " in {
+            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = Some("giin"), "testFiNameFromFim")
+            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+          }
+
+          "when message type is FATCA and GIIN is held and does not require an election " in {
+            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
             val vfd = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
 
-            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.ReportElectionsController.onPageLoad(NormalMode)
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
           }
-          "when message type is FATCA and GIIN is held" in {}
 
+          "when message type is CRS and requires an election" in {
+            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+          }
+
+          "when message type is CRS and does not require an election" in {
+            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          }
         }
-
       }
+    }
 
     "in Check mode" - {
 

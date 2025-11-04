@@ -21,13 +21,33 @@ import models.*
 import pages.*
 import play.api.mvc.Call
 
+import java.time.{LocalDate, ZoneId}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case ValidXMLPage => userAnswers => routes.RequiredGiinController.onPageLoad(NormalMode)
+    case ValidXMLPage =>
+      userAnswers =>
+        userAnswers.get(ValidXMLPage) match {
+          case Some(validatedFileData) =>
+            validatedFileData match {
+              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, _, None, _), _, _) if msgType == FATCA =>
+                routes.RequiredGiinController.onPageLoad(NormalMode)
+              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, reportingPeriod, Some(giin), _), _, _) if msgType == FATCA =>
+                if (requiresElection(reportingPeriod.getYear))
+                  controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+                else
+                  routes.CheckYourAnswersController.onPageLoad()
+              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, reportingPeriod, _, _), _, _) if msgType == CRS =>
+                if (requiresElection(reportingPeriod.getYear))
+                  controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+                else
+                  routes.CheckYourAnswersController.onPageLoad()
+            }
+          case None => routes.IndexController.onPageLoad()
+        }
   }
 
   val checkRouteMap: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
@@ -38,4 +58,16 @@ class Navigator @Inject() () {
     case CheckMode =>
       checkRouteMap(page)(userAnswers)
   }
+
+  private def requiresElection(reportingYear: Int): Boolean =
+    isReportingYearValid(reportingYear) && !hasElectionsHappened()
+
+  private def isReportingYearValid(reportingYear: Int): Boolean = {
+    val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+    reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+  }
+
+  /* Will be implemented later in  DAC6-3959 & DAC6-3964
+  Placeholder implementation; replace with actual logic to determine if elections have happened */
+  private def hasElectionsHappened(): Boolean = false
 }
