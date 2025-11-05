@@ -126,7 +126,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to ReportElectionsController and save data for a valid file with a valid reporting period for CRS" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val reportingPeriod = LocalDate.of(currentYear - 1, 1, 1)
+      val reportingPeriod                                = LocalDate.of(currentYear - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
         messageType = CRS,
@@ -141,17 +141,17 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
 
       val expectedData: JsObject = Json.obj(
-        UploadIDPage.toString -> uploadId,
+        UploadIDPage.toString      -> uploadId,
         FileReferencePage.toString -> fileReferenceId,
-        ValidXMLPage.toString -> validatedFileData,
-        URLPage.toString -> downloadURL
+        ValidXMLPage.toString      -> validatedFileData,
+        URLPage.toString           -> downloadURL
       )
 
       when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Right(messageSpecData)))
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       fakeUpscanConnector.setDetails(uploadDetails)
 
-      val request = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val request                = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
       val result: Future[Result] = route(application, request).value
 
       status(result) mustBe SEE_OTHER
@@ -159,7 +159,6 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual expectedData
     }
-
 
     "must redirect to Check your answers when invalid reporting period (outside 12-year window) is provided" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
@@ -199,7 +198,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
     "must redirect to required giin page if giin missing for FATCA" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-      val reportingPeriod = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
+      val reportingPeriod                                = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
         messageType = FATCA,
@@ -214,17 +213,17 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
 
       val expectedData: JsObject = Json.obj(
-        UploadIDPage.toString -> uploadId,
+        UploadIDPage.toString      -> uploadId,
         FileReferencePage.toString -> fileReferenceId,
-        ValidXMLPage.toString -> validatedFileData,
-        URLPage.toString -> downloadURL
+        ValidXMLPage.toString      -> validatedFileData,
+        URLPage.toString           -> downloadURL
       )
 
       when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Right(messageSpecData)))
       when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       fakeUpscanConnector.setDetails(uploadDetails)
 
-      val request = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val request                = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
       val result: Future[Result] = route(application, request).value
 
       status(result) mustBe SEE_OTHER
