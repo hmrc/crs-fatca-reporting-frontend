@@ -38,7 +38,7 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new RequiredGiinFormProvider()
+  val formProvider       = new RequiredGiinFormProvider()
   val form: Form[String] = formProvider()
 
   lazy val requiredGiinRoute: String = routes.RequiredGiinController.onPageLoad(NormalMode).url
