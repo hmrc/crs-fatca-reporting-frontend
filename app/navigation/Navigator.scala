@@ -40,12 +40,18 @@ class Navigator @Inject() () {
             }
           case None => routes.IndexController.onPageLoad()
         }
+    case RequiredGiinPage =>
+      userAnswers =>
+        userAnswers.get(ValidXMLPage) match {
+          case Some(validatedFileData) =>
+            val messageSpecData: MessageSpecData = validatedFileData.messageSpecData
+            redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+          case None => routes.IndexController.onPageLoad()
+        }
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = {
-    case _ => _ => routes.IndexController.onPageLoad()
-  }
+  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
@@ -65,7 +71,7 @@ class Navigator @Inject() () {
 
     /* Will be implemented later in  DAC6-3959 & DAC6-3964
     Placeholder implementation; replace with actual logic to determine if elections have happened */
-    def hasElectionsHappened(): Boolean = false
+    def hasElectionsHappened: Boolean = false
 
     if (requiresElection(reportingPeriodYear))
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)

@@ -18,9 +18,9 @@ package controllers
 
 import controllers.actions.*
 import forms.RequiredGiinFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
-import pages.RequiredGiinPage
+import pages.{RequiredGiinPage, ValidXMLPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -37,6 +37,7 @@ class RequiredGiinController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  RequireData: DataRequiredAction,
   formProvider: RequiredGiinFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RequiredGiinView
@@ -46,25 +47,34 @@ class RequiredGiinController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(RequiredGiinPage)) match {
+      val preparedForm = request.userAnswers.get(RequiredGiinPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
-
-      Ok(view(preparedForm, mode, "fiName"))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          Ok(view(preparedForm, mode, validatedFileData.messageSpecData.fiNameFromFim))
+        case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, "fiName"))),
+          formWithErrors =>
+            request.userAnswers.get(ValidXMLPage) match {
+              case Some(validatedFileData) =>
+                Future.successful(BadRequest(view(formWithErrors, mode, validatedFileData.messageSpecData.fiNameFromFim)))
+
+              case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+            },
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(RequiredGiinPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(RequiredGiinPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(RequiredGiinPage, mode, updatedAnswers))
         )

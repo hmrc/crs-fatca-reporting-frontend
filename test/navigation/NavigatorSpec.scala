@@ -19,7 +19,6 @@ package navigation
 import base.SpecBase
 import controllers.routes
 import models.*
-import org.scalatestplus.play.PlaySpec
 import pages.*
 
 import java.time.LocalDate
@@ -43,45 +42,57 @@ class NavigatorSpec extends SpecBase {
         "to /required-giin" - {
           "when message type is FATCA and GIIN is not held" in {
             val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
-            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
           }
         }
+        "to /check-your-answers" - {
+          "when message type is FATCA and GIIN is held and does not require an election " in {
+            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          }
+          "when message type is CRS and does not require an election" in {
+            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          }
+        }
         "to /report-elections" - {
           "when message type is FATCA and GIIN is held and requires an election " in {
             val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = Some("giin"), "testFiNameFromFim")
-            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
           }
-
-          "when message type is FATCA and GIIN is held and does not require an election " in {
-            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
-            val vfd = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
-
-            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
-          }
-
           "when message type is CRS and requires an election" in {
             val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
-            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
           }
+        }
+      }
 
-          "when message type is CRS and does not require an election" in {
-            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
-            val vfd         = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
-            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, vfd)
+      "must go from /required-giin" - {
+        "to /report-elections when requires an election" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(RequiredGiinPage, "testGIIN")
 
-            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
-          }
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+        }
+        "to /check-your-answers when elections made already" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(RequiredGiinPage, "testGIIN")
+
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
     }
@@ -95,4 +106,5 @@ class NavigatorSpec extends SpecBase {
       }
     }
   }
+
 }
