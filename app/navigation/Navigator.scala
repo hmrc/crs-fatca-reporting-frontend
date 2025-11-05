@@ -36,10 +36,7 @@ class Navigator @Inject() () {
             if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
               routes.RequiredGiinController.onPageLoad(NormalMode)
             } else {
-              if (requiresElection(messageSpecData.reportingPeriod.getYear))
-                controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
-              else
-                routes.CheckYourAnswersController.onPageLoad()
+              redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
             }
           case None => routes.IndexController.onPageLoad()
         }
@@ -57,15 +54,23 @@ class Navigator @Inject() () {
       checkRouteMap(page)(userAnswers)
   }
 
-  private def requiresElection(reportingYear: Int): Boolean =
-    isReportingYearValid(reportingYear) && !hasElectionsHappened()
+  private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
+    def requiresElection(reportingYear: Int): Boolean =
+      isReportingYearValid(reportingYear) && !hasElectionsHappened()
 
-  private def isReportingYearValid(reportingYear: Int): Boolean = {
-    val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
-    reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+    def isReportingYearValid(reportingYear: Int): Boolean = {
+      val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+      reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+    }
+
+    /* Will be implemented later in  DAC6-3959 & DAC6-3964
+    Placeholder implementation; replace with actual logic to determine if elections have happened */
+    def hasElectionsHappened(): Boolean = false
+
+    if (requiresElection(reportingPeriodYear))
+      controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+    else
+      routes.CheckYourAnswersController.onPageLoad()
   }
 
-  /* Will be implemented later in  DAC6-3959 & DAC6-3964
-  Placeholder implementation; replace with actual logic to determine if elections have happened */
-  private def hasElectionsHappened(): Boolean = false
 }
