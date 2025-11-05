@@ -62,7 +62,7 @@ class Navigator @Inject() () {
 
   private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
     def requiresElection(reportingYear: Int): Boolean =
-      isReportingYearValid(reportingYear) && !hasElectionsHappened()
+      isReportingYearValid(reportingYear) && !hasElectionsHappened
 
     def isReportingYearValid(reportingYear: Int): Boolean = {
       val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
@@ -73,10 +73,11 @@ class Navigator @Inject() () {
     Placeholder implementation; replace with actual logic to determine if elections have happened */
     def hasElectionsHappened: Boolean = false
 
-    if (requiresElection(reportingPeriodYear))
+    if (requiresElection(reportingPeriodYear)) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
-    else
+    } else {
       routes.CheckYourAnswersController.onPageLoad()
+    }
   }
 
 }
