@@ -39,6 +39,7 @@ import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ThereIsAProblemView
 
+import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -85,6 +86,13 @@ class FileValidationController @Inject() (
 
   }
 
+  private def isReportingYearValid(reportingYear: Int): Boolean = {
+    val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+    reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+  }
+
+  private def hasElectionsHappened(): Boolean = false
+
   private def extractIds(answers: UserAnswers): Option[(UploadId, Reference)] =
     for {
       uploadId      <- answers.get(UploadIDPage)
@@ -115,6 +123,7 @@ class FileValidationController @Inject() (
       .flatMap {
         case Right(messageSpecData) =>
           val validatedFileData = ValidatedFileData(downloadDetails.name, messageSpecData, downloadDetails.size, downloadDetails.checksum)
+          val reportingYear     = messageSpecData.reportingPeriod.getYear
           for {
             updatedAnswers        <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
