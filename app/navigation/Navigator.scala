@@ -26,6 +26,7 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
+  val EUROPE_LONDON_ZONE: ZoneId = ZoneId.of("Europe/London")
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ValidXMLPage =>
@@ -65,7 +66,7 @@ class Navigator @Inject() () {
       isReportingYearValid(reportingYear) && !hasElectionsHappened
 
     def isReportingYearValid(reportingYear: Int): Boolean = {
-      val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+      val currentYear = LocalDate.now(EUROPE_LONDON_ZONE).getYear
       reportingYear >= (currentYear - 12) && reportingYear <= currentYear
     }
 
