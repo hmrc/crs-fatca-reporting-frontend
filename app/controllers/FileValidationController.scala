@@ -20,7 +20,16 @@ import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import models.requests.DataRequest
 import models.upscan.*
-import models.{FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, SchemaValidationErrors, UserAnswers, ValidatedFileData}
+import models.{
+  FIIDNotMatchingError,
+  IncorrectMessageTypeError,
+  InvalidXmlFileError,
+  NormalMode,
+  ReportingPeriodError,
+  SchemaValidationErrors,
+  UserAnswers,
+  ValidatedFileData
+}
 import navigation.Navigator
 import pages.*
 import play.api.Logging

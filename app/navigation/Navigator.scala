@@ -32,25 +32,23 @@ class Navigator @Inject() () {
       userAnswers =>
         userAnswers.get(ValidXMLPage) match {
           case Some(validatedFileData) =>
-            validatedFileData match {
-              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, _, None, _), _, _) if msgType == FATCA =>
-                routes.RequiredGiinController.onPageLoad(NormalMode)
-              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, reportingPeriod, Some(giin), _), _, _) if msgType == FATCA =>
-                if (requiresElection(reportingPeriod.getYear))
-                  controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
-                else
-                  routes.CheckYourAnswersController.onPageLoad()
-              case ValidatedFileData(_, MessageSpecData(msgType, _, _, _, reportingPeriod, _, _), _, _) if msgType == CRS =>
-                if (requiresElection(reportingPeriod.getYear))
-                  controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
-                else
-                  routes.CheckYourAnswersController.onPageLoad()
+            val messageSpecData = validatedFileData.messageSpecData
+            if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
+              routes.RequiredGiinController.onPageLoad(NormalMode)
+            } else {
+              if (requiresElection(messageSpecData.reportingPeriod.getYear))
+                controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+              else
+                routes.CheckYourAnswersController.onPageLoad()
             }
           case None => routes.IndexController.onPageLoad()
         }
+    case _ => _ => routes.IndexController.onPageLoad()
   }
 
-  val checkRouteMap: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
+  private val checkRouteMap: Page => UserAnswers => Call = {
+    case _ => _ => routes.IndexController.onPageLoad()
+  }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
