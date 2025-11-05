@@ -20,17 +20,7 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{
-  CRS,
-  FIIDNotMatchingError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  MessageSpecData,
-  NormalMode,
-  ReportingPeriodError,
-  UserAnswers,
-  ValidatedFileData
-}
+import models.{CRS, FATCA, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, MessageSpecData, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -92,7 +82,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val reportingPeriod                                = LocalDate.of(currentYear - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
-        messageType = CRS,
+        messageType = FATCA,
         sendingCompanyIN = "sendingCompanyIN",
         messageRefId = "messageRefId",
         reportingFIName = "reportingFIName",
@@ -123,12 +113,12 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       userAnswersCaptor.getValue.data mustEqual expectedData
     }
 
-    "must redirect to IndexController and save data for a valid file with an invalid reporting period (outside 12-year window)" in {
+    "must redirect to Check your answers when invalid reporting period (outside 12-year window) is provided" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
       val reportingPeriod                                = LocalDate.of(reportingPeriodLowerBound - 1, 1, 1)
 
       val messageSpecData = MessageSpecData(
-        messageType = CRS,
+        messageType = FATCA,
         sendingCompanyIN = "sendingCompanyIN",
         messageRefId = "messageRefId",
         reportingFIName = "reportingFIName",
@@ -154,7 +144,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val result: Future[Result] = route(application, request).value
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustEqual routes.IndexController.onPageLoad().url
+      redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual expectedData
     }
