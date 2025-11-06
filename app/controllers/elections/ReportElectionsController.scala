@@ -18,16 +18,17 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.ReportElectionsFormProvider
-import models.{Mode, UserAnswers, ValidatedFileData}
+import models.UserAnswers.getMessageSpecData
+import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{ReportElectionsPage, ValidXMLPage}
+import pages.ReportElectionsPage
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.elections.ReportElectionsView
 import views.html.ThereIsAProblemView
+import views.html.elections.ReportElectionsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,37 +48,32 @@ class ReportElectionsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  private def getValidatedFileData(userAnswers: UserAnswers): Option[ValidatedFileData] =
-    userAnswers.get(ValidXMLPage)
-
   def form(regime: String) = formProvider(regime)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      getValidatedFileData(request.userAnswers) match {
-        case Some(validatedFileData) =>
-          val reportingPeriod = validatedFileData.messageSpecData.reportingPeriod.getYear.toString
-          val regime          = validatedFileData.messageSpecData.messageType.toString
-          val name            = validatedFileData.messageSpecData.fiNameFromFim
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+
+          val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
+          val regime          = messageSpecData.messageType.toString
+          val name            = messageSpecData.fiNameFromFim
 
           val preparedForm = request.userAnswers.get(ReportElectionsPage) match {
             case None        => form(regime)
             case Some(value) => form(regime).fill(value)
           }
-
           Ok(view(reportingPeriod, regime, name, preparedForm, mode))
-        case None =>
-          InternalServerError(errorView())
       }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      getValidatedFileData(request.userAnswers) match {
-        case Some(validatedFileData) =>
-          val reportingPeriod = validatedFileData.messageSpecData.reportingPeriod.getYear.toString
-          val regime          = validatedFileData.messageSpecData.messageType.toString
-          val name            = validatedFileData.messageSpecData.fiNameFromFim
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
+          val regime          = messageSpecData.messageType.toString
+          val name            = messageSpecData.fiNameFromFim
 
           form(regime)
             .bindFromRequest()
@@ -90,7 +86,7 @@ class ReportElectionsController @Inject() (
                 } yield
                   if (!value) {
                     Redirect(controllers.routes.CheckYourFileDetailsController.onPageLoad())
-                  } else
+                  } else {
                     regime match {
                       case "FATCA" =>
                         Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
@@ -100,9 +96,8 @@ class ReportElectionsController @Inject() (
                         logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
                         InternalServerError(errorView())
                     }
+                  }
             )
-        case None =>
-          Future.successful(InternalServerError(errorView()))
       }
   }
 }

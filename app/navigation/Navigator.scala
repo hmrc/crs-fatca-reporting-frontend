@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
+import models.UserAnswers.getMessageSpecData
 import pages.*
 import play.api.mvc.Call
 
@@ -28,38 +29,38 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class Navigator @Inject() () {
 
-  private val normalRoutes: Page => UserAnswers => Call = {
-    case ValidXMLPage =>
-      userAnswers =>
-        userAnswers.get(ValidXMLPage) match {
-          case Some(validatedFileData) =>
-            val messageSpecData = validatedFileData.messageSpecData
-            if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
-              routes.RequiredGiinController.onPageLoad(NormalMode)
-            } else {
-              redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
-            }
-          case None => routes.IndexController.onPageLoad()
-        }
-    case RequiredGiinPage =>
-      userAnswers =>
-        userAnswers.get(ValidXMLPage) match {
-          case Some(validatedFileData) =>
-            val messageSpecData: MessageSpecData = validatedFileData.messageSpecData
-            redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
-          case None => routes.IndexController.onPageLoad()
-        }
-    case _ => _ => routes.IndexController.onPageLoad()
-  }
-
-  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
-
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
       normalRoutes(page)(userAnswers)
     case CheckMode =>
       checkRouteMap(page)(userAnswers)
   }
+
+  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
+
+  private val normalRoutes: Page => UserAnswers => Call = {
+    case ValidXMLPage =>
+      userAnswers => validFileUploadedNavigation(userAnswers)
+    case RequiredGiinPage =>
+      userAnswers => requiredGiinNavigation(userAnswers)
+    case _ => _ => routes.IndexController.onPageLoad()
+  }
+
+  private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
+          routes.RequiredGiinController.onPageLoad(NormalMode)
+        } else {
+          redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+        }
+    }
+
+  private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+    }
 
   private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
     def requiresElection(reportingYear: Int): Boolean =

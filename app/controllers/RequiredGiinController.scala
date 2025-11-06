@@ -19,8 +19,9 @@ package controllers
 import controllers.actions.*
 import forms.RequiredGiinFormProvider
 import models.Mode
+import models.UserAnswers.getMessageSpecData
 import navigation.Navigator
-import pages.{RequiredGiinPage, ValidXMLPage}
+import pages.RequiredGiinPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -53,10 +54,9 @@ class RequiredGiinController @Inject() (
         case None        => form
         case Some(value) => form.fill(value)
       }
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(validatedFileData) =>
-          Ok(view(preparedForm, mode, validatedFileData.messageSpecData.fiNameFromFim))
-        case _ => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          Ok(view(preparedForm, mode, messageSpecData.fiNameFromFim))
       }
   }
 
@@ -66,11 +66,9 @@ class RequiredGiinController @Inject() (
         .bindFromRequest()
         .fold(
           formWithErrors =>
-            request.userAnswers.get(ValidXMLPage) match {
-              case Some(validatedFileData) =>
-                Future.successful(BadRequest(view(formWithErrors, mode, validatedFileData.messageSpecData.fiNameFromFim)))
-
-              case _ => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+            getMessageSpecData(request.userAnswers) {
+              messageSpecData =>
+                Future.successful(BadRequest(view(formWithErrors, mode, messageSpecData.fiNameFromFim)))
             },
           value =>
             for {
