@@ -16,7 +16,8 @@
 
 package models
 
-import play.api.libs.json._
+import pages.ValidXMLPage
+import play.api.libs.json.*
 import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
@@ -69,7 +70,7 @@ object UserAnswers {
 
   val reads: Reads[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (
       (__ \ "_id").read[String] and
@@ -80,7 +81,7 @@ object UserAnswers {
 
   val writes: OWrites[UserAnswers] = {
 
-    import play.api.libs.functional.syntax._
+    import play.api.libs.functional.syntax.*
 
     (
       (__ \ "_id").write[String] and
@@ -92,4 +93,13 @@ object UserAnswers {
   }
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
+
+  def getMessageSpecData[T](userAnswers: UserAnswers)(
+    f: MessageSpecData => T
+  ): T =
+    userAnswers.get(ValidXMLPage) match {
+      case Some(validatedFileData) => f(validatedFileData.messageSpecData)
+      case _ =>
+        throw new IllegalStateException("ValidXMLPage is missing")
+    }
 }

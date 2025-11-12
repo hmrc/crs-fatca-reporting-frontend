@@ -17,8 +17,7 @@
 package controllers
 
 import controllers.actions.*
-
-import javax.inject.Inject
+import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -26,6 +25,7 @@ import views.html.ReportingPeriodErrorView
 
 import java.time
 import java.time.*
+import javax.inject.Inject
 
 class ReportingPeriodErrorController @Inject() (
   override val messagesApi: MessagesApi,
@@ -38,7 +38,7 @@ class ReportingPeriodErrorController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+      val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
       Ok(view(currentYear))
   }
 }

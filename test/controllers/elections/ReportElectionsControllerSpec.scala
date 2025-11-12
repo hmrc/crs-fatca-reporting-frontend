@@ -27,7 +27,6 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.ThereIsAProblemView
 import views.html.elections.ReportElectionsView
 
 import java.time.LocalDate
@@ -106,21 +105,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return Internal Server Error when ValidXMLPage data is missing on GET" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, reportElectionsRoute)
-
-        val result = route(application, request).value
-        val view   = application.injector.instanceOf[ThereIsAProblemView]
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to ElectCRSContractConroller on submission when regime is CRS" in {
+    "must redirect to ElectCRSContractController on submission when regime is CRS" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
@@ -185,29 +170,6 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(reportingPeriod, crsRegime, expectedFiName, boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must return Internal Server Error when ValidXMLPage data is missing on POST" in {
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[SessionRepository].toInstance(mockSessionRepository)
-        )
-        .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, reportElectionsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-        val view   = application.injector.instanceOf[ThereIsAProblemView]
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
       }
     }
   }

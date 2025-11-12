@@ -16,30 +16,70 @@
 
 package navigation
 
-import javax.inject.{Inject, Singleton}
-
-import play.api.mvc.Call
 import controllers.routes
-import pages._
-import models._
+import models.*
+import models.TimeZones.EUROPE_LONDON_TIME_ZONE
+import models.UserAnswers.getMessageSpecData
+import pages.*
+import play.api.mvc.Call
+
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
 
-  val normalRoutes: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
-
-  val checkRouteMap: PartialFunction[Page, UserAnswers => Call] = PartialFunction.empty
-
-  private def checkRoutes(mode: Mode): PartialFunction[Page, UserAnswers => Call] = mode match {
+  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
-      normalRoutes orElse {
-        case _ => _ => routes.IndexController.onPageLoad()
-      }
+      normalRoutes(page)(userAnswers)
     case CheckMode =>
-      checkRouteMap orElse {
-        case _ => _ => routes.CheckYourAnswersController.onPageLoad()
-      }
+      checkRouteMap(page)(userAnswers)
   }
 
-  def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = checkRoutes(mode)(page)(userAnswers)
+  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
+
+  private val normalRoutes: Page => UserAnswers => Call = {
+    case ValidXMLPage =>
+      userAnswers => validFileUploadedNavigation(userAnswers)
+    case RequiredGiinPage =>
+      userAnswers => requiredGiinNavigation(userAnswers)
+    case _ => _ => routes.IndexController.onPageLoad()
+  }
+
+  private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
+          routes.RequiredGiinController.onPageLoad(NormalMode)
+        } else {
+          redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+        }
+    }
+
+  private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+    }
+
+  private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
+    def requiresElection(reportingYear: Int): Boolean =
+      isReportingYearValid(reportingYear) && !hasElectionsHappened
+
+    def isReportingYearValid(reportingYear: Int): Boolean = {
+      val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
+      reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+    }
+
+    /* Will be implemented later in  DAC6-3959 & DAC6-3964
+    Placeholder implementation; replace with actual logic to determine if elections have happened */
+    def hasElectionsHappened: Boolean = false
+
+    if (requiresElection(reportingPeriodYear)) {
+      controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
+    }
+  }
+
 }

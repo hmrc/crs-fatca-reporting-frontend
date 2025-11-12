@@ -17,10 +17,11 @@
 package controllers
 
 import base.SpecBase
+import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 
-import java.time.{LocalDate, ZoneId}
+import java.time.LocalDate
 
 class ReportingPeriodErrorControllerSpec extends SpecBase {
 
@@ -29,7 +30,7 @@ class ReportingPeriodErrorControllerSpec extends SpecBase {
     "must return OK and the correct view for a GET" in {
 
       val application     = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      val currentYear     = LocalDate.now(ZoneId.of("Europe/London")).getYear
+      val currentYear     = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
       val expectedMessage = s"The ReportingPeriod element in your file must contain a date between 31 December 2014 and 31 December $currentYear."
 
       running(application) {

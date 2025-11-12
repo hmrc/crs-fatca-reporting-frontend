@@ -17,6 +17,7 @@
 package views
 
 import base.SpecBase
+import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
@@ -26,7 +27,7 @@ import play.twirl.api.HtmlFormat
 import utils.ViewHelper
 import views.html.ReportingPeriodErrorView
 
-import java.time.{LocalDate, ZoneId}
+import java.time.LocalDate
 
 class ReportingPeriodErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
@@ -35,7 +36,7 @@ class ReportingPeriodErrorViewSpec extends SpecBase with GuiceOneAppPerSuite wit
 
   implicit private val request: FakeRequest[AnyContent] = FakeRequest()
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
-  private val currentYear                               = LocalDate.now(ZoneId.of("Europe/London")).getYear
+  private val currentYear                               = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
 
   "InvalidMessageTypeErrorView" - {
 

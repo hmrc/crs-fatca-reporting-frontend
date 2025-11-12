@@ -18,7 +18,8 @@ package controllers
 
 import controllers.actions.*
 import forms.RequiredGiinFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
+import models.UserAnswers.getMessageSpecData
 import navigation.Navigator
 import pages.RequiredGiinPage
 import play.api.data.Form
@@ -37,6 +38,7 @@ class RequiredGiinController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  RequireData: DataRequiredAction,
   formProvider: RequiredGiinFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: RequiredGiinView
@@ -46,25 +48,31 @@ class RequiredGiinController @Inject() (
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(RequiredGiinPage)) match {
+      val preparedForm = request.userAnswers.get(RequiredGiinPage) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
-
-      Ok(view(preparedForm, mode, "fiName"))
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          Ok(view(preparedForm, mode, messageSpecData.fiNameFromFim))
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData).async {
     implicit request =>
       form
         .bindFromRequest()
         .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, "fiName"))),
+          formWithErrors =>
+            getMessageSpecData(request.userAnswers) {
+              messageSpecData =>
+                Future.successful(BadRequest(view(formWithErrors, mode, messageSpecData.fiNameFromFim)))
+            },
           value =>
             for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(RequiredGiinPage, value))
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(RequiredGiinPage, value))
               _              <- sessionRepository.set(updatedAnswers)
             } yield Redirect(navigator.nextPage(RequiredGiinPage, mode, updatedAnswers))
         )

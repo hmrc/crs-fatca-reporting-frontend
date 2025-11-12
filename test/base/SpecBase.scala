@@ -18,12 +18,11 @@ package base
 
 import controllers.actions.*
 import generators.Generators
-import helpers.FakeUpscanConnector
-import models.UserAnswers
+import models.{FATCA, MessageSpecData, UserAnswers, ValidatedFileData}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import org.scalatest.{OptionValues, TryValues}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.mockito.MockitoSugar.mock
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -35,6 +34,8 @@ import play.api.libs.json.Writes
 import play.api.test.{FakeRequest, Injecting}
 import queries.Settable
 import repositories.SessionRepository
+
+import java.time.LocalDate
 
 trait SpecBase
     extends AnyFreeSpec
@@ -51,6 +52,12 @@ trait SpecBase
   val userAnswersId: String = "FATCAID"
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
+
+  val testMsd: MessageSpecData = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName")
+
+  def getValidatedFileData(
+    msd: MessageSpecData = testMsd
+  ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

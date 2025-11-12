@@ -18,8 +18,10 @@ package navigation
 
 import base.SpecBase
 import controllers.routes
-import pages._
-import models._
+import models.*
+import pages.*
+
+import java.time.LocalDate
 
 class NavigatorSpec extends SpecBase {
 
@@ -34,15 +36,75 @@ class NavigatorSpec extends SpecBase {
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
+
+      "must go from /file-validation" - {
+
+        "to /required-giin" - {
+          "when message type is FATCA and GIIN is not held" in {
+            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
+          }
+        }
+        "to /check-your-answers" - {
+          "when message type is FATCA and GIIN is held and does not require an election " in {
+            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          }
+          "when message type is CRS and does not require an election" in {
+            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          }
+        }
+        "to /report-elections" - {
+          "when message type is FATCA and GIIN is held and requires an election " in {
+            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = Some("giin"), "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+          }
+          "when message type is CRS and requires an election" in {
+            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+          }
+        }
+      }
+
+      "must go from /required-giin" - {
+        "to /report-elections when requires an election" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(RequiredGiinPage, "testGIIN")
+
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+        }
+        "to /check-your-answers when elections made already" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(RequiredGiinPage, "testGIIN")
+
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
     }
 
     "in Check mode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
+      "must go from a page that doesn't exist in the edit route map to Index controller" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
     }
   }
+
 }

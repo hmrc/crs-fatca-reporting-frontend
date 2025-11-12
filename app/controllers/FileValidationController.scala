@@ -18,6 +18,7 @@ package controllers
 
 import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.requests.DataRequest
 import models.upscan.*
 import models.{
@@ -30,6 +31,7 @@ import models.{
   UserAnswers,
   ValidatedFileData
 }
+import navigation.Navigator
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -51,6 +53,7 @@ class FileValidationController @Inject() (
   upscanConnector: UpscanConnector,
   requireData: DataRequiredAction,
   validationConnector: ValidationConnector,
+  navigator: Navigator,
   errorView: ThereIsAProblemView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -85,7 +88,7 @@ class FileValidationController @Inject() (
   }
 
   private def isReportingYearValid(reportingYear: Int): Boolean = {
-    val currentYear = LocalDate.now(ZoneId.of("Europe/London")).getYear
+    val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
     reportingYear >= (currentYear - 12) && reportingYear <= currentYear
   }
 
@@ -126,12 +129,7 @@ class FileValidationController @Inject() (
             updatedAnswers        <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
             updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
             _                     <- sessionRepository.set(updatedAnswersWithURL)
-          } yield
-            if (isReportingYearValid(reportingYear) && !hasElectionsHappened()) {
-              Redirect(controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode))
-            } else {
-              Redirect(routes.IndexController.onPageLoad())
-            }
+          } yield Redirect(navigator.nextPage(ValidXMLPage, NormalMode, updatedAnswersWithURL))
         case Left(SchemaValidationErrors(validationErrors, messageType)) =>
           for {
             updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
