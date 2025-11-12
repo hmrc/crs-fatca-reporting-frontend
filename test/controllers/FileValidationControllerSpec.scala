@@ -99,7 +99,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         reportingFIName = "reportingFIName",
         reportingPeriod = reportingPeriod,
         giin = Some("giin"),
-        fiNameFromFim = "fi-name"
+        fiNameFromFim = "fi-name",
+        electionsRequired = false
       )
 
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
@@ -135,7 +136,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         reportingFIName = "reportingFIName",
         reportingPeriod = reportingPeriod,
         giin = None,
-        fiNameFromFim = "fi-name"
+        fiNameFromFim = "fi-name",
+        electionsRequired = false
       )
 
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
@@ -171,7 +173,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         reportingFIName = "reportingFIName",
         reportingPeriod = reportingPeriod,
         giin = Some("giin"),
-        fiNameFromFim = "fi-name"
+        fiNameFromFim = "fi-name",
+        electionsRequired = false
       )
 
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")
@@ -207,7 +210,8 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
         reportingFIName = "reportingFIName",
         reportingPeriod = reportingPeriod,
         giin = None,
-        fiNameFromFim = "fi-name"
+        fiNameFromFim = "fi-name",
+        electionsRequired = false
       )
 
       val validatedFileData = ValidatedFileData("afile", messageSpecData, FileSize, "MD5:123")

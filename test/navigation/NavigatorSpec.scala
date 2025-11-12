@@ -41,7 +41,8 @@ class NavigatorSpec extends SpecBase {
 
         "to /required-giin" - {
           "when message type is FATCA and GIIN is not held" in {
-            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val msd =
+              MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim", electionsRequired = true)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
@@ -49,13 +50,29 @@ class NavigatorSpec extends SpecBase {
         }
         "to /check-your-answers" - {
           "when message type is FATCA and GIIN is held and does not require an election " in {
-            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
+            val msd = MessageSpecData(FATCA,
+                                      "testFI",
+                                      "testRefId",
+                                      "testReportingName",
+                                      LocalDate.of(2000, 1, 1),
+                                      giin = Some("giin"),
+                                      "testFiNameFromFim",
+                                      electionsRequired = false
+            )
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
           }
           "when message type is CRS and does not require an election" in {
-            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+            val msd = MessageSpecData(CRS,
+                                      "testFI",
+                                      "testRefId",
+                                      "testReportingName",
+                                      LocalDate.of(2000, 1, 1),
+                                      giin = None,
+                                      "testFiNameFromFim",
+                                      electionsRequired = false
+            )
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
@@ -63,13 +80,22 @@ class NavigatorSpec extends SpecBase {
         }
         "to /report-elections" - {
           "when message type is FATCA and GIIN is held and requires an election " in {
-            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = Some("giin"), "testFiNameFromFim")
+            val msd = MessageSpecData(FATCA,
+                                      "testFI",
+                                      "testRefId",
+                                      "testReportingName",
+                                      LocalDate.now(),
+                                      giin = Some("giin"),
+                                      "testFiNameFromFim",
+                                      electionsRequired = true
+            )
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
           }
           "when message type is CRS and requires an election" in {
-            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val msd =
+              MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim", electionsRequired = true)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
@@ -79,20 +105,29 @@ class NavigatorSpec extends SpecBase {
 
       "must go from /required-giin" - {
         "to /report-elections when requires an election" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          val msd =
+            MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim", electionsRequired = true)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(RequiredGiinPage, "testGIIN")
 
-          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
+          navigator.nextPage(RequiredGiinPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
         }
         "to /check-your-answers when elections made already" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = MessageSpecData(CRS,
+                                    "testFI",
+                                    "testRefId",
+                                    "testReportingName",
+                                    LocalDate.of(2000, 1, 1),
+                                    giin = None,
+                                    "testFiNameFromFim",
+                                    electionsRequired = false
+          )
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(RequiredGiinPage, "testGIIN")
 
-          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          navigator.nextPage(RequiredGiinPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
     }

@@ -52,19 +52,19 @@ class Navigator @Inject() () {
         if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
           routes.RequiredGiinController.onPageLoad(NormalMode)
         } else {
-          redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+          redirectToElectionPageOrCheckYourAnswers(messageSpecData)
         }
     }
 
   private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
       messageSpecData =>
-        redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+        redirectToElectionPageOrCheckYourAnswers(messageSpecData)
     }
 
-  private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
+  private def redirectToElectionPageOrCheckYourAnswers(messageSpecData: MessageSpecData): Call = {
     def requiresElection(reportingYear: Int): Boolean =
-      isReportingYearValid(reportingYear) && !hasElectionsHappened
+      isReportingYearValid(reportingYear) && messageSpecData.electionsRequired
 
     def isReportingYearValid(reportingYear: Int): Boolean = {
       val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
@@ -75,7 +75,7 @@ class Navigator @Inject() () {
     Placeholder implementation; replace with actual logic to determine if elections have happened */
     def hasElectionsHappened: Boolean = false
 
-    if (requiresElection(reportingPeriodYear)) {
+    if (requiresElection(messageSpecData.reportingPeriod.getYear)) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
       routes.CheckYourAnswersController.onPageLoad()
