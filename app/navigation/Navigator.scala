@@ -71,10 +71,6 @@ class Navigator @Inject() () {
       reportingYear >= (currentYear - 12) && reportingYear <= currentYear
     }
 
-    /* Will be implemented later in  DAC6-3959 & DAC6-3964
-    Placeholder implementation; replace with actual logic to determine if elections have happened */
-    def hasElectionsHappened: Boolean = false
-
     if (requiresElection(messageSpecData.reportingPeriod.getYear)) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
