@@ -20,6 +20,7 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
+import pages.elections.crs.DormantAccountsPage
 
 import java.time.LocalDate
 
@@ -95,6 +96,17 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
+
+      "must go from elections/crs/dormant-accounts page" - {
+        "to  /elections/crs/thresholds" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(DormantAccountsPage, true)
+
+          navigator.nextPage(DormantAccountsPage, NormalMode, userAnswers) mustBe controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
+        }
+      }
     }
 
     "in Check mode" - {
@@ -106,5 +118,4 @@ class NavigatorSpec extends SpecBase {
       }
     }
   }
-
 }
