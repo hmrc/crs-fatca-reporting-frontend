@@ -18,11 +18,12 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.DormantAccountsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ValidXMLPage
 import pages.elections.crs.DormantAccountsPage
 import play.api.data.Form
 import play.api.inject.bind
@@ -32,6 +33,7 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.DormantAccountsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
