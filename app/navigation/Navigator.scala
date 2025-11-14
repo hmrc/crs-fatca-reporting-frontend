@@ -21,6 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
+import pages.elections.crs.DormantAccountsPage
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -43,6 +44,8 @@ class Navigator @Inject() () {
       userAnswers => validFileUploadedNavigation(userAnswers)
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
+    case DormantAccountsPage =>
+      _ => controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
