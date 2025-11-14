@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
 import connectors.UpscanConnector
-import models.upscan.{PreparedUpload, Reference, UploadForm}
+import models.UserAnswers
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.libs.json.Json
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.libs.ws.{DefaultWSCookie, WSClient}
 import play.api.mvc.*
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
-import utils.ISpecBase
 
-class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
+trait ISpecBehaviours extends PlaySpec with ISpecBase {
 
   val testFatcaId = "XAFATCA0000123456"
 
@@ -35,35 +34,15 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
   val sessionCookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
   val sessionCookie: Cookie                  = sessionCookieBaker.encodeAsCookie(session)
   val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
-  lazy val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
-  val path = "/report/upload-file"
+  lazy val connector: UpscanConnector        = app.injector.instanceOf[UpscanConnector]
+  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = MessagesImpl(Lang.defaultLang, messagesApi)
 
-  "Authenticated Identifier Action" when {
-
-    "the user is authenticated and has a FATCA ID" must {
-      "return OK when the user is authorised" in {
-        stubAuthorised("cbc12345")
-        val upscanBody = PreparedUpload(Reference("Reference"), UploadForm("downloadUrl", Map("formKey" -> "formValue")))
-
-        stubPostResponse("/upscan/v2/initiate", OK, Json.toJson(upscanBody).toString())
-
-        val response = await(
-          buildClient(path)
-            .withFollowRedirects(false)
-            .addCookies(wsSessionCookie)
-            .get()
-        )
-        response.status mustBe OK
-        verifyPost(authUrl)
-        val body: String = response.body
-        body must include("Send a CRS or FATCA report")
-      }
-
-    }
+  def pageRedirectsWhenNotAuthorised(pageUrl: String): Unit = {
     "the user is not authenticated" must {
       "redirect to the government gateway sign-in page" in {
         val response = await(
-          buildClient(path)
+          buildClient(pageUrl)
             .withFollowRedirects(false)
             .get()
         )
@@ -73,17 +52,18 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
     }
     "the user is authenticated but does not have the FATCA enrolment" must {
       "redirect to the registration page" in {
-        val json = """
-                     |{
-                     |  "internalId": "some-id",
-                     |  "affinityGroup": "Organisation",
-                     |  "allEnrolments": []
-                     |}
-                     |""".stripMargin
+        val json =
+          """
+            |{
+            |  "internalId": "some-id",
+            |  "affinityGroup": "Organisation",
+            |  "allEnrolments": []
+            |}
+            |""".stripMargin
         stubPost(authUrl, OK, authRequest, json)
 
         val response = await(
-          buildClient(path)
+          buildClient(pageUrl)
             .withFollowRedirects(false)
             .addCookies(wsSessionCookie)
             .get()
@@ -113,7 +93,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
         stubPost(authUrl, OK, authRequest, json)
 
         val response = await(
-          buildClient(path)
+          buildClient(pageUrl)
             .withFollowRedirects(false)
             .addCookies(wsSessionCookie)
             .get()
@@ -124,4 +104,21 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
       }
     }
   }
+
+  def pageLoads(pageUrl: String, pageTitle: String = "", userAnswers: UserAnswers = emptyUserAnswers): Unit =
+    "load relative page" in {
+      
+      stubAuthorised("cbc12345")
+
+      await(repository.set(userAnswers))
+
+      val response = await(
+        buildClient(pageUrl)
+          .addCookies(wsSessionCookie)
+          .get()
+      )
+      response.status mustBe OK
+      val responseBody: String = response.body
+      responseBody must include(messages(pageTitle))
+    }
 }

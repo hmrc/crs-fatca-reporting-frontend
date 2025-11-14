@@ -18,11 +18,12 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
-import models.{NormalMode, UserAnswers}
+import models.{CRS, MessageSpecData, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsContractPage
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -31,6 +32,7 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.ElectCrsContractView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
@@ -39,15 +41,18 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new ElectCrsContractFormProvider()
   val form         = formProvider()
-  val fi           = "EFG Bank plc"
+  val fiNameFM     = "testFIFromFM"
+
+  val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
 
   lazy val electCrsContractRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
-
   "ElectCrsContract Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, electCrsContractRoute)
@@ -57,13 +62,15 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ElectCrsContractView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fi, form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiNameFM, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsContractPage, true).success.value
+      val userAnswers = emptyUserAnswers
+        .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+        .withPage(ElectCrsContractPage, true)
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -75,18 +82,22 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fi, form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiNameFM, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+        .withPage(ElectCrsContractPage, true)
 
       val mockSessionRepository = mock[SessionRepository]
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -107,7 +118,11 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val userAnswers = emptyUserAnswers
+        .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+        .withPage(ElectCrsContractPage, true)
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -121,7 +136,7 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(fi, boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(fiNameFM, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
   }

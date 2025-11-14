@@ -17,19 +17,27 @@
 package utils
 
 import generators.Generators
-import models.UserAnswers
+import models.{FATCA, MessageSpecData, UserAnswers, ValidatedFileData}
+import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.test.FakeRequest
+import queries.Settable
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
+import java.time.LocalDate
+
 trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
+
+  val userAnswersId: String = "FATCAID"
+  def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
@@ -42,8 +50,8 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     "mongodb.uri"                     -> mongoUri
   )
 
-  def buildClient(): WSRequest =
-    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file")
+  def buildClient(path: String): WSRequest =
+    app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca$path")
 
   def buildFakeRequest() =
     FakeRequest("GET", s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file").withSession("authToken" -> "my-token")
@@ -53,5 +61,17 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
     .build()
+
+  implicit class UserAnswersExtension(userAnswers: UserAnswers) {
+
+    def withPage[T](page: Settable[T], value: T)(implicit writes: Writes[T]): UserAnswers =
+      userAnswers.set(page, value).success.value
+
+  }
+
+  val testMessageSpecData: MessageSpecData = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName")
+  def getValidatedFileData(
+                            msd: MessageSpecData = testMessageSpecData
+                          ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
 
 }

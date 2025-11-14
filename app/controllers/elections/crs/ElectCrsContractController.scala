@@ -18,6 +18,7 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.ElectCrsContractFormProvider
+import models.UserAnswers.getMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.elections.crs.ElectCrsContractPage
@@ -45,25 +46,33 @@ class ElectCrsContractController @Inject() (
     with I18nSupport {
 
   val form = formProvider()
-  val fi   = "EFG Bank plc"
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsContractPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          val preparedForm = request.userAnswers.get(ElectCrsContractPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(messageSpecData.fiNameFromFim, preparedForm, mode))
       }
-
-      Ok(view(fi, preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(fi, formWithErrors, mode))),
-          value => Future.successful(Redirect(navigator.nextPage(ElectCrsContractPage, mode, UserAnswers("id"))))
-        )
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(messageSpecData.fiNameFromFim, formWithErrors, mode))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectCrsContractPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ElectCrsContractPage, mode, updatedAnswers))
+            )
+      }
   }
 }
