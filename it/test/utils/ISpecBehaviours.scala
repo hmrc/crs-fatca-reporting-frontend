@@ -20,7 +20,8 @@ import models.UserAnswers
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.libs.ws.{DefaultWSCookie, WSClient}
+import play.api.libs.ws.DefaultBodyWritables.writeableOf_urlEncodedForm
+import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
 import play.api.mvc.*
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
@@ -33,14 +34,14 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
   val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang.defaultLang, messagesApi)
+  val testFatcaID = "XE2ATCA0009234567"
 
-  def pageRedirectsWhenNotAuthorised(pageUrl: String): Unit = {
-    userNotAuthenticated(pageUrl)
-    userDoesnotHaveFatcaEnrollment(pageUrl)
-    userDoesNotHaveFatcaID(pageUrl)
+  def pageRedirectsWhenNotAuthorised(path: String): Unit = {
+    userNotAuthenticated(path,None)
+    userDoesNotHaveFatcaEnrollment(path,None)
+    userDoesNotHaveFatcaID(path,None)
   }
-
-  private def userDoesNotHaveFatcaID(pageUrl: String): Unit = {
+  private def userDoesNotHaveFatcaID(path: String, requestBody: Option[Map[String, Seq[String]]]): Unit = {
     "the user is authenticated but the FATCA ID is empty" must {
       "redirect to the registration page" in {
         val json =
@@ -60,12 +61,7 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
             |""".stripMargin
         stubPost(authUrl, OK, authRequest, json)
 
-        val response = await(
-          buildClient(pageUrl)
-            .withFollowRedirects(false)
-            .addCookies(wsSessionCookie)
-            .get()
-        )
+        val response: WSResponse = getResponse(path, requestBody)
 
         response.status mustBe SEE_OTHER
         response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
@@ -73,7 +69,16 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
     }
   }
 
-  private def userDoesnotHaveFatcaEnrollment(pageUrl: String): Unit = {
+  private def getResponse(path: String, requestBody: Option[Map[String, Seq[String]]]) = {
+    val response = requestBody match {
+      case Some(value) => await(buildClient(path)
+        .withFollowRedirects(false).addHttpHeaders("Csrf-Token" -> "nocheck").addCookies(wsSessionCookie).post(value))
+      case None => await(buildClient(path).withFollowRedirects(false).addCookies(wsSessionCookie).get())
+    }
+    response
+  }
+
+  private def userDoesNotHaveFatcaEnrollment(path: String, requestBody: Option[Map[String, Seq[String]]]): Unit = {
     "the user is authenticated but does not have the FATCA enrolment" must {
       "redirect to the registration page" in {
         val json =
@@ -86,12 +91,7 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
             |""".stripMargin
         stubPost(authUrl, OK, authRequest, json)
 
-        val response = await(
-          buildClient(pageUrl)
-            .withFollowRedirects(false)
-            .addCookies(wsSessionCookie)
-            .get()
-        )
+        val response: WSResponse = getResponse(path, requestBody)
 
         response.status mustBe SEE_OTHER
         response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
@@ -99,14 +99,16 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
     }
   }
 
-  private def userNotAuthenticated(pageUrl: String): Unit = {
+  private def userNotAuthenticated(path: String,requestBody: Option[Map[String, Seq[String]]]): Unit = {
     "the user is not authenticated" must {
       "redirect to the government gateway sign-in page" in {
         val response = await(
-          buildClient(pageUrl)
-            .withFollowRedirects(false)
-            .get()
+          requestBody match {
+            case Some(value) => buildClient(path).addHttpHeaders("Csrf-Token" -> "nocheck").withFollowRedirects(false).post(value)
+            case None => buildClient(path).withFollowRedirects(false).get()
+          }
         )
+
         response.status mustBe SEE_OTHER
         response.header("Location").value must include("gg-sign-in")
       }
@@ -115,10 +117,7 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
 
   def pageLoads(path: String, pageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit =
     "load relative page" in {
-
-      val testFatcaID = "XE2ATCA0009234567"
       stubAuthorised(testFatcaID)
-
       await(repository.set(userAnswers))
 
       val response = await(
@@ -127,8 +126,38 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
           .addCookies(wsSessionCookie)
           .get()
       )
+
       response.status mustBe OK
       val responseBody: String = response.body
       responseBody must include(messages(pageTitle))
     }
+
+  def pageSubmits(path: String,
+                  redirectLocation: String,
+                  ua: UserAnswers = emptyUserAnswers,
+                  requestBody: Map[String, Seq[String]] = Map("value" -> Seq("testValue"))
+                 ): Unit =
+    "should submit form" in {
+      stubAuthorised(testFatcaID)
+      await(repository.set(ua))
+
+      val response = await(
+        buildClient(path)
+          .addCookies(wsSessionCookie)
+          .addHttpHeaders("Csrf-Token" -> "nocheck")
+          .withFollowRedirects(false)
+          .post(requestBody)
+      )
+
+      response.status mustBe SEE_OTHER
+      response.header("Location").value must
+        include(redirectLocation)
+      verifyPost(authUrl)
+    }
+
+  def standardOnSubmit(path: String, requestBody: Map[String, Seq[String]]): Unit = {
+    userNotAuthenticated(path, Some(requestBody))
+    userDoesNotHaveFatcaEnrollment(path, Some(requestBody))
+    userDoesNotHaveFatcaID(path,Some(requestBody))
+  }
 }

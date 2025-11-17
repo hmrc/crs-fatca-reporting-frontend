@@ -29,9 +29,16 @@ class ElectCrsContractControllerISpec extends ISpecBehaviours {
   val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
   val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
-  "GET ContactEmailController.onPageLoad" must {
+  "GET ElectCrsContractController.onPageLoad" must {
     behave like pageLoads(path = path, pageTitle= "electCrsContract.title", userAnswers = userAnswers)
     behave like pageRedirectsWhenNotAuthorised(path)
+  }
+
+  "Post ElectCrsContractController.onSubmit" must {
+    val requestBody: Map[String, Seq[String]] = Map("value" -> Seq("true"))
+
+    behave like standardOnSubmit(path, requestBody)
+    behave like pageSubmits(path, "/report/elections/crs/dormant-accounts", userAnswers, requestBody)
   }
 
 }
