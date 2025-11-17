@@ -37,8 +37,6 @@ import scala.concurrent.Future
 
 class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
-
   private val formProvider            = new TreasuryRegulationsFormProvider()
   private val form                    = formProvider()
   private val reportingPeriodYear     = 2024
