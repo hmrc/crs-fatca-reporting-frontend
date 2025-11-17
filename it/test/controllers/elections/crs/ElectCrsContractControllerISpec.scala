@@ -24,14 +24,14 @@ import java.time.LocalDate
 
 class ElectCrsContractControllerISpec extends ISpecBehaviours {
 
-  private val pageUrl = "/report/elections/crs/contracts"
+  private val path = "/report/elections/crs/contracts"
   val fiNameFM = "testFIFromFM"
   val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
   val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET ContactEmailController.onPageLoad" must {
-    behave like pageLoads(pageUrl, "electCrsContract.title",userAnswers)
-    behave like pageRedirectsWhenNotAuthorised(pageUrl)
+    behave like pageLoads(path = path, pageTitle= "electCrsContract.title", userAnswers = userAnswers)
+    behave like pageRedirectsWhenNotAuthorised(path)
   }
 
 }

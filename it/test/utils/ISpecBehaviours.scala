@@ -16,7 +16,6 @@
 
 package utils
 
-import connectors.UpscanConnector
 import models.UserAnswers
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -27,52 +26,21 @@ import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 trait ISpecBehaviours extends PlaySpec with ISpecBase {
 
-  val testFatcaId = "XAFATCA0000123456"
-
   lazy val wsClient: WSClient                = app.injector.instanceOf[WSClient]
   val session: Session                       = Session(Map("authToken" -> "abc123"))
   val sessionCookieBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
   val sessionCookie: Cookie                  = sessionCookieBaker.encodeAsCookie(session)
   val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
-  lazy val connector: UpscanConnector        = app.injector.instanceOf[UpscanConnector]
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit lazy val messages: Messages = MessagesImpl(Lang.defaultLang, messagesApi)
 
   def pageRedirectsWhenNotAuthorised(pageUrl: String): Unit = {
-    "the user is not authenticated" must {
-      "redirect to the government gateway sign-in page" in {
-        val response = await(
-          buildClient(pageUrl)
-            .withFollowRedirects(false)
-            .get()
-        )
-        response.status mustBe SEE_OTHER
-        response.header("Location").value must include("gg-sign-in")
-      }
-    }
-    "the user is authenticated but does not have the FATCA enrolment" must {
-      "redirect to the registration page" in {
-        val json =
-          """
-            |{
-            |  "internalId": "some-id",
-            |  "affinityGroup": "Organisation",
-            |  "allEnrolments": []
-            |}
-            |""".stripMargin
-        stubPost(authUrl, OK, authRequest, json)
+    userNotAuthenticated(pageUrl)
+    userDoesnotHaveFatcaEnrollment(pageUrl)
+    userDoesNotHaveFatcaID(pageUrl)
+  }
 
-        val response = await(
-          buildClient(pageUrl)
-            .withFollowRedirects(false)
-            .addCookies(wsSessionCookie)
-            .get()
-        )
-
-        response.status mustBe SEE_OTHER
-        response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
-      }
-    }
+  private def userDoesNotHaveFatcaID(pageUrl: String): Unit = {
     "the user is authenticated but the FATCA ID is empty" must {
       "redirect to the registration page" in {
         val json =
@@ -105,15 +73,57 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
     }
   }
 
-  def pageLoads(pageUrl: String, pageTitle: String = "", userAnswers: UserAnswers = emptyUserAnswers): Unit =
+  private def userDoesnotHaveFatcaEnrollment(pageUrl: String): Unit = {
+    "the user is authenticated but does not have the FATCA enrolment" must {
+      "redirect to the registration page" in {
+        val json =
+          """
+            |{
+            |  "internalId": "some-id",
+            |  "affinityGroup": "Organisation",
+            |  "allEnrolments": []
+            |}
+            |""".stripMargin
+        stubPost(authUrl, OK, authRequest, json)
+
+        val response = await(
+          buildClient(pageUrl)
+            .withFollowRedirects(false)
+            .addCookies(wsSessionCookie)
+            .get()
+        )
+
+        response.status mustBe SEE_OTHER
+        response.header("Location").value mustBe "http://localhost:10030/register-for-crs-and-fatca"
+      }
+    }
+  }
+
+  private def userNotAuthenticated(pageUrl: String): Unit = {
+    "the user is not authenticated" must {
+      "redirect to the government gateway sign-in page" in {
+        val response = await(
+          buildClient(pageUrl)
+            .withFollowRedirects(false)
+            .get()
+        )
+        response.status mustBe SEE_OTHER
+        response.header("Location").value must include("gg-sign-in")
+      }
+    }
+  }
+
+  def pageLoads(path: String, pageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit =
     "load relative page" in {
-      
-      stubAuthorised("cbc12345")
+
+      val testFatcaID = "XE2ATCA0009234567"
+      stubAuthorised(testFatcaID)
 
       await(repository.set(userAnswers))
 
       val response = await(
-        buildClient(pageUrl)
+        buildClient(path)
+          .withFollowRedirects(false)
           .addCookies(wsSessionCookie)
           .get()
       )

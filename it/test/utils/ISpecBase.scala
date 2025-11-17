@@ -36,7 +36,7 @@ import java.time.LocalDate
 
 trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
 
-  val userAnswersId: String = "FATCAID"
+  val userAnswersId: String = "internalId"
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
@@ -47,14 +47,14 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
     "microservice.services.auth.host" -> WireMockConstants.stubHost,
     "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
-    "mongodb.uri"                     -> mongoUri
+    "mongodb.uri"                     -> mongoUri,
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"       -> "nocheck"
+//    "logger.root"                                             -> "INFO",
+//    "logger.controllers"                                      -> "DEBUG"
   )
 
   def buildClient(path: String): WSRequest =
     app.injector.instanceOf[WSClient].url(s"http://localhost:$port/report-for-crs-and-fatca$path")
-
-  def buildFakeRequest() =
-    FakeRequest("GET", s"http://localhost:$port/report-for-crs-and-fatca/report/upload-file").withSession("authToken" -> "my-token")
 
   implicit override val patienceConfig: PatienceConfig = PatienceConfig(scaled(Span(20, Seconds)))
 
