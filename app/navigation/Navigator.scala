@@ -43,6 +43,9 @@ class Navigator @Inject() () {
       userAnswers => validFileUploadedNavigation(userAnswers)
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
+    case ElectFatcaThresholdsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case _ => _ => routes.IndexController.onPageLoad()
   }
 

@@ -18,6 +18,7 @@ package controllers.elections.fatca
 
 import controllers.actions.*
 import forms.elections.fatca.ElectFatcaThresholdsFormProvider
+import models.UserAnswers.getMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.ElectFatcaThresholdsPage
@@ -44,30 +45,37 @@ class ElectFatcaThresholdsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form   = formProvider()
-  val fiName = "EFG Bank plc"
+  val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(ElectFatcaThresholdsPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          val fiName = messageSpecData.fiNameFromFim
+          val preparedForm = request.userAnswers.get(ElectFatcaThresholdsPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(fiName, preparedForm, mode))
       }
-
-      Ok(view(fiName, preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(fiName, formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ElectFatcaThresholdsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ElectFatcaThresholdsPage, mode, updatedAnswers))
-        )
+      getMessageSpecData(request.userAnswers) {
+        messageSpecData =>
+          val fiName = messageSpecData.fiNameFromFim
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(fiName, formWithErrors, mode))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectFatcaThresholdsPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ElectFatcaThresholdsPage, mode, updatedAnswers))
+            )
+      }
+
   }
 }

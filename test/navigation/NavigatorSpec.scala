@@ -95,6 +95,17 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
+
+      "must go from /elections/fatca/thresholds" - {
+        "to /check-your-answers when elections made already" in {
+          val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(ElectFatcaThresholdsPage, true)
+
+          navigator.nextPage(ElectFatcaThresholdsPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
     }
 
     "in Check mode" - {
