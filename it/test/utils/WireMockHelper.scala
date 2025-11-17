@@ -140,7 +140,6 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach with Auth
     server.stubFor(
       WireMock
         .post(urlEqualTo(stripToPath(url)))
-        //        .withRequestBody(new EqualToJsonPattern(requestBody, true, false))
         .willReturn(aResponse().withStatus(status).withBody(returnBody))
     )
 
