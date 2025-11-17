@@ -46,7 +46,6 @@ class TreasuryRegulationsController @Inject() (
     with I18nSupport {
 
   val form    = formProvider()
-  val fiName_ = "Placeholder Financial Institution"
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
