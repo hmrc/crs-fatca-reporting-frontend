@@ -36,6 +36,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
   val sessionCookie: Cookie                  = sessionCookieBaker.encodeAsCookie(session)
   val wsSessionCookie: DefaultWSCookie       = DefaultWSCookie(sessionCookie.name, sessionCookie.value)
   lazy val connector: UpscanConnector = app.injector.instanceOf[UpscanConnector]
+  val path = "/report/upload-file"
 
   "Authenticated Identifier Action" when {
 
@@ -47,7 +48,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
         stubPostResponse("/upscan/v2/initiate", OK, Json.toJson(upscanBody).toString())
 
         val response = await(
-          buildClient()
+          buildClient(path)
             .withFollowRedirects(false)
             .addCookies(wsSessionCookie)
             .get()
@@ -62,7 +63,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
     "the user is not authenticated" must {
       "redirect to the government gateway sign-in page" in {
         val response = await(
-          buildClient()
+          buildClient(path)
             .withFollowRedirects(false)
             .get()
         )
@@ -82,7 +83,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
         stubPost(authUrl, OK, authRequest, json)
 
         val response = await(
-          buildClient()
+          buildClient(path)
             .withFollowRedirects(false)
             .addCookies(wsSessionCookie)
             .get()
@@ -112,7 +113,7 @@ class AuthenticatedIdentifierActionISpec extends PlaySpec with ISpecBase {
         stubPost(authUrl, OK, authRequest, json)
 
         val response = await(
-          buildClient()
+          buildClient(path)
             .withFollowRedirects(false)
             .addCookies(wsSessionCookie)
             .get()
