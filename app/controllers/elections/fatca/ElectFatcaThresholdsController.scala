@@ -21,7 +21,8 @@ import forms.elections.fatca.ElectFatcaThresholdsFormProvider
 import models.UserAnswers.getMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.ElectFatcaThresholdsPage
+import pages.{ElectFatcaThresholdsPage, ValidXMLPage}
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -45,26 +46,31 @@ class ElectFatcaThresholdsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
-          val fiName = messageSpecData.fiNameFromFim
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
           val preparedForm = request.userAnswers.get(ElectFatcaThresholdsPage) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
           Ok(view(fiName, preparedForm, mode))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
-          val fiName = messageSpecData.fiNameFromFim
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
           form
             .bindFromRequest()
             .fold(
@@ -75,7 +81,8 @@ class ElectFatcaThresholdsController @Inject() (
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(ElectFatcaThresholdsPage, mode, updatedAnswers))
             )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
-
   }
 }
