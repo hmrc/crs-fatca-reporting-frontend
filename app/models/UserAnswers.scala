@@ -67,7 +67,6 @@ final case class UserAnswers(
 }
 
 object UserAnswers {
-  val missingValidXmlMessage = "ValidXMLPage is missing"
 
   val reads: Reads[UserAnswers] = {
 
