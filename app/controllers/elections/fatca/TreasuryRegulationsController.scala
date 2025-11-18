@@ -18,10 +18,11 @@ package controllers.elections.fatca
 
 import controllers.actions.*
 import forms.elections.fatca.TreasuryRegulationsFormProvider
-import models.UserAnswers.getMessageSpecData
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
+import pages.ValidXMLPage
 import pages.elections.fatca.TreasuryRegulationsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -45,28 +46,33 @@ class TreasuryRegulationsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
-          val fiName = messageSpecData.fiNameFromFim
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validateFileData) =>
+          val messageSpecData = validateFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
           val preparedForm = request.userAnswers.get(TreasuryRegulationsPage) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
 
           Ok(view(preparedForm, mode, fiName))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
-
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
-          val fiName = messageSpecData.fiNameFromFim
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validateFileData) =>
+          val messageSpecData = validateFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
           form
             .bindFromRequest()
             .fold(
@@ -77,6 +83,8 @@ class TreasuryRegulationsController @Inject() (
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(TreasuryRegulationsPage, mode, updatedAnswers))
             )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
   }
 }
