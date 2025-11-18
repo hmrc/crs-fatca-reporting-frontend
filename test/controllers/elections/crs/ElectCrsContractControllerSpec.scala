@@ -18,7 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
-import models.{CRS, MessageSpecData, NormalMode, UserAnswers}
+import models.{CRS, MessageSpecData, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -46,7 +46,26 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
   val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
 
   lazy val electCrsContractRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl    = controllers.routes.PageUnavailableController.onPageLoad().url
   "ElectCrsContract Controller" - {
+
+    "must return SEE_OTHER and the correct view for a GET When message spec data not available" in {
+
+      val userAnswers = emptyUserAnswers
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, electCrsContractRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ElectCrsContractView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
 
     "must return OK and the correct view for a GET" in {
 
@@ -113,6 +132,35 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to page unavailable page when message spec data not available" in {
+
+      val userAnswers = emptyUserAnswers
+        .withPage(ElectCrsContractPage, true)
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, electCrsContractRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 

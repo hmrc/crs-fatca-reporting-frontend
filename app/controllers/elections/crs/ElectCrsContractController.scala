@@ -21,6 +21,7 @@ import forms.ElectCrsContractFormProvider
 import models.UserAnswers.getMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
+import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsContractPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -49,20 +50,23 @@ class ElectCrsContractController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validXmlData) =>
+          val messageSpecData = validXmlData.messageSpecData
           val preparedForm = request.userAnswers.get(ElectCrsContractPage) match {
             case None        => form
             case Some(value) => form.fill(value)
           }
           Ok(view(messageSpecData.fiNameFromFim, preparedForm, mode))
+        case _ => Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validXmlData) =>
+          val messageSpecData = validXmlData.messageSpecData
           form
             .bindFromRequest()
             .fold(
@@ -73,6 +77,7 @@ class ElectCrsContractController @Inject() (
                   _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(ElectCrsContractPage, mode, updatedAnswers))
             )
+        case _ => Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
   }
 }
