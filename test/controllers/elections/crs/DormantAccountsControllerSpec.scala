@@ -47,6 +47,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   val expectedFiName          = "fi-name"
 
   lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl           = controllers.routes.PageUnavailableController.onPageLoad().url
 
   val crsMessageSpec = MessageSpecData(
     messageType = CRS,
@@ -75,6 +76,19 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, fiName)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to pageUnavailable when a validxml object is not present in useranswers for a GET" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, dormantAccountsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
@@ -118,6 +132,21 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode).url
+      }
+    }
+
+    "must redirect to pageUnavailable when a validxml object is not present in useranswers for a submit" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, dormantAccountsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
