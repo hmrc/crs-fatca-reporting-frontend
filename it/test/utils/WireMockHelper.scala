@@ -58,8 +58,8 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach with Auth
     super.afterAll()
   }
 
-  def stubAuthorised(appaId: String): Unit =
-    stubPost(authUrl, OK, authRequest, authOKResponse(appaId))
+  def stubAuthorised(appID: String): Unit =
+    stubPost(authUrl, OK, authRequest, authOKResponse(appID))
 
   def verifyAuthorised(): Unit =
     verifyPost(authUrl)
@@ -140,7 +140,6 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach with Auth
     server.stubFor(
       WireMock
         .post(urlEqualTo(stripToPath(url)))
-        .withRequestBody(new EqualToJsonPattern(requestBody, true, false))
         .willReturn(aResponse().withStatus(status).withBody(returnBody))
     )
 

@@ -19,9 +19,10 @@ package utils
 import org.scalatest.Suite
 import play.api.http.Status.OK
 
-trait AuthStubs { this: Suite =>
+trait AuthStubs {
+  this: Suite =>
 
-  val authUrl            = "/auth/authorise"
+  val authUrl = "/auth/authorise"
   val testAuthInternalId = "internalId"
 
   val authRequest =
@@ -40,18 +41,19 @@ trait AuthStubs { this: Suite =>
        |""".stripMargin
 
   def authOKResponse(fatcaId: String) =
-    s"""|  {
-        |    "internalId": "$testAuthInternalId",
-        |    "affinityGroup": "Organisation",
-        |    "allEnrolments" : [ {
-        |      "key" : "HMRC-FATCA-ORG",
-        |      "identifiers" : [ {
-        |        "key" : "FATCAID",
-        |        "value" : "$fatcaId"
-        |      } ],
-        |      "state" : "Activated",
-        |      "confidenceLevel" : 50
-        |    } ]
-        |  }
-         """.stripMargin
+    s"""
+       |{
+       |  "internalId" : "$testAuthInternalId",
+       |  "allEnrolments" : [ {
+       |    "key" : "HMRC-FATCA-ORG",
+       |    "identifiers" : [ {
+       |      "key" : "FATCAID",
+       |      "value" : "$fatcaId"
+       |    } ],
+       |    "state" : "Activated",
+       |    "confidenceLevel" : 50
+       |  } ],
+       |  "affinityGroup" : "Organisation"
+       |}
+       |""".stripMargin
 }
