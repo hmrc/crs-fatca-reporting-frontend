@@ -38,6 +38,6 @@ class ElectFatcaThresholdsControllerISpec extends ISpecBehaviours {
     val requestBody: Map[String, Seq[String]] = Map("value" -> Seq("true"))
 
     behave like standardOnSubmit(path, requestBody)
-    behave like pageSubmits(path, "/report-for-crs-and-fatca/check-your-answers", userAnswers, requestBody)
+    behave like pageSubmits(path, "/report-for-crs-and-fatca/report/check-your-file-details", userAnswers, requestBody)
   }
 }
