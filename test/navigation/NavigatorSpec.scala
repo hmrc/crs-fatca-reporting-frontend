@@ -108,6 +108,9 @@ class NavigatorSpec extends SpecBase {
 
           navigator.nextPage(TreasuryRegulationsPage, NormalMode, userAnswers) mustBe controllers.elections.fatca.routes.ElectFatcaThresholdsController
             .onPageLoad(NormalMode)
+        }
+      }
+
       "must go from elections/crs/dormant-accounts page" - {
         "to  /elections/crs/thresholds" in {
           val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
