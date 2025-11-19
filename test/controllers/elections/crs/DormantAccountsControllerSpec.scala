@@ -18,8 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.DormantAccountsFormProvider
-import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
-import navigation.{FakeNavigator, Navigator}
+import models.{CRS, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -27,7 +26,6 @@ import pages.ValidXMLPage
 import pages.elections.crs.DormantAccountsPage
 import play.api.data.Form
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -38,18 +36,36 @@ import scala.concurrent.Future
 
 class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute: Call = Call("GET", "/foo")
+  val formProvider            = new DormantAccountsFormProvider()
+  val form: Form[Boolean]     = formProvider()
+  val fiName                  = "fi-name"
+  val reportingPeriodYear     = 2024
+  val reportingPeriod: String = reportingPeriodYear.toString
+  val fileName                = "test-file.xml"
+  val FileSize                = 100L
+  val FileChecksum            = "checksum"
+  val expectedFiName          = "fi-name"
 
-  val formProvider                      = new DormantAccountsFormProvider()
-  val form: Form[Boolean]               = formProvider()
-  val fiName                            = "placeholderFIName"
   lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl           = controllers.routes.PageUnavailableController.onPageLoad().url
+
+  val crsMessageSpec = MessageSpecData(
+    messageType = CRS,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+    giin = None,
+    fiNameFromFim = fiName
+  )
+
+  val crsValidatedFileData        = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
 
   "DormantAccounts Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, dormantAccountsRoute)
@@ -63,9 +79,22 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to pageUnavailable when a validxml object is not present in useranswers for a GET" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, dormantAccountsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(DormantAccountsPage, true).success.value
+      val userAnswers = crsUserAnswers.set(DormantAccountsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -88,9 +117,8 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(crsUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -103,13 +131,28 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode).url
+      }
+    }
+
+    "must redirect to pageUnavailable when a validxml object is not present in useranswers for a submit" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, dormantAccountsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request =

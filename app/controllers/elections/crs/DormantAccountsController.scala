@@ -18,8 +18,9 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.DormantAccountsFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
+import pages.ValidXMLPage
 import pages.elections.crs.DormantAccountsPage
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,6 +38,7 @@ class DormantAccountsController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   formProvider: DormantAccountsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: DormantAccountsView
@@ -46,29 +48,42 @@ class DormantAccountsController @Inject() (
 
   val form: Form[Boolean] = formProvider()
 
-  val fiName = "placeholderFIName"
-
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(DormantAccountsPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
 
-      Ok(view(preparedForm, mode, fiName))
+          val preparedForm = request.userAnswers.get(DormantAccountsPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(preparedForm, mode, fiName))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(DormantAccountsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(DormantAccountsPage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fiName))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(DormantAccountsPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(DormantAccountsPage, mode, updatedAnswers))
+            )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+      }
   }
 }
