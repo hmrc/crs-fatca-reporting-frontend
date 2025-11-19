@@ -17,37 +17,57 @@
 package controllers.elections.crs
 
 import base.SpecBase
+import controllers.routes
 import forms.ElectCrsGrossProceedsFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{CRS, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.ElectCrsGrossProceedsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ElectCrsGrossProceedsFormProvider()
   val form         = formProvider()
-  val fiName       = "EFG Bank plc"
+  val fiName                  = "fi-name"
+  val reportingPeriodYear     = 2024
+  val reportingPeriod: String = reportingPeriodYear.toString
+  val fileName                = "test-file.xml"
+  val FileSize                = 100L
+  val FileChecksum            = "checksum"
 
   lazy val electCrsGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl: String = controllers.routes.PageUnavailableController.onPageLoad().url
+
+  val crsMessageSpec = MessageSpecData(
+    messageType = CRS,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+    giin = None,
+    fiNameFromFim = fiName
+  )
+
+  val fatcaValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
+
 
   "ElectCrsGrossProceeds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, electCrsGrossProceedsRoute)
@@ -61,9 +81,25 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return to page unavailable when xml valid page is not present in user answers GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, electCrsGrossProceedsRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsGrossProceedsPage, true).success.value
+      val userAnswers = crsUserAnswers.set(ElectCrsGrossProceedsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -86,9 +122,8 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(crsUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -101,13 +136,38 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.CheckYourFileDetailsController.onPageLoad().url
+      }
+    }
+
+    "must redirect to page unavailable when xml valid page is missing from user answers on submit" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, electCrsGrossProceedsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(crsUserAnswers)).build()
 
       running(application) {
         val request =

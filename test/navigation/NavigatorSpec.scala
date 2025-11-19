@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
-import pages.elections.crs.ElectCrsContractPage
+import pages.elections.crs.{ElectCrsContractPage, ElectCrsGrossProceedsPage}
 
 import java.time.LocalDate
 
@@ -106,6 +106,18 @@ class NavigatorSpec extends SpecBase {
 
           navigator.nextPage(ElectCrsContractPage, NormalMode, userAnswers) mustBe
             controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
+        }
+      }
+
+      "must go from  /elections/crs/gross-proceeds page" - {
+        "to  /check-your-file-details" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(ElectCrsGrossProceedsPage, true)
+
+          navigator.nextPage(ElectCrsGrossProceedsPage, NormalMode, userAnswers) mustBe
+            routes.CheckYourFileDetailsController.onPageLoad()
         }
       }
     }

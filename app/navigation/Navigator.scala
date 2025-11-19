@@ -21,7 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.ElectCrsContractPage
+import pages.elections.crs.{ElectCrsContractPage, ElectCrsGrossProceedsPage}
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -46,6 +46,8 @@ class Navigator @Inject() () {
       userAnswers => requiredGiinNavigation(userAnswers)
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
+    case ElectCrsGrossProceedsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
