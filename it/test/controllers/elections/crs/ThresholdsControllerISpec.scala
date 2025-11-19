@@ -43,7 +43,7 @@ class ThresholdsControllerISpec extends ISpecBehaviours {
   val userAnswers2025 = userAnswersWithReportingPeriod(2025)
   val userAnswers2026 = userAnswersWithReportingPeriod(2026)
 
-  private val routeFor2025OrEarlier = "/report/elections/check-your-file-details"
+  private val routeFor2025OrEarlier = "/report/check-your-file-details"
   private val routeFor2026OrLater = "/report/elections/crs/carf-gross-proceeds"
 
   "GET ThresholdsController.onPageLoad" must {
@@ -53,7 +53,7 @@ class ThresholdsControllerISpec extends ISpecBehaviours {
 
   "POST ThresholdsController.onSubmit" must {
 
-    "redirect to CheckYourFileDetailsController when reporting period is 2025 or earlier" in {
+    "redirect to CheckYourFileDetailsController when reporting period is 2025 or earlier" when {
       behave like pageSubmits(
         path = path,
         redirectLocation = routeFor2025OrEarlier,
@@ -62,7 +62,7 @@ class ThresholdsControllerISpec extends ISpecBehaviours {
       )
     }
 
-    "redirect to ElectCrsCarfGrossProceedsController when reporting period is 2026 or later" in {
+    "redirect to ElectCrsCarfGrossProceedsController when reporting period is 2026 or later" when {
       behave like pageSubmits(
         path = path,
         redirectLocation = routeFor2026OrLater,
