@@ -17,7 +17,7 @@
 package utils
 
 import generators.Generators
-import models.{CRS, MessageSpecData, UserAnswers, ValidatedFileData}
+import models.{FATCA, MessageSpecData, UserAnswers, ValidatedFileData}
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -49,8 +49,8 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
     "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
     "mongodb.uri"                     -> mongoUri,
     "play.filters.csrf.header.bypassHeaders.Csrf-Token"       -> "nocheck"
-    //    "logger.root"                                             -> "INFO",
-    //    "logger.controllers"                                      -> "DEBUG"
+//    "logger.root"                                             -> "INFO",
+//    "logger.controllers"                                      -> "DEBUG"
   )
 
   def buildClient(path: String): WSRequest =
@@ -69,7 +69,7 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
 
   }
 
-  val testMessageSpecData: MessageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName")
+  val testMessageSpecData: MessageSpecData = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName")
   def getValidatedFileData(
                             msd: MessageSpecData = testMessageSpecData
                           ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
