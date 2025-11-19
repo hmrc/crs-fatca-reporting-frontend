@@ -105,6 +105,8 @@ class NavigatorSpec extends SpecBase {
             .withPage(ElectFatcaThresholdsPage, true)
 
           navigator.nextPage(ElectFatcaThresholdsPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
       "must go from elections/crs/contracts page" - {
         "to  /elections/crs/dormant-accounts" in {
           val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
