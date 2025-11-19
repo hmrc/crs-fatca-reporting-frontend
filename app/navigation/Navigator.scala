@@ -21,6 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
+import pages.elections.crs.ElectCrsContractPage
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -46,6 +47,8 @@ class Navigator @Inject() () {
     case ElectFatcaThresholdsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    case ElectCrsContractPage =>
+      userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
