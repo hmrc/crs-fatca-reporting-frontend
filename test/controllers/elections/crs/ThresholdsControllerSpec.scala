@@ -209,7 +209,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery if ValidXMLPage data (containing message spec) is missing on GET" in {
+    "must redirect to Page Unavailable if ValidXMLPage data (containing message spec) is missing on GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -219,11 +219,11 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.PageUnavailableController.onPageLoad().url
       }
     }
 
-    "must redirect to Journey Recovery if ValidXMLPage data (containing message spec) is missing on POST" in {
+    "must redirect to Page Unavailable if ValidXMLPage data (containing message spec) is missing on POST" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -235,7 +235,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.PageUnavailableController.onPageLoad().url
       }
     }
   }

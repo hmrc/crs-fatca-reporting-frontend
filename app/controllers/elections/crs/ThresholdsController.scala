@@ -55,7 +55,7 @@ class ThresholdsController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case None =>
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad())
         case Some(_) =>
           getMessageSpecData(request.userAnswers) {
             messageSpecData =>
@@ -75,7 +75,7 @@ class ThresholdsController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case None =>
-          Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad()))
         case Some(_) =>
           getMessageSpecData(request.userAnswers) {
             messageSpecData =>
