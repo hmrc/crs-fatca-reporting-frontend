@@ -21,6 +21,7 @@ import controllers.routes
 import models.*
 import pages.*
 import pages.elections.crs.DormantAccountsPage
+import pages.elections.crs.ElectCrsContractPage
 
 import java.time.LocalDate
 
@@ -105,6 +106,15 @@ class NavigatorSpec extends SpecBase {
             .withPage(DormantAccountsPage, true)
 
           navigator.nextPage(DormantAccountsPage, NormalMode, userAnswers) mustBe controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
+      "must go from elections/crs/contracts page" - {
+        "to  /elections/crs/dormant-accounts" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(ElectCrsContractPage, true)
+
+          navigator.nextPage(ElectCrsContractPage, NormalMode, userAnswers) mustBe
+            controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
         }
       }
     }
