@@ -46,7 +46,7 @@ class Navigator @Inject() () {
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
     case ElectFatcaThresholdsPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
 
     case DormantAccountsPage =>
       _ => controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)

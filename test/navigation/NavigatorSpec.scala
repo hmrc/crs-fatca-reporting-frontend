@@ -105,7 +105,7 @@ class NavigatorSpec extends SpecBase {
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(ElectFatcaThresholdsPage, true)
 
-          navigator.nextPage(ElectFatcaThresholdsPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          navigator.nextPage(ElectFatcaThresholdsPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
         }
       }
       "must go from elections/crs/dormant-accounts page" - {
