@@ -18,16 +18,17 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.ElectCrsCarfGrossProceedsFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
+import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsCarfGrossProceedsPage
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.elections.crs.ElectCrsCarfGrossProceedsView
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,33 +45,49 @@ class ElectCrsCarfGrossProceedsController @Inject() (
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-  val fiName = "EFG Bank plc"
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val currentYear = LocalDate.now().getYear
-      val form        = formProvider(currentYear)
-      val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsCarfGrossProceedsPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+          val reportingYear   = messageSpecData.reportingPeriod.getYear
 
-      Ok(view(fiName, currentYear, preparedForm, mode))
+          val form: Form[Boolean] = formProvider(reportingYear)
+
+          val preparedForm = request.userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(fiName, reportingYear, preparedForm, mode))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val currentYear = LocalDate.now().getYear
-      val form        = formProvider(currentYear)
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(fiName, currentYear, formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ElectCrsCarfGrossProceedsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ElectCrsCarfGrossProceedsPage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+          val reportingYear   = messageSpecData.reportingPeriod.getYear
+
+          val form: Form[Boolean] = formProvider(reportingYear)
+
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(fiName, reportingYear, formWithErrors, mode))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectCrsCarfGrossProceedsPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ElectCrsCarfGrossProceedsPage, mode, updatedAnswers))
+            )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+      }
   }
 }
