@@ -36,9 +36,8 @@ import scala.concurrent.Future
 
 class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-
-  val formProvider = new ElectCrsGrossProceedsFormProvider()
-  val form         = formProvider()
+  val formProvider            = new ElectCrsGrossProceedsFormProvider()
+  val form                    = formProvider()
   val fiName                  = "fi-name"
   val reportingPeriodYear     = 2024
   val reportingPeriod: String = reportingPeriodYear.toString
@@ -59,9 +58,8 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
     fiNameFromFim = fiName
   )
 
-  val fatcaValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val fatcaValidatedFileData      = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
   val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
-
 
   "ElectCrsGrossProceeds Controller" - {
 

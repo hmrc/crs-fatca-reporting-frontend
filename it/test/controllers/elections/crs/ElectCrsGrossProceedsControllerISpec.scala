@@ -8,21 +8,21 @@ import java.time.LocalDate
 
 class ElectCrsGrossProceedsControllerISpec extends ISpecBehaviours {
 
-  private val path = "/report/elections/fatca/us-treasury-regulations"
+  private val path = "/report/elections/crs/gross-proceeds"
   val fiNameFM = "testFIFromFM"
   val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
   val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
-  "GET TreasuryRegulationsController.onPageLoad" must {
-    behave like pageLoads(path = path, pageTitle = "treasuryRegulations.title", userAnswers = userAnswers)
+  "GET ElectCrsGrossProceedsController.onPageLoad" must {
+    behave like pageLoads(path = path, pageTitle = "elections.crs.grossProceeds.title", userAnswers = userAnswers)
     behave like pageRedirectsWhenNotAuthorised(path)
   }
 
-  "Post TreasuryRegulationsController.onSubmit" must {
+  "Post ElectCrsGrossProceedsController.onSubmit" must {
     val requestBody: Map[String, Seq[String]] = Map("value" -> Seq("true"))
 
     behave like standardOnSubmit(path, requestBody)
-    behave like pageSubmits(path, "/report-for-crs-and-fatca/report/elections/fatca/thresholds", userAnswers, requestBody)
+    behave like pageSubmits(path, "/report-for-crs-and-fatca/report/check-your-file-details", userAnswers, requestBody)
   }
 
 }
