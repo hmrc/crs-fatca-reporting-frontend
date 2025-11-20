@@ -21,8 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.DormantAccountsPage
-import pages.elections.crs.ElectCrsContractPage
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage}
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -58,17 +57,17 @@ class Navigator @Inject() () {
         if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
           routes.RequiredGiinController.onPageLoad(NormalMode)
         } else {
-          redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+          redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
         }
     }
 
   private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
       messageSpecData =>
-        redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+        redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
     }
 
-  private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
+  private def redirectToElectionPageOrCheckFileDetails(reportingPeriodYear: Int): Call = {
     def requiresElection(reportingYear: Int): Boolean =
       isReportingYearValid(reportingYear) && !hasElectionsHappened
 
@@ -84,7 +83,7 @@ class Navigator @Inject() () {
     if (requiresElection(reportingPeriodYear)) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
-      routes.CheckYourAnswersController.onPageLoad()
+      routes.CheckYourFileDetailsController.onPageLoad()
     }
   }
 
