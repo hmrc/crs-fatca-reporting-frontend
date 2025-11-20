@@ -18,15 +18,19 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.elections.crs.ThresholdsFormProvider
+import models.UserAnswers.getMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.elections.crs.ThresholdsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.elections.crs.ThresholdsView
+import controllers.elections.crs.routes.*
+import pages.ValidXMLPage
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -36,6 +40,7 @@ class ThresholdsController @Inject() (
   navigator: Navigator,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   formProvider: ThresholdsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: ThresholdsView
@@ -43,30 +48,47 @@ class ThresholdsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form   = formProvider()
-  val FIName = "EFG Bank plc"
+  val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(ThresholdsPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
+      request.userAnswers.get(ValidXMLPage) match {
+        case None =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+        case Some(_) =>
+          getMessageSpecData(request.userAnswers) {
+            messageSpecData =>
 
-      Ok(view(FIName, preparedForm, mode))
+              val fiName = messageSpecData.fiNameFromFim
+
+              val preparedForm = request.userAnswers.get(ThresholdsPage) match {
+                case None        => form
+                case Some(value) => form.fill(value)
+              }
+              Ok(view(fiName, preparedForm, mode))
+          }
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(FIName, formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ThresholdsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ThresholdsPage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validXmlData) =>
+          val messageSpecData = validXmlData.messageSpecData
+          val reportingFIName = messageSpecData.fiNameFromFim
+
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(reportingFIName, formWithErrors, mode))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ThresholdsPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ThresholdsPage, mode, updatedAnswers))
+            )
+        case None =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad()))
+      }
   }
 }

@@ -17,39 +17,69 @@
 package controllers.elections.crs
 
 import base.SpecBase
+import controllers.elections.crs.routes.*
 import controllers.routes
 import forms.elections.crs.ThresholdsFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{CRS, MessageSpecData, Mode, NormalMode, UserAnswers, ValidatedFileData}
+import navigation.Navigator
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ValidXMLPage
 import pages.elections.crs.ThresholdsPage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.ThresholdsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  val mockNavigator = mock[Navigator]
+  val formProvider  = new ThresholdsFormProvider()
+  val form          = formProvider()
 
-  val formProvider = new ThresholdsFormProvider()
-  val form         = formProvider()
+  val testFIName = "FI Test Name PLC"
 
-  val FIName = "EFG Bank plc"
+  private val messageSpecData2025: MessageSpecData = MessageSpecData(
+    messageType = CRS,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(2025, 12, 31),
+    giin = Some("giin"),
+    fiNameFromFim = testFIName
+  )
+  private val validatedFileData2025 = ValidatedFileData("file.xml", messageSpecData2025, 100L, "checksum")
+
+  val userAnswers2025: UserAnswers = emptyUserAnswers
+    .set(ValidXMLPage, validatedFileData2025)
+    .success
+    .value
+
+  private val messageSpecData2026: MessageSpecData = messageSpecData2025.copy(
+    reportingPeriod = LocalDate.of(2026, 1, 1)
+  )
+  private val validatedFileData2026 = ValidatedFileData("file.xml", messageSpecData2026, 100L, "checksum")
+
+  val userAnswers2026: UserAnswers = emptyUserAnswers
+    .set(ValidXMLPage, validatedFileData2026)
+    .success
+    .value
 
   lazy val electionsCRSThresholdsRoute = controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode).url
 
-  "ElectionsCRSThresholds Controller" - {
+  lazy val routeFor2025OrEarlier = controllers.routes.CheckYourFileDetailsController.onPageLoad().url
+  lazy val routeFor2026OrLater   = ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
+
+  "Thresholds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers2025)).build()
 
       running(application) {
         val request = FakeRequest(GET, electionsCRSThresholdsRoute)
@@ -59,13 +89,13 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[ThresholdsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(FIName, form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(testFIName, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ThresholdsPage, true).success.value
+      val userAnswers = userAnswers2025.set(ThresholdsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,39 +107,71 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(FIName, form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(testFIName, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "on submit with valid data" - {
 
       val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      "must redirect to CheckYourFileDetailsController when reporting period is 2025 or earlier" in {
 
-      running(application) {
-        val request =
-          FakeRequest(POST, electionsCRSThresholdsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+        when(mockNavigator.nextPage(any(), any[Mode], any()))
+          .thenReturn(routes.CheckYourFileDetailsController.onPageLoad())
 
-        val result = route(application, request).value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers2025))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(mockNavigator)
+            )
+            .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        running(application) {
+          val request =
+            FakeRequest(POST, electionsCRSThresholdsRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routeFor2025OrEarlier
+        }
+        reset(mockNavigator)
+      }
+
+      "must redirect to ElectCrsCarfGrossProceedsController when reporting period is 2026 or later" in {
+
+        when(mockNavigator.nextPage(any(), any[Mode], any()))
+          .thenReturn(ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode))
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers2026))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(mockNavigator)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, electionsCRSThresholdsRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routeFor2026OrLater
+        }
+        reset(mockNavigator)
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers2025)).build()
 
       running(application) {
         val request =
@@ -123,11 +185,11 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(FIName, boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(testFIName, boundForm, NormalMode)(request, messages(application)).toString
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" ignore {
+    "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -141,7 +203,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to Journey Recovery for a POST if no existing data is found" ignore {
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -154,6 +216,36 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Page Unavailable if ValidXMLPage data (containing message spec) is missing on GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, electionsCRSThresholdsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PageUnavailableController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Page Unavailable if ValidXMLPage data (containing message spec) is missing on POST" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, electionsCRSThresholdsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PageUnavailableController.onPageLoad().url
       }
     }
   }
