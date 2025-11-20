@@ -47,6 +47,9 @@ class Navigator @Inject() () {
       userAnswers => validFileUploadedNavigation(userAnswers)
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
+    case ElectFatcaThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+
     case TreasuryRegulationsPage =>
       _ => controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode)
     case DormantAccountsPage =>
