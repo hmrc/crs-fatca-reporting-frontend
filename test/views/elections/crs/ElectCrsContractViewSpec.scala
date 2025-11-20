@@ -56,7 +56,7 @@ class ElectCrsContractViewSpec extends SpecBase with GuiceOneAppPerSuite with In
     }
 
     "should have continue Button" in {
-      elementText(doc, "button") mustEqual "Continue"
+      elementText(doc, "#submit") mustEqual "Continue"
     }
   }
 }
