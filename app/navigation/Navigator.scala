@@ -54,8 +54,7 @@ class Navigator @Inject() () {
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case ThresholdsPage =>
-      userAnswers =>
-        thresholdsNavigation(userAnswers)
+      userAnswers => thresholdsNavigation(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
