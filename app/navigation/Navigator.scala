@@ -21,6 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
+import pages.elections.fatca.TreasuryRegulationsPage
 import pages.elections.crs.DormantAccountsPage
 import pages.elections.crs.ElectCrsContractPage
 import play.api.mvc.Call
@@ -48,6 +49,8 @@ class Navigator @Inject() () {
     case ElectFatcaThresholdsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
 
+    case TreasuryRegulationsPage =>
+      _ => controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode)
     case DormantAccountsPage =>
       _ => controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
     case ElectCrsContractPage =>
