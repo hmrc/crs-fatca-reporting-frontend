@@ -49,7 +49,6 @@ class ThresholdsController @Inject() (
     with I18nSupport {
 
   val form                  = formProvider()
-  private val thresholdDate = LocalDate.of(2026, 1, 1)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -74,31 +73,24 @@ class ThresholdsController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
+        case Some(validXmlData) =>
+          val messageSpecData = validXmlData.messageSpecData
+          val reportingFIName = messageSpecData.fiNameFromFim
+
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(BadRequest(view(reportingFIName, formWithErrors, mode))),
+
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ThresholdsPage, value))
+                  _ <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ThresholdsPage, mode, updatedAnswers))
+            )
         case None =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad()))
-        case Some(_) =>
-          getMessageSpecData(request.userAnswers) {
-            messageSpecData =>
-              val fiName          = messageSpecData.fiNameFromFim
-              val reportingPeriod = messageSpecData.reportingPeriod
-
-              form
-                .bindFromRequest()
-                .fold(
-                  formWithErrors => Future.successful(BadRequest(view(fiName, formWithErrors, mode))),
-                  value =>
-                    for {
-                      updatedAnswers <- Future.fromTry(request.userAnswers.set(ThresholdsPage, value))
-                      _              <- sessionRepository.set(updatedAnswers)
-                      redirectRoute: Result =
-                        if (reportingPeriod.getYear >= thresholdDate.getYear) {
-                          Redirect(ElectCrsCarfGrossProceedsController.onPageLoad(mode))
-                        } else {
-                          Redirect(controllers.routes.CheckYourFileDetailsController.onPageLoad())
-                        }
-                    } yield redirectRoute
-                )
-          }
       }
   }
 }

@@ -20,9 +20,10 @@ import base.SpecBase
 import controllers.elections.crs.routes.*
 import controllers.routes
 import forms.elections.crs.ThresholdsFormProvider
-import models.{CRS, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, MessageSpecData, Mode, NormalMode, UserAnswers, ValidatedFileData}
+import navigation.Navigator
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ValidXMLPage
 import pages.elections.crs.ThresholdsPage
@@ -37,6 +38,7 @@ import scala.concurrent.Future
 
 class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
+  val mockNavigator = mock[Navigator]
   val formProvider = new ThresholdsFormProvider()
   val form         = formProvider()
 
@@ -109,53 +111,61 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to CheckYourFileDetailsController when valid data is submitted and reporting period is 2025 or earlier" in {
+    "on submit with valid data" - {
 
       val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers2025))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      "must redirect to CheckYourFileDetailsController when reporting period is 2025 or earlier" in {
 
-      running(application) {
-        val request =
-          FakeRequest(POST, electionsCRSThresholdsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+        when(mockNavigator.nextPage(any(), any[Mode], any()))
+          .thenReturn(routes.CheckYourFileDetailsController.onPageLoad())
 
-        val result = route(application, request).value
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers2025))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(mockNavigator)
+            )
+            .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routeFor2025OrEarlier
+        running(application) {
+          val request =
+            FakeRequest(POST, electionsCRSThresholdsRoute)
+              .withFormUrlEncodedBody(("value", "true"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routeFor2025OrEarlier
+        }
+        reset(mockNavigator)
       }
-    }
 
-    "must redirect to ElectCrsCarfGrossProceedsController when valid data is submitted and reporting period is 2026 or later" in {
+      "must redirect to ElectCrsCarfGrossProceedsController when reporting period is 2026 or later" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+        when(mockNavigator.nextPage(any(), any[Mode], any()))
+          .thenReturn(ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode))
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswers2026))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository),
+              bind[Navigator].toInstance(mockNavigator)
+            )
+            .build()
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers2026))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+        running(application) {
+          val request =
+            FakeRequest(POST, electionsCRSThresholdsRoute)
+              .withFormUrlEncodedBody(("value", "true"))
 
-      running(application) {
-        val request =
-          FakeRequest(POST, electionsCRSThresholdsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          val result = route(application, request).value
 
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routeFor2026OrLater
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routeFor2026OrLater
+        }
+        reset(mockNavigator)
       }
     }
 

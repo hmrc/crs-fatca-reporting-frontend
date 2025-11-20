@@ -21,7 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.ElectCrsContractPage
+import pages.elections.crs.{ElectCrsContractPage, ThresholdsPage}
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -29,6 +29,8 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
+
+  private val thresholdDate = LocalDate.of(2026, 1, 1)
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
@@ -46,8 +48,28 @@ class Navigator @Inject() () {
       userAnswers => requiredGiinNavigation(userAnswers)
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
+    case ThresholdsPage =>
+      userAnswers =>
+        getMessageSpecData(userAnswers) {
+          messageSpecData =>
+            if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
+              controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
+            } else {
+              controllers.routes.CheckYourFileDetailsController.onPageLoad()
+            }
+        }
     case _ => _ => routes.IndexController.onPageLoad()
   }
+
+  private def thresholdsNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
+          controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
+        } else {
+          controllers.routes.CheckYourFileDetailsController.onPageLoad()
+        }
+    }
 
   private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
