@@ -20,6 +20,7 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
+import pages.elections.fatca.TreasuryRegulationsPage
 import pages.elections.crs.DormantAccountsPage
 import pages.elections.crs.ElectCrsContractPage
 
@@ -95,6 +96,18 @@ class NavigatorSpec extends SpecBase {
             .withPage(RequiredGiinPage, "testGIIN")
 
           navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
+
+      "must go from elections/fatca/us-treasury-regulations page" - {
+        "to  /elections/fatca/thresholds" in {
+          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val userAnswers = emptyUserAnswers
+            .withPage(ValidXMLPage, getValidatedFileData(msd))
+            .withPage(TreasuryRegulationsPage, true)
+
+          navigator.nextPage(TreasuryRegulationsPage, NormalMode, userAnswers) mustBe controllers.elections.fatca.routes.ElectFatcaThresholdsController
+            .onPageLoad(NormalMode)
         }
       }
 
