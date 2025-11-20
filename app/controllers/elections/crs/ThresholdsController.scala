@@ -48,7 +48,7 @@ class ThresholdsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form                  = formProvider()
+  val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
@@ -80,13 +80,11 @@ class ThresholdsController @Inject() (
           form
             .bindFromRequest()
             .fold(
-              formWithErrors =>
-                Future.successful(BadRequest(view(reportingFIName, formWithErrors, mode))),
-
+              formWithErrors => Future.successful(BadRequest(view(reportingFIName, formWithErrors, mode))),
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ThresholdsPage, value))
-                  _ <- sessionRepository.set(updatedAnswers)
+                  _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(ThresholdsPage, mode, updatedAnswers))
             )
         case None =>

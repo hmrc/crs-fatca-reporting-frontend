@@ -21,7 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.{ElectCrsContractPage, ThresholdsPage, DormantAccountsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
 import play.api.mvc.Call
 
 import java.time.LocalDate

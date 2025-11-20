@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
-import pages.elections.crs.{ElectCrsContractPage, ThresholdsPage, DormantAccountsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
 
 import java.time.LocalDate
 
@@ -124,7 +124,7 @@ class NavigatorSpec extends SpecBase {
         val baseAnswers = emptyUserAnswers.withPage(ThresholdsPage, true)
 
         "to /elections/crs/gross-proceeds when the reporting period is 2026 or later" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2026, 1, 1), giin = None, "testFiNameFromFim")
+          val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2026, 1, 1), giin = None, "testFiNameFromFim")
           val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
           navigator.nextPage(ThresholdsPage, NormalMode, userAnswers) mustBe
@@ -132,7 +132,7 @@ class NavigatorSpec extends SpecBase {
         }
 
         "to /check-your-file-details when the reporting period is 2025 or earlier" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
+          val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
           val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
           navigator.nextPage(ThresholdsPage, NormalMode, userAnswers) mustBe

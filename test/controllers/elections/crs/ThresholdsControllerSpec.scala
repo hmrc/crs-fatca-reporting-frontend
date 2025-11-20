@@ -39,8 +39,8 @@ import scala.concurrent.Future
 class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
   val mockNavigator = mock[Navigator]
-  val formProvider = new ThresholdsFormProvider()
-  val form         = formProvider()
+  val formProvider  = new ThresholdsFormProvider()
+  val form          = formProvider()
 
   val testFIName = "FI Test Name PLC"
 
