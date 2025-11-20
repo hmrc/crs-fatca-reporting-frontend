@@ -22,6 +22,7 @@ import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.mvc.Call
 
 import java.time.LocalDate
@@ -46,20 +47,15 @@ class Navigator @Inject() () {
       userAnswers => validFileUploadedNavigation(userAnswers)
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
+    case TreasuryRegulationsPage =>
+      _ => controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode)
     case DormantAccountsPage =>
       _ => controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case ThresholdsPage =>
       userAnswers =>
-        getMessageSpecData(userAnswers) {
-          messageSpecData =>
-            if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
-              controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
-            } else {
-              controllers.routes.CheckYourFileDetailsController.onPageLoad()
-            }
-        }
+        thresholdsNavigation(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
   }
 

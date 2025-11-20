@@ -18,36 +18,52 @@ package controllers.elections.fatca
 
 import base.SpecBase
 import forms.elections.fatca.TreasuryRegulationsFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.ValidXMLPage
 import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.fatca.TreasuryRegulationsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private val formProvider        = new TreasuryRegulationsFormProvider()
+  private val form                = formProvider()
+  private val reportingPeriodYear = 2024
+  private val fiName              = "fi-name"
+  private val fileName            = "test-file.xml"
+  private val FileSize            = 100L
+  private val FileChecksum        = "checksum"
 
-  private val formProvider = new TreasuryRegulationsFormProvider()
-  private val form         = formProvider()
-  private val fiName       = "Placeholder Financial Institution"
+  lazy val treasuryRegulationsRoute: String = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl: String       = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  lazy val treasuryRegulationsRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
+  val fatcaMessageSpec = MessageSpecData(
+    messageType = FATCA,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+    giin = None,
+    fiNameFromFim = fiName
+  )
+
+  val fatcaValidatedFileData        = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
+  val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "TreasuryRegulations Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(fatcaUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, treasuryRegulationsRoute)
@@ -61,9 +77,23 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to page unavailble when validxml page is not present in user answers for a GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, treasuryRegulationsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
+
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(TreasuryRegulationsPage, true).success.value
+      val userAnswers = fatcaUserAnswers.set(TreasuryRegulationsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -86,9 +116,8 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -101,13 +130,30 @@ class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
+      }
+    }
+
+    "must redirect to page unavailable when a validxml page is not present in the user answers for submission" in {
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, treasuryRegulationsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(fatcaUserAnswers)).build()
 
       running(application) {
         val request =
