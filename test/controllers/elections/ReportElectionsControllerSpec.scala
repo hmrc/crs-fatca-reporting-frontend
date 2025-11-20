@@ -48,7 +48,8 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
     reportingFIName = "reportingFIName",
     reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
     giin = Some("giin"),
-    fiNameFromFim = expectedFiName
+    fiNameFromFim = expectedFiName,
+    electionsRequired = false
   )
   val crsValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
   val crsUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value

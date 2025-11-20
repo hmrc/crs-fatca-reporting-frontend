@@ -53,7 +53,8 @@ trait SpecBase
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-  val testMsd: MessageSpecData = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName")
+  val testMsd: MessageSpecData =
+    MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiName", electionsRequired = false)
 
   def getValidatedFileData(
     msd: MessageSpecData = testMsd
