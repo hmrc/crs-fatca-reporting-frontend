@@ -17,37 +17,56 @@
 package controllers.elections.fatca
 
 import base.SpecBase
+import controllers.routes
 import forms.elections.fatca.ElectFatcaThresholdsFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ElectFatcaThresholdsPage
+import pages.{ElectFatcaThresholdsPage, ValidXMLPage}
+import play.api.data.Form
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.fatca.ElectFatcaThresholdsView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  val formProvider            = new ElectFatcaThresholdsFormProvider()
+  val form: Form[Boolean]     = formProvider()
+  val fiName                  = "fi-name"
+  val reportingPeriodYear     = 2024
+  val reportingPeriod: String = reportingPeriodYear.toString
+  val fileName                = "test-file.xml"
+  val FileSize                = 100L
+  val FileChecksum            = "checksum"
+  val expectedFiName          = "fi-name"
 
-  val formProvider = new ElectFatcaThresholdsFormProvider()
-  val form         = formProvider()
-  val fiName       = "EFG Bank plc"
+  lazy val electFatcaThresholdsRoute: String = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl: String        = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  lazy val electFatcaThresholdsRoute = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
+  val fatcaMessageSpec = MessageSpecData(
+    messageType = FATCA,
+    sendingCompanyIN = "sendingCompanyIN",
+    messageRefId = "messageRefId",
+    reportingFIName = "reportingFIName",
+    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+    giin = None,
+    fiNameFromFim = fiName
+  )
+
+  val fatcaValidatedFileData        = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
+  val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "ElectFatcaThresholds Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(fatcaUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, electFatcaThresholdsRoute)
@@ -61,9 +80,23 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must redirect to page unavailable when valid xml page is not present in the user answers" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectFatcaThresholdsPage, true).success.value
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, electFatcaThresholdsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
+
+    "must populate the view correctly on a GET when the question has previously been answered for GET" in {
+
+      val userAnswers = fatcaUserAnswers.set(ElectFatcaThresholdsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -86,9 +119,8 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -101,13 +133,29 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.CheckYourFileDetailsController.onPageLoad().url
+      }
+    }
+
+    "must populate the view correctly on a GET when the question has previously been answered for a submission" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, electFatcaThresholdsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(fatcaUserAnswers)).build()
 
       running(application) {
         val request =
