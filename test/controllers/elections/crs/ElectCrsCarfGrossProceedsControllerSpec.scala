@@ -18,12 +18,13 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsCarfGrossProceedsFormProvider
-import models.{NormalMode, UserAnswers}
+import models.*
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.elections.crs.ElectCrsCarfGrossProceedsPage
+import pages.ValidXMLPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -36,11 +37,25 @@ import scala.concurrent.Future
 
 class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute  = Call("GET", "/foo")
-  val fiName       = "EFG Bank plc"
-  val currentYear  = LocalDate.now().getYear()
+  def onwardRoute = Call("GET", "/foo")
+
+  val mockFiName: String     = "Test Financial Institution"
+  val mockReportingYear: Int = LocalDate.now().getYear
+
+  val mockMessageSpecData: MessageSpecData =
+    MessageSpecData(
+      messageType = CRS,
+      sendingCompanyIN = "sendingCompanyIN",
+      messageRefId = "messageRefId",
+      reportingFIName = "reportingFIName",
+      reportingPeriod = LocalDate.of(mockReportingYear, 1, 1),
+      giin = None,
+      fiNameFromFim = mockFiName
+    )
+  val requiredUserAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(mockMessageSpecData))
+
   val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
-  val form         = formProvider(currentYear)
+  val form         = formProvider(mockReportingYear)
 
   lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
 
@@ -48,7 +63,7 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(requiredUserAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
@@ -58,13 +73,13 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
         val view = application.injector.instanceOf[ElectCrsCarfGrossProceedsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, currentYear, form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mockFiName, mockReportingYear, form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(ElectCrsCarfGrossProceedsPage, true).success.value
+      val userAnswers = requiredUserAnswers.set(ElectCrsCarfGrossProceedsPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -76,7 +91,7 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fiName, currentYear, form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mockFiName, mockReportingYear, form.fill(true), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -87,7 +102,7 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(requiredUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -108,7 +123,7 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(requiredUserAnswers)).build()
 
       running(application) {
         val request =
@@ -122,7 +137,37 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(fiName, currentYear, boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(mockFiName, mockReportingYear, boundForm, NormalMode)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to Page Unavailable for a GET if no ValidXMLPage data is found" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, electCrsCarfGrossProceedsRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+      }
+    }
+
+    "must redirect to Page Unavailable for a POST if no ValidXMLPage data is found" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, electCrsCarfGrossProceedsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
     }
   }
