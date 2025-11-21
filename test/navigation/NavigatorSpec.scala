@@ -20,8 +20,9 @@ import base.SpecBase
 import controllers.routes
 import models.*
 import pages.*
-import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
+
 import java.time.LocalDate
 
 class NavigatorSpec extends SpecBase {
@@ -151,6 +152,9 @@ class NavigatorSpec extends SpecBase {
 
           navigator.nextPage(ElectCrsGrossProceedsPage, NormalMode, userAnswers) mustBe
             routes.CheckYourFileDetailsController.onPageLoad()
+        }
+      }
+
       "must go from elections/crs/thresholds page" - {
         val baseAnswers = emptyUserAnswers.withPage(ThresholdsPage, true)
 
