@@ -28,7 +28,7 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
   private val path = "/report/elections/crs/carf-gross-proceeds"
 
   val fiNameFM: String = "Test Financial Institution"
-  val reportingYear: Int = 2000
+  val reportingYear: String = "2000"
 
   val messageSpecData: MessageSpecData =
     MessageSpecData(
@@ -36,7 +36,7 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
       sendingCompanyIN = "testFI",
       messageRefId = "testRefId",
       reportingFIName = "testReportingName",
-      reportingPeriod = LocalDate.of(reportingYear, 1, 1),
+      reportingPeriod = LocalDate.of(reportingYear.toInt, 1, 1),
       giin = None,
       fiNameFromFim = fiNameFM
     )
@@ -49,7 +49,8 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
     behave like pageLoads(
       path = path,
       pageTitle = expectedTitle,
-      userAnswers = userAnswers
+      userAnswers = userAnswers,
+      isPageTitleAsString = true
     )
 
     behave like pageRedirectsWhenNotAuthorised(path)
