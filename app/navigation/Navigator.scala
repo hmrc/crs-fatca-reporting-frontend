@@ -21,17 +21,16 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
-import pages.elections.crs.DormantAccountsPage
-import pages.elections.crs.ElectCrsContractPage
-import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.mvc.Call
-
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
+
+  private val thresholdDate = LocalDate.of(2026, 1, 1)
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
@@ -47,6 +46,8 @@ class Navigator @Inject() () {
       userAnswers => validFileUploadedNavigation(userAnswers)
     case RequiredGiinPage =>
       userAnswers => requiredGiinNavigation(userAnswers)
+    case ElectFatcaThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
     case TreasuryRegulationsPage =>
       _ => controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode)
     case DormantAccountsPage =>
@@ -55,8 +56,20 @@ class Navigator @Inject() () {
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case ElectCrsGrossProceedsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ThresholdsPage =>
+      userAnswers => thresholdsNavigation(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
   }
+
+  private def thresholdsNavigation(userAnswers: UserAnswers): Call =
+    getMessageSpecData(userAnswers) {
+      messageSpecData =>
+        if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
+          controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
+        } else {
+          controllers.routes.CheckYourFileDetailsController.onPageLoad()
+        }
+    }
 
   private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
