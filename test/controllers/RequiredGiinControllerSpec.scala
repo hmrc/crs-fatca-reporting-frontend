@@ -18,15 +18,13 @@ package controllers
 
 import base.SpecBase
 import forms.RequiredGiinFormProvider
-import models.{NormalMode, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{RequiredGiinPage, ValidXMLPage}
 import play.api.data.Form
 import play.api.inject.bind
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -36,12 +34,11 @@ import scala.concurrent.Future
 
 class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute: Call = Call("GET", "/foo")
-
   val formProvider       = new RequiredGiinFormProvider()
   val form: Form[String] = formProvider()
 
-  lazy val requiredGiinRoute: String = routes.RequiredGiinController.onPageLoad(NormalMode).url
+  lazy val requiredGiinRoute: String  = routes.RequiredGiinController.onPageLoad(NormalMode).url
+  lazy val pageUnavailableUrl: String = controllers.routes.PageUnavailableController.onPageLoad().url
 
   val hardcodedFiName = "testFiName"
   val exampleGiin     = "8Q298C.00000.LE.340"
@@ -61,6 +58,21 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, hardcodedFiName)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to page unavailable when xml valid page is not present in user answers for a GET" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, requiredGiinRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[RequiredGiinView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 
@@ -90,7 +102,6 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(userAnswers = Some(ua))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
           )
           .build()
@@ -102,7 +113,23 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
+      }
+    }
+
+    "must redirect to page unavailable when xml valid page is not present in user answers on  submit" in {
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, requiredGiinRoute)
+            .withFormUrlEncodedBody(("value", exampleGiin))
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual pageUnavailableUrl
       }
     }
 

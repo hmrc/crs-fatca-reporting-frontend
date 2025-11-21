@@ -21,7 +21,7 @@ import forms.RequiredGiinFormProvider
 import models.Mode
 import models.UserAnswers.getMessageSpecData
 import navigation.Navigator
-import pages.RequiredGiinPage
+import pages.{RequiredGiinPage, ValidXMLPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,31 +50,35 @@ class RequiredGiinController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.get(RequiredGiinPage) match {
-        case None        => form
-        case Some(value) => form.fill(value)
-      }
-      getMessageSpecData(request.userAnswers) {
-        messageSpecData =>
-          Ok(view(preparedForm, mode, messageSpecData.fiNameFromFim))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val preparedForm = request.userAnswers.get(RequiredGiinPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+          Ok(view(preparedForm, mode, validatedFileData.messageSpecData.fiNameFromFim))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen RequireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            getMessageSpecData(request.userAnswers) {
-              messageSpecData =>
-                Future.successful(BadRequest(view(formWithErrors, mode, messageSpecData.fiNameFromFim)))
-            },
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(RequiredGiinPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(RequiredGiinPage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, validatedFileData.messageSpecData.fiNameFromFim))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(RequiredGiinPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(RequiredGiinPage, mode, updatedAnswers))
+            )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+      }
+
   }
 }
