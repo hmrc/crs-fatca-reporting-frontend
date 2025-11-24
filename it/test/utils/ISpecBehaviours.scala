@@ -115,7 +115,7 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
     }
   }
 
-  def pageLoads(path: String, pageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit =
+  def pageLoads(path: String, pageTitle: String, isPageTitleAsString : Boolean = false, userAnswers: UserAnswers = emptyUserAnswers): Unit =
     "load relative page" in {
       stubAuthorised(testFatcaID)
       await(repository.set(userAnswers))
@@ -129,7 +129,10 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
 
       response.status mustBe OK
       val responseBody: String = response.body
-      responseBody must include(messages(pageTitle))
+      isPageTitleAsString match {
+        case true => responseBody must include(pageTitle)
+        case false => responseBody must include(messages(pageTitle))
+      }
     }
 
   def pageSubmits(path: String,

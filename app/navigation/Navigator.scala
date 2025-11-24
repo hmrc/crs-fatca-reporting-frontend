@@ -21,7 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.mvc.Call
 
@@ -49,13 +49,19 @@ class Navigator @Inject() () {
       userAnswers => requiredGiinNavigation(userAnswers)
     case ElectFatcaThresholdsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
-
     case TreasuryRegulationsPage =>
       _ => controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode)
     case DormantAccountsPage =>
       _ => controllers.elections.crs.routes.ThresholdsController.onPageLoad(NormalMode)
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
+    case ElectCrsCarfGrossProceedsPage =>
+      userAnswers =>
+        userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
+          case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
+          case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
+          case None        => routes.JourneyRecoveryController.onPageLoad()
+        }
     case ThresholdsPage =>
       userAnswers => thresholdsNavigation(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
