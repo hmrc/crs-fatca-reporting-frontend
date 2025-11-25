@@ -22,6 +22,7 @@ import models.*
 import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
+import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 
 import java.time.LocalDate
 
@@ -173,6 +174,29 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(ThresholdsPage, NormalMode, userAnswers) mustBe
             controllers.routes.CheckYourFileDetailsController.onPageLoad()
         }
+      }
+    }
+
+    "must go from elections/crs/carf-gross-proceeds page" - {
+      "to /elections/crs/gross-proceeds when the answer is Yes" in {
+        val userAnswers = emptyUserAnswers.withPage(ElectCrsCarfGrossProceedsPage, true)
+
+        navigator.nextPage(ElectCrsCarfGrossProceedsPage, NormalMode, userAnswers) mustBe
+          controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
+      }
+
+      "to /check-your-file-details when the answer is No" in {
+        val userAnswers = emptyUserAnswers.withPage(ElectCrsCarfGrossProceedsPage, false)
+
+        navigator.nextPage(ElectCrsCarfGrossProceedsPage, NormalMode, userAnswers) mustBe
+          routes.CheckYourFileDetailsController.onPageLoad()
+      }
+
+      "to Journey Recovery if the answer is missing" in {
+        val userAnswers = emptyUserAnswers
+
+        navigator.nextPage(ElectCrsCarfGrossProceedsPage, NormalMode, userAnswers) mustBe
+          routes.JourneyRecoveryController.onPageLoad()
       }
     }
 
