@@ -23,8 +23,8 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import pages.ValidXMLPage
+import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -37,12 +37,12 @@ import scala.concurrent.Future
 
 class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onwardRoute = Call("GET", "/foo")
 
-  val mockFiName: String     = "Test Financial Institution"
-  val mockReportingYear: Int = LocalDate.now().getYear
+  private val mockFiName: String     = "Test Financial Institution"
+  private val mockReportingYear: Int = LocalDate.now().getYear
 
-  val mockMessageSpecData: MessageSpecData =
+  private val mockMessageSpecData: MessageSpecData =
     MessageSpecData(
       messageType = CRS,
       sendingCompanyIN = "sendingCompanyIN",
@@ -52,12 +52,12 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
       giin = None,
       fiNameFromFim = mockFiName
     )
-  val requiredUserAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(mockMessageSpecData))
+  private val requiredUserAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(mockMessageSpecData))
 
-  val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
-  val form         = formProvider(mockReportingYear)
+  private val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
+  private val form         = formProvider(mockReportingYear)
 
-  lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
+  private lazy val electCrsCarfGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode).url
 
   "ElectCrsCarfGrossProceeds Controller" - {
 
