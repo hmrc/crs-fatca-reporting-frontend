@@ -18,8 +18,9 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.ElectCrsGrossProceedsFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
+import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsGrossProceedsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -44,30 +45,48 @@ class ElectCrsGrossProceedsController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  val form   = formProvider()
-  val fiName = "EFG Bank plc"
+  val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val preparedForm = request.userAnswers.flatMap(_.get(ElectCrsGrossProceedsPage)) match {
-        case None        => form
-        case Some(value) => form.fill(value)
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
+          val preparedForm = request.userAnswers.get(ElectCrsGrossProceedsPage) match {
+            case None        => form
+            case Some(value) => form.fill(value)
+          }
+
+          Ok(view(fiName, preparedForm, mode))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+
       }
 
-      Ok(view(fiName, preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors => Future.successful(BadRequest(view(fiName, formWithErrors, mode))),
-          value =>
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.getOrElse(UserAnswers(request.userId)).set(ElectCrsGrossProceedsPage, value))
-              _              <- sessionRepository.set(updatedAnswers)
-            } yield Redirect(navigator.nextPage(ElectCrsGrossProceedsPage, mode, updatedAnswers))
-        )
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
+          val fiName          = messageSpecData.fiNameFromFim
+
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(fiName, formWithErrors, mode))),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectCrsGrossProceedsPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(ElectCrsGrossProceedsPage, mode, updatedAnswers))
+            )
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+      }
+
   }
 }

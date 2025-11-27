@@ -21,7 +21,7 @@ import models.*
 import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
-import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.mvc.Call
 
@@ -64,6 +64,8 @@ class Navigator @Inject() () {
         }
     case ThresholdsPage =>
       userAnswers => thresholdsNavigation(userAnswers)
+    case ElectCrsGrossProceedsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
     case _ => _ => routes.IndexController.onPageLoad()
   }
 

@@ -27,10 +27,10 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
 
   private val path = "/report/elections/crs/carf-gross-proceeds"
 
-  val fiNameFM: String = "Test Financial Institution"
-  val reportingYear: String = "2000"
+  private val fiNameFM: String = "Test Financial Institution"
+  private val reportingYear: String = "2000"
 
-  val messageSpecData: MessageSpecData =
+  private val messageSpecData: MessageSpecData =
     MessageSpecData(
       messageType = CRS,
       sendingCompanyIN = "testFI",
@@ -41,7 +41,7 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
       fiNameFromFim = fiNameFM
     )
 
-  val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+  private val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET ElectCrsCarfGrossProceedsController.onPageLoad" must {
     val expectedTitle = messages("electCrsCarfGrossProceeds.title", reportingYear)

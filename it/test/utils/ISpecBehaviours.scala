@@ -129,10 +129,10 @@ trait ISpecBehaviours extends PlaySpec with ISpecBase {
 
       response.status mustBe OK
       val responseBody: String = response.body
-      isPageTitleAsString match {
-        case true => responseBody must include(pageTitle)
-        case false => responseBody must include(messages(pageTitle))
-      }
+      if isPageTitleAsString then
+        responseBody must include(pageTitle)
+      else
+        responseBody must include(messages(pageTitle))
     }
 
   def pageSubmits(path: String,
