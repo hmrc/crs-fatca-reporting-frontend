@@ -54,7 +54,7 @@ class ElectCrsCarfGrossProceedsViewSpec extends SpecBase with GuiceOneAppPerSuit
     }
   }
 
-  private def getButtonText(page: Document) = elementText(page, "button")
+  private def getButtonText(page: Document) = elementText(page, "#submit")
 
   private def assertRadioLabel(page: Document) = {
     val radioLabel = page.select(".govuk-radios__label")
