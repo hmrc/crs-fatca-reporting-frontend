@@ -36,7 +36,8 @@ class UploadValidationResultSpec extends SpecBase {
           |    "reportingFIName": "Test FI",
           |    "reportingPeriod": "2024-01-01",
           |    "giin": "GIIN123",
-          |    "fiNameFromFim": "fi-name"
+          |    "fiNameFromFim": "fi-name",
+          |    "electionsRequired": false
           |  }
           |}
             """.stripMargin)
@@ -51,7 +52,8 @@ class UploadValidationResultSpec extends SpecBase {
           reportingFIName = "Test FI",
           reportingPeriod = LocalDate.parse("2024-01-01"),
           giin = Some("GIIN123"),
-          fiNameFromFim = "fi-name"
+          fiNameFromFim = "fi-name",
+          electionsRequired = false
         )
       )
     }

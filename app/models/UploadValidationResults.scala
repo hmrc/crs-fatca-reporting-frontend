@@ -55,7 +55,8 @@ case class MessageSpecData(messageType: MessageType,
                            reportingFIName: String,
                            reportingPeriod: LocalDate,
                            giin: Option[String] = None,
-                           fiNameFromFim: String
+                           fiNameFromFim: String,
+                           electionsRequired: Boolean
 )
 
 object MessageSpecData {
