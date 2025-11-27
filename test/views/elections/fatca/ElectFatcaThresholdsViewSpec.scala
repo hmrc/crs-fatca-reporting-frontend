@@ -57,7 +57,7 @@ class ElectFatcaThresholdsViewSpec extends SpecBase with ViewHelper {
     }
 
     "should have continue Button" in {
-      elementText(doc, "button") mustEqual "Continue"
+      elementText(doc, "#submit") mustEqual "Continue"
     }
   }
 }

@@ -59,7 +59,7 @@ class TreasuryRegulationsViewSpec extends SpecBase with ViewHelper {
     }
 
     "should have continue Button" in {
-      elementText(doc, ".govuk-button") mustEqual "Continue"
+      elementText(doc, "#submit") mustEqual "Continue"
     }
   }
 
