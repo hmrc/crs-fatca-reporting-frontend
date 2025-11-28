@@ -24,14 +24,13 @@ import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
 import play.api.mvc.Call
+import utils.thresholdDate
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
-
-  private val thresholdDate = LocalDate.of(2026, 1, 1)
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>

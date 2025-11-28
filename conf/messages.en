@@ -150,6 +150,7 @@ elections.crs.grossProceeds.error.required = Select yes if the financial institu
 
 checkYourFileDetails.title = Check your file details are correct for the financial institution
 checkYourFileDetails.heading = Check your file details are correct for {0}
+checkYourFileDetails.fileInformation.heading = File details
 checkYourFileDetails.fileId.key = File ID (MessageRefId)
 checkYourFileDetails.reportingRegime.key = Reporting regime (MessageType)
 checkYourFileDetails.fiId.key = FI ID (SendingCompanyIN)
@@ -158,6 +159,12 @@ checkYourFileDetails.companyIN.key = SendingCompanyIN
 checkYourFileDetails.fiName.key = ReportingFIName
 checkYourFileDetails.fileInformation.change = Change file
 checkYourFileDetails.row5 = File information
+checkYourFileDetails.fIDetails.heading = Financial institution details
+checkYourFileDetails.crs.contracts = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
+checkYourFileDetails.crs.dormantAccounts = Are they treating dormant accounts as not being reportable accounts for CRS?
+checkYourFileDetails.crs.threshold = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
+checkYourFileDetails.crs.grossProceed = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026?
+checkYourFileDetails.crs.reportingGrossProceed = Are they also reporting these gross proceeds for the CARF under CRS?
 
 election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?

@@ -17,13 +17,14 @@
 package controllers
 
 import controllers.actions.*
+import pages.ValidXMLPage
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.CheckYourFileDetailsViewModel
 import views.html.CheckYourFileDetailsView
-import viewmodels.CheckYourFileDetailsViewModel.getYourFileDetailsRows
 
 class CheckYourFileDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,8 +36,17 @@ class CheckYourFileDetailsController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(getYourFileDetailsRows(), "Placeholder Name"))
+      val userAnswers = request.userAnswers
+      val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)
+      userAnswers.get(ValidXMLPage) match {
+        case Some(validData) => Ok(view(
+          viewModelHelper.getYourFileDetailsRows,
+          viewModelHelper.getFIDetailsRows,
+          validData.messageSpecData.fiNameFromFim))
+        case None => Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+      }
+
   }
 }
