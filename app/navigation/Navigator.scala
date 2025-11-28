@@ -85,17 +85,17 @@ class Navigator @Inject() () {
         if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
           routes.RequiredGiinController.onPageLoad(NormalMode)
         } else {
-          redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+          redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
         }
     }
 
   private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
       messageSpecData =>
-        redirectToElectionPageOrCheckYourAnswers(messageSpecData.reportingPeriod.getYear)
+        redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
     }
 
-  private def redirectToElectionPageOrCheckYourAnswers(reportingPeriodYear: Int): Call = {
+  private def redirectToElectionPageOrCheckFileDetails(reportingPeriodYear: Int): Call = {
     def requiresElection(reportingYear: Int): Boolean =
       isReportingYearValid(reportingYear) && !hasElectionsHappened
 
@@ -111,7 +111,7 @@ class Navigator @Inject() () {
     if (requiresElection(reportingPeriodYear)) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
-      routes.CheckYourAnswersController.onPageLoad()
+      routes.CheckYourFileDetailsController.onPageLoad()
     }
   }
 

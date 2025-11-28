@@ -50,18 +50,18 @@ class NavigatorSpec extends SpecBase {
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
           }
         }
-        "to /check-your-answers" - {
+        "to /check-your-file-details" - {
           "when message type is FATCA and GIIN is held and does not require an election " in {
             val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
-            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
           }
           "when message type is CRS and does not require an election" in {
             val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
-            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
           }
         }
         "to /report-elections" - {
@@ -89,13 +89,13 @@ class NavigatorSpec extends SpecBase {
 
           navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
         }
-        "to /check-your-answers when elections made already" in {
+        "to /check-your-file-details when elections made already" in {
           val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(RequiredGiinPage, "testGIIN")
 
-          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourAnswersController.onPageLoad()
+          navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
         }
       }
 
