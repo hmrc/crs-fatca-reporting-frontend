@@ -41,7 +41,8 @@ class CheckYourFileDetailsController @Inject() (
       val userAnswers = request.userAnswers
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)
       userAnswers.get(ValidXMLPage) match {
-        case Some(validData) => Ok(view(
+        case Some(validData) =>
+          Ok(view(
           viewModelHelper.getYourFileDetailsRows,
           viewModelHelper.getFIDetailsRows,
           validData.messageSpecData.fiNameFromFim))

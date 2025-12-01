@@ -165,6 +165,9 @@ checkYourFileDetails.crs.dormantAccounts = Are they treating dormant accounts as
 checkYourFileDetails.crs.threshold = Are they applying thresholds to any of their accounts in their due diligence process for CRS?
 checkYourFileDetails.crs.grossProceed = Are they reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026?
 checkYourFileDetails.crs.reportingGrossProceed = Are they also reporting these gross proceeds for the CARF under CRS?
+checkYourFileDetails.fatca.requireGIIN = Global Intermediary Identification Number
+checkYourFileDetails.fatca.treasuryRegulation = Are they using due diligence procedures from US Treasury Regulations for FATCA?
+checkYourFileDetails.fatca.threshold = Are they applying thresholds to any of their accounts in their due diligence process for FATCA?
 
 election.fatca.thresholds.title = Is the financial institution applying thresholds to any of their accounts in their due diligence process for FATCA?
 election.fatca.thresholds.heading = Is {0} applying thresholds to any of their accounts in their due diligence process for FATCA?

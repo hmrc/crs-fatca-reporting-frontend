@@ -16,7 +16,6 @@
 
 package pages
 
-import models.GenericError
 import play.api.libs.json.JsPath
 
 object MessageTypePage extends QuestionPage[String] {

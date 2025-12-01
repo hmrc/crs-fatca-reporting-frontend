@@ -18,9 +18,10 @@ package viewmodels
 
 import controllers.routes
 import models.UserAnswers.getMessageSpecData
-import models.{CRS, FATCA, UserAnswers, name}
-import pages.ReportElectionsPage
+import models.{CRS, FATCA, MessageType, UserAnswers, name}
 import pages.elections.crs.*
+import pages.elections.fatca.TreasuryRegulationsPage
+import pages.{ElectFatcaThresholdsPage, QuestionPage, ReportElectionsPage, RequiredGiinPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
@@ -77,108 +78,106 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
           )
       }
 
-  def getFIDetailsRows: SummaryList =
-    userAnswers.get(ReportElectionsPage) match
-      case Some(value) =>
-        getMessageSpecData(userAnswers) {
-          messageSpecData =>
-            val reportingYear = messageSpecData.reportingPeriod.getYear.toString
-            messageSpecData.messageType match
-              case CRS => SummaryList(rows = Seq(getReportElectionsPage(CRS.name, reportingYear)) ++ getCRSElectionData(value, reportingYear))
-              case FATCA => SummaryList(rows = Seq(getReportElectionsPage(CRS.name, reportingYear)) ++ getCRSElectionData(value, reportingYear))
-        }
-      case None => SummaryList(rows = Seq.empty)
+  def getFIDetailsRows: SummaryList = SummaryList(rows = getGIIN.toSeq ++ reportElection)
 
+  private def reportElection: Seq[SummaryListRow] = {
+    userAnswers.get(ReportElectionsPage).map(
+      value => getMessageSpecData(userAnswers) {
+        messageSpecData =>
+          val reportingYear = messageSpecData.reportingPeriod.getYear.toString
+          Seq(SummaryListRow(
+            key = Key(content = Text(messages("reportElections.title", messageSpecData.messageType.name, reportingYear))),
+            value = Value(content = Text(value.toYesNo)),
+            actions = Some(
+              Actions(
+                items = Seq(
+                  ActionItem(
+                    href = routes.IndexController.onPageLoad().url,
+                    content = Text(messages("site.change")),
+                    visuallyHiddenText = Some(messages("site.change"))
+                  )
+                )
+              )
+            )
+          )) ++ getMessageTypeData(value,messageSpecData.messageType,reportingYear)
+      }
+    ).getOrElse(Seq.empty)
+  }
 
-  private def getCRSElectionData(requireElection: Boolean, reportingYear: String): Seq[SummaryListRow] =
-    if requireElection then Seq(getCRSContracts,
-      getCRSDormants, getCRSThreshold) ++ getGrossProceedPages(reportingYear.toInt) else Seq.empty
+  private def getMessageTypeData(requireData: Boolean, messageType: MessageType, reportingYear: String) = if requireData then
+    messageType match
+        case CRS => getCRSElectionData(reportingYear)
+        case FATCA => getFATCAElectionData
+    else Seq.empty
 
-
-  private def getReportElectionsPage(regime: String, reportingYear: String) =
-    userAnswers.get(ReportElectionsPage) match
-      case Some(value) => SummaryListRow(
-      key = Key(content = Text(messages("reportElections.title", regime, reportingYear))),
-      value = Value(content = Text(value.toYesNo)),
-      actions = Some(
-        Actions(
-          items = Seq(
-            ActionItem(
-              href = routes.IndexController.onPageLoad().url,
-              content = Text(messages("site.change")),
-              visuallyHiddenText = Some(messages("site.change"))
+  private def getGIIN: Option[SummaryListRow] =
+    userAnswers.get(RequiredGiinPage).map(value =>
+      SummaryListRow(
+        key = Key(content = Text(messages("checkYourFileDetails.fatca.requireGIIN"))),
+        value = Value(content = Text(value)),
+        actions = Some(
+          Actions(
+            items = Seq(
+              ActionItem(
+                href = routes.IndexController.onPageLoad().url,
+                content = Text(messages("site.change")),
+                visuallyHiddenText = Some(messages("site.change"))
+              )
             )
           )
         )
-      )
-    )
-      case None => throw new IllegalStateException("ReportElectionsPage is missing")
+      ))
 
-  private def getCRSContracts =
-    userAnswers.get(ElectCrsContractPage) match
-      case Some(value) => SummaryListRow(
-      key = Key(content = Text(messages("checkYourFileDetails.crs.contracts"))),
-      value = Value(content = Text(value.toYesNo)),
-      actions = Some(
-        Actions(
-          items = Seq(
-            ActionItem(
-              href = routes.IndexController.onPageLoad().url,
-              content = Text(messages("site.change")),
-              visuallyHiddenText = Some(messages("site.change"))
-            )
-          )
-        )
-      )
-    )
-      case None => throw new IllegalStateException("ElectCrsContractPage is missing")
+  private def getCRSElectionData(reportingYear: String): Seq[SummaryListRow] =
+    Seq(getCRSContracts, getCRSDormants, getCRSThreshold) ++ getGrossProceedPages(reportingYear.toInt)
 
-  private def getCRSDormants =
-    userAnswers.get(DormantAccountsPage) match
-      case Some(value) => SummaryListRow(
-      key = Key(content = Text(messages("checkYourFileDetails.crs.dormantAccounts"))),
-      value = Value(content = Text(value.toYesNo)),
-      actions = Some(
-        Actions(
-          items = Seq(
-            ActionItem(
-              href = routes.IndexController.onPageLoad().url,
-              content = Text(messages("site.change")),
-              visuallyHiddenText = Some(messages("site.change"))
-            )
-          )
-        )
-      )
-    )
-      case None => throw new IllegalStateException("DormantAccountsPage is missing")
+  private def getFATCAElectionData: Seq[SummaryListRow] = Seq(getFATCAUSTreasuryRegulation,getFATCAThreshold)
 
-  private def getCRSThreshold =
-    userAnswers.get(ThresholdsPage) match
-      case Some(value) => SummaryListRow(
-      key = Key(content = Text(messages("checkYourFileDetails.crs.threshold"))),
-      value = Value(content = Text(value.toYesNo)),
-      actions = Some(
-        Actions(
-          items = Seq(
-            ActionItem(
-              href = routes.IndexController.onPageLoad().url,
-              content = Text(messages("site.change")),
-              visuallyHiddenText = Some(messages("site.change"))
-            )
-          )
-        )
-      )
-    )
-      case None => throw new IllegalStateException("ThresholdsPage is missing")
+  private def getCRSContracts = getSummaryRowForBooleanPage(ElectCrsContractPage,messages("checkYourFileDetails.crs.contracts"))
+
+  private def getCRSDormants = getSummaryRowForBooleanPage(DormantAccountsPage,messages("checkYourFileDetails.crs.dormantAccounts"))
+
+  private def getCRSThreshold = getSummaryRowForBooleanPage(ThresholdsPage,messages("checkYourFileDetails.crs.threshold"))
 
   private def getGrossProceedPages(reportingPeriod: Int) : Seq[SummaryListRow] =
     if reportingPeriod >= thresholdDate.getYear then getCRSCarfGrossProceed else Seq.empty
 
-  private def getCRSCarfGrossProceed: Seq[SummaryListRow] =
-    userAnswers.get(ElectCrsCarfGrossProceedsPage) match
-      case Some(value) =>
-        Seq(SummaryListRow(
-          key = Key(content = Text(messages("checkYourFileDetails.crs.grossProceed"))),
+  private def getCRSCarfGrossProceed: Seq[SummaryListRow] = {
+    userAnswers.get(ElectCrsCarfGrossProceedsPage)
+      .fold(throw new IllegalStateException("ElectCrsCarfGrossProceedsPage is missing")) {
+        value =>
+          Seq(SummaryListRow(
+            key = Key(content = Text(messages("checkYourFileDetails.crs.grossProceed"))),
+            value = Value(content = Text(value.toYesNo)),
+            actions = Some(
+              Actions(
+                items = Seq(
+                  ActionItem(
+                    href = routes.IndexController.onPageLoad().url,
+                    content = Text(messages("site.change")),
+                    visuallyHiddenText = Some(messages("site.change"))
+                  )
+                )
+              )
+            )
+          )) ++ getCRSGrossProceed(value)
+      }
+  }
+
+  private def getCRSGrossProceed(crsCarfGrossProceedValue: Boolean): Seq[SummaryListRow] =
+    if crsCarfGrossProceedValue then Seq(getCRSGrossProceedValue) else Seq.empty
+
+  private def getCRSGrossProceedValue = getSummaryRowForBooleanPage(ElectCrsGrossProceedsPage,messages("checkYourFileDetails.crs.reportingGrossProceed"))
+
+  private def getFATCAUSTreasuryRegulation = getSummaryRowForBooleanPage(TreasuryRegulationsPage,messages("checkYourFileDetails.fatca.treasuryRegulation"))
+
+  private def getFATCAThreshold = getSummaryRowForBooleanPage(ElectFatcaThresholdsPage,messages("checkYourFileDetails.fatca.threshold"))
+
+  private def getSummaryRowForBooleanPage(page: QuestionPage[Boolean], keyValue: String): SummaryListRow =
+    userAnswers.get(page).map(
+      value =>
+        SummaryListRow(
+          key = Key(content = Text(keyValue)),
           value = Value(content = Text(value.toYesNo)),
           actions = Some(
             Actions(
@@ -191,27 +190,5 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               )
             )
           )
-        )) ++ getCRSGrossProceed(value)
-      case None => throw new IllegalStateException("ElectCrsCarfGrossProceedsPage is missing")
-
-  private def getCRSGrossProceed(crsCarfGrossProceedValue: Boolean) =
-    if crsCarfGrossProceedValue then Seq(getCRSGrossProceedValue) else Seq.empty
-
-  private def getCRSGrossProceedValue =
-    userAnswers.get(ElectCrsGrossProceedsPage) match
-      case Some(value) => SummaryListRow(
-        key = Key(content = Text(messages("checkYourFileDetails.crs.reportingGrossProceed"))),
-        value = Value(content = Text(value.toYesNo)),
-        actions = Some(
-          Actions(
-            items = Seq(
-              ActionItem(
-                href = routes.IndexController.onPageLoad().url,
-                content = Text(messages("site.change")),
-                visuallyHiddenText = Some(messages("site.change"))
-              )
-            )
-          )
         )
-      )
-      case None => throw new IllegalStateException("ElectCrsGrossProceedsPage is missing")
+    ).getOrElse(throw new IllegalStateException(s"$page is missing"))
