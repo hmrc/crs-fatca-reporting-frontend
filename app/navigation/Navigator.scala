@@ -22,7 +22,7 @@ import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.UserAnswers.getMessageSpecData
 import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
-import pages.elections.fatca.TreasuryRegulationsPage
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import play.api.mvc.Call
 import utils.thresholdDate
 

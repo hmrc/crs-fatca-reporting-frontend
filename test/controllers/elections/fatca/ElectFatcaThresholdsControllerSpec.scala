@@ -23,7 +23,8 @@ import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileDat
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ElectFatcaThresholdsPage, ValidXMLPage}
+import pages.ValidXMLPage
+import pages.elections.fatca.ElectFatcaThresholdsPage
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.test.FakeRequest

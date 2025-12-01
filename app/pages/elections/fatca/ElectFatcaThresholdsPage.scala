@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package pages
+package pages.elections.fatca
 
+import pages.QuestionPage
 import play.api.libs.json.JsPath
 
 case object ElectFatcaThresholdsPage extends QuestionPage[Boolean] {

@@ -20,8 +20,8 @@ import controllers.routes
 import models.UserAnswers.getMessageSpecData
 import models.{CRS, FATCA, MessageType, UserAnswers, name}
 import pages.elections.crs.*
-import pages.elections.fatca.TreasuryRegulationsPage
-import pages.{ElectFatcaThresholdsPage, QuestionPage, ReportElectionsPage, RequiredGiinPage}
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
+import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text

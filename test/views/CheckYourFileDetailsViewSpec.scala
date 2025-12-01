@@ -39,9 +39,9 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     "should render page components with a summary list" in {
       val financialInstitutionName = "Placeholder Name"
 
-      val summaryList = CheckYourFileDetailsViewModel.getYourFileDetailsRows()
+      val summaryList = CheckYourFileDetailsViewModel(emptyUserAnswers)(using messages(app)).getYourFileDetailsRows
 
-      val renderedHtml: HtmlFormat.Appendable = view(summaryList, financialInstitutionName)
+      val renderedHtml: HtmlFormat.Appendable = view(summaryList, summaryList,financialInstitutionName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
