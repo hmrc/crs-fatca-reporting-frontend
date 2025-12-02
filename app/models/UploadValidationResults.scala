@@ -29,8 +29,7 @@ case object CRS extends MessageType
 
 case object FATCA extends MessageType
 
-extension (messageType: MessageType)
-  def name: String = messageType.toString
+extension (messageType: MessageType) def name: String = messageType.toString
 
 object MessageType {
 

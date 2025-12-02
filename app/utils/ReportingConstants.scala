@@ -19,5 +19,3 @@ package utils
 import java.time.LocalDate
 
 final val thresholdDate = LocalDate.of(2026, 1, 1)
-
-

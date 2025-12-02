@@ -38,14 +38,11 @@ class CheckYourFileDetailsController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val userAnswers = request.userAnswers
+      val userAnswers     = request.userAnswers
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)
       userAnswers.get(ValidXMLPage) match {
         case Some(validData) =>
-          Ok(view(
-          viewModelHelper.getYourFileDetailsRows,
-          viewModelHelper.getFIDetailsRows,
-          validData.messageSpecData.fiNameFromFim))
+          Ok(view(viewModelHelper.getYourFileDetailsRows, viewModelHelper.getFIDetailsRows, validData.messageSpecData.fiNameFromFim))
         case None => Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
 
