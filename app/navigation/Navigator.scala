@@ -39,7 +39,47 @@ class Navigator @Inject() () {
       checkRouteMap(page)(userAnswers)
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
+  private val checkRouteMap: Page => UserAnswers => Call = {
+    case ElectCrsCarfGrossProceedsPage =>
+      userAnswers =>
+        userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
+          case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
+          case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
+          case None        => routes.JourneyRecoveryController.onPageLoad()
+        }
+    case ElectCrsGrossProceedsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case DormantAccountsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ElectCrsContractPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ElectFatcaThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case TreasuryRegulationsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case RequiredGiinPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ReportElectionsPage =>
+      userAnswers =>
+        userAnswers.get(ReportElectionsPage) match {
+          case Some(true) =>
+            getMessageSpecData(userAnswers) {
+              messageSpecData =>
+                messageSpecData.messageType match {
+                  case CRS =>
+                    controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
+                  case FATCA =>
+                    controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
+                }
+            }
+          case Some(false) =>
+            routes.CheckYourFileDetailsController.onPageLoad()
+        }
+    case _ =>
+      _ => routes.IndexController.onPageLoad()
+  }
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ValidXMLPage =>
@@ -65,6 +105,23 @@ class Navigator @Inject() () {
       userAnswers => thresholdsNavigation(userAnswers)
     case ElectCrsGrossProceedsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ReportElectionsPage =>
+      userAnswers =>
+        userAnswers.get(ReportElectionsPage) match {
+          case Some(true) =>
+            getMessageSpecData(userAnswers) {
+              messageSpecData =>
+                messageSpecData.messageType match {
+                  case CRS =>
+                    controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
+                  case FATCA =>
+                    controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
+                }
+            }
+          case Some(false) =>
+            routes.CheckYourFileDetailsController.onPageLoad()
+        }
+
     case _ => _ => routes.IndexController.onPageLoad()
   }
 

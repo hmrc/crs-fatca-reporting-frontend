@@ -18,7 +18,7 @@ package viewmodels
 
 import controllers.routes
 import models.UserAnswers.getMessageSpecData
-import models.{name, CRS, FATCA, MessageType, UserAnswers}
+import models.{name, CRS, CheckMode, FATCA, MessageType, UserAnswers}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
@@ -97,7 +97,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                     Actions(
                       items = Seq(
                         ActionItem(
-                          href = routes.IndexController.onPageLoad().url,
+                          href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                           content = Text(messages("site.change")),
                           visuallyHiddenText = Some(messages("site.change"))
                         )
@@ -128,7 +128,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               Actions(
                 items = Seq(
                   ActionItem(
-                    href = routes.IndexController.onPageLoad().url,
+                    href = routes.RequiredGiinController.onPageLoad(mode = CheckMode).url,
                     content = Text(messages("site.change")),
                     visuallyHiddenText = Some(messages("site.change"))
                   )
@@ -143,11 +143,23 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
 
   private def getFATCAElectionData: Seq[SummaryListRow] = Seq(getFATCAUSTreasuryRegulation, getFATCAThreshold)
 
-  private def getCRSContracts = getSummaryRowForBooleanPage(ElectCrsContractPage, messages("checkYourFileDetails.crs.contracts"))
+  private def getCRSContracts = getSummaryRowForBooleanPage(
+    ElectCrsContractPage,
+    messages("checkYourFileDetails.crs.contracts"),
+    actionUrl = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
+  )
 
-  private def getCRSDormants = getSummaryRowForBooleanPage(DormantAccountsPage, messages("checkYourFileDetails.crs.dormantAccounts"))
+  private def getCRSDormants = getSummaryRowForBooleanPage(
+    DormantAccountsPage,
+    messages("checkYourFileDetails.crs.dormantAccounts"),
+    actionUrl = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
+  )
 
-  private def getCRSThreshold = getSummaryRowForBooleanPage(ThresholdsPage, messages("checkYourFileDetails.crs.threshold"))
+  private def getCRSThreshold = getSummaryRowForBooleanPage(
+    ThresholdsPage,
+    messages("checkYourFileDetails.crs.threshold"),
+    actionUrl = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
+  )
 
   private def getGrossProceedPages(reportingPeriod: Int): Seq[SummaryListRow] =
     if reportingPeriod >= thresholdDate.getYear then getCRSCarfGrossProceed else Seq.empty
@@ -165,7 +177,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text(messages("site.change")),
                       visuallyHiddenText = Some(messages("site.change"))
                     )
@@ -181,11 +193,22 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
 
   private def getCRSGrossProceedValue = getSummaryRowForBooleanPage(ElectCrsGrossProceedsPage, messages("checkYourFileDetails.crs.reportingGrossProceed"))
 
-  private def getFATCAUSTreasuryRegulation = getSummaryRowForBooleanPage(TreasuryRegulationsPage, messages("checkYourFileDetails.fatca.treasuryRegulation"))
+  private def getFATCAUSTreasuryRegulation = getSummaryRowForBooleanPage(
+    TreasuryRegulationsPage,
+    messages("checkYourFileDetails.fatca.treasuryRegulation"),
+    actionUrl = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
+  )
 
-  private def getFATCAThreshold = getSummaryRowForBooleanPage(ElectFatcaThresholdsPage, messages("checkYourFileDetails.fatca.threshold"))
+  private def getFATCAThreshold = getSummaryRowForBooleanPage(
+    ElectFatcaThresholdsPage,
+    messages("checkYourFileDetails.fatca.threshold"),
+    actionUrl = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
+  )
 
-  private def getSummaryRowForBooleanPage(page: QuestionPage[Boolean], keyValue: String): SummaryListRow =
+  private def getSummaryRowForBooleanPage(page: QuestionPage[Boolean],
+                                          keyValue: String,
+                                          actionUrl: String = routes.IndexController.onPageLoad().url
+  ): SummaryListRow =
     userAnswers
       .get(page)
       .map(
@@ -197,7 +220,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               Actions(
                 items = Seq(
                   ActionItem(
-                    href = routes.IndexController.onPageLoad().url,
+                    href = actionUrl,
                     content = Text(messages("site.change")),
                     visuallyHiddenText = Some(messages("site.change"))
                   )

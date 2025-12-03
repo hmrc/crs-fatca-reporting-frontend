@@ -18,10 +18,10 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.ElectCrsCarfGrossProceedsFormProvider
-import models.Mode
+import models.{CheckMode, Mode}
 import navigation.Navigator
 import pages.ValidXMLPage
-import pages.elections.crs.ElectCrsCarfGrossProceedsPage
+import pages.elections.crs.{ElectCrsCarfGrossProceedsPage, ElectCrsGrossProceedsPage}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -83,7 +83,10 @@ class ElectCrsCarfGrossProceedsController @Inject() (
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectCrsCarfGrossProceedsPage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
+                  uaFromCheckMode <-
+                    if (mode == CheckMode && !value) Future.fromTry(updatedAnswers.removeAllFrom(Seq(ElectCrsGrossProceedsPage)))
+                    else Future(updatedAnswers)
+                  _ <- sessionRepository.set(uaFromCheckMode)
                 } yield Redirect(navigator.nextPage(ElectCrsCarfGrossProceedsPage, mode, updatedAnswers))
             )
         case _ =>

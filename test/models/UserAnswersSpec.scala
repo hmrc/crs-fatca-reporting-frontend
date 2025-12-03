@@ -19,7 +19,7 @@ package models
 import base.SpecBase
 import models.UserAnswers.getMessageSpecData
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ValidXMLPage
+import pages.{MessageTypePage, ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 
 class UserAnswersSpec extends SpecBase with MockitoSugar {
 
@@ -46,4 +46,33 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
     }
 
   }
+
+  "Remove" - {
+    "a list of pages should be removed from UserAnswers" in {
+      val ua = emptyUserAnswers
+        .set(ReportElectionsPage, true)
+        .get
+        .set(RequiredGiinPage, "some data")
+        .get
+        .set(MessageTypePage, "msg type")
+        .get
+
+      val result = ua.removeAllFrom(Seq(ReportElectionsPage, MessageTypePage)).get
+
+      result.get(ReportElectionsPage) mustBe None
+      result.get(MessageTypePage) mustBe None
+      result.get(RequiredGiinPage) mustBe Some("some data")
+    }
+
+    "a list of pages that do not exist should be ignored when removing from UserAnswers" in {
+      val ua = emptyUserAnswers
+        .set(RequiredGiinPage, "some data")
+        .get
+
+      val result = ua.removeAllFrom(Seq(ReportElectionsPage, MessageTypePage)).get
+
+      result.get(RequiredGiinPage) mustBe Some("some data")
+    }
+  }
+
 }

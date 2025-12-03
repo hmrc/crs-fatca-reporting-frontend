@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, FATCA, MessageSpecData, ValidatedFileData}
+import models.{CRS, CheckMode, FATCA, MessageSpecData, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
@@ -143,7 +143,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -189,7 +189,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -205,7 +205,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -221,7 +221,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -237,7 +237,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -286,7 +286,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -302,7 +302,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -318,7 +318,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -334,7 +334,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -350,7 +350,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -400,7 +400,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -416,7 +416,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -432,7 +432,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -448,7 +448,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -464,7 +464,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -531,7 +531,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -577,7 +577,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -593,7 +593,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -609,7 +609,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -658,7 +658,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.RequiredGiinController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -674,7 +674,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -690,7 +690,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -706,7 +706,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )
@@ -756,7 +756,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.RequiredGiinController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )

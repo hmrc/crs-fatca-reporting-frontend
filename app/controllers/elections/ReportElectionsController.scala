@@ -19,14 +19,14 @@ package controllers.elections
 import controllers.actions.*
 import forms.elections.ReportElectionsFormProvider
 import models.UserAnswers.getMessageSpecData
-import models.{Mode, UserAnswers}
+import models.{CheckMode, Mode, UserAnswers}
 import navigation.Navigator
 import pages.ReportElectionsPage
-import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.reportElectionPages
 import views.html.ThereIsAProblemView
 import views.html.elections.ReportElectionsView
 
@@ -82,21 +82,11 @@ class ReportElectionsController @Inject() (
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportElectionsPage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield
-                  if (!value) {
-                    Redirect(controllers.routes.CheckYourFileDetailsController.onPageLoad())
-                  } else {
-                    regime match {
-                      case "FATCA" =>
-                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
-                      case "CRS" =>
-                        Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
-                      case unknownRegime =>
-                        logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
-                        InternalServerError(errorView())
-                    }
-                  }
+                  uaFromCheckMode <-
+                    if (mode == CheckMode && !value) Future.fromTry(updatedAnswers.removeAllFrom(reportElectionPages(messageSpecData.messageType)))
+                    else Future(updatedAnswers)
+                  _ <- sessionRepository.set(uaFromCheckMode)
+                } yield Redirect(navigator.nextPage(ReportElectionsPage, mode, updatedAnswers))
             )
       }
   }
