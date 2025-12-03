@@ -18,8 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import models.TimeZones.EUROPE_LONDON_TIME_ZONE
-import models.UserAnswers.getMessageSpecData
+import models.UserAnswers.extractMessageSpecData
 import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.TreasuryRegulationsPage
@@ -70,7 +69,7 @@ class Navigator @Inject() () {
   }
 
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =
-    getMessageSpecData(userAnswers) {
+    extractMessageSpecData(userAnswers) {
       messageSpecData =>
         if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
           controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
@@ -80,35 +79,23 @@ class Navigator @Inject() () {
     }
 
   private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
-    getMessageSpecData(userAnswers) {
+    extractMessageSpecData(userAnswers) {
       messageSpecData =>
         if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
           routes.RequiredGiinController.onPageLoad(NormalMode)
         } else {
-          redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
+          redirectToElectionPageOrCheckFileDetails(messageSpecData.electionsRequired)
         }
     }
 
   private def requiredGiinNavigation(userAnswers: UserAnswers): Call =
-    getMessageSpecData(userAnswers) {
+    extractMessageSpecData(userAnswers) {
       messageSpecData =>
-        redirectToElectionPageOrCheckFileDetails(messageSpecData.reportingPeriod.getYear)
+        redirectToElectionPageOrCheckFileDetails(messageSpecData.electionsRequired)
     }
 
-  private def redirectToElectionPageOrCheckFileDetails(reportingPeriodYear: Int): Call = {
-    def requiresElection(reportingYear: Int): Boolean =
-      isReportingYearValid(reportingYear) && !hasElectionsHappened
-
-    def isReportingYearValid(reportingYear: Int): Boolean = {
-      val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
-      reportingYear >= (currentYear - 12) && reportingYear <= currentYear
-    }
-
-    /* Will be implemented later in  DAC6-3959 & DAC6-3964
-    Placeholder implementation; replace with actual logic to determine if elections have happened */
-    def hasElectionsHappened: Boolean = false
-
-    if (requiresElection(reportingPeriodYear)) {
+  private def redirectToElectionPageOrCheckFileDetails(electionsRequired: Boolean): Call = {
+    if (electionsRequired) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
       routes.CheckYourFileDetailsController.onPageLoad()

@@ -43,7 +43,7 @@ class NavigatorSpec extends SpecBase {
 
         "to /required-giin" - {
           "when message type is FATCA and GIIN is not held" in {
-            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val msd         = getMessageSpecData(messageType = FATCA, giin = None)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.RequiredGiinController.onPageLoad(NormalMode)
@@ -51,13 +51,14 @@ class NavigatorSpec extends SpecBase {
         }
         "to /check-your-file-details" - {
           "when message type is FATCA and GIIN is held and does not require an election " in {
-            val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = Some("giin"), "testFiNameFromFim")
+            val msd = getMessageSpecData(messageType = FATCA, giin = Some("giin"), electionsRequired = false)
+
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
           }
           "when message type is CRS and does not require an election" in {
-            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+            val msd         = getMessageSpecData(messageType = CRS, giin = Some("giin"), electionsRequired = false)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.CheckYourFileDetailsController.onPageLoad()
@@ -65,13 +66,13 @@ class NavigatorSpec extends SpecBase {
         }
         "to /report-elections" - {
           "when message type is FATCA and GIIN is held and requires an election " in {
-            val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = Some("giin"), "testFiNameFromFim")
+            val msd         = getMessageSpecData(messageType = FATCA, giin = Some("giin"), electionsRequired = true)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
           }
           "when message type is CRS and requires an election" in {
-            val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+            val msd         = getMessageSpecData(messageType = CRS, electionsRequired = true)
             val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
@@ -81,7 +82,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from /required-giin" - {
         "to /report-elections when requires an election" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.now(), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = CRS, electionsRequired = true)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(RequiredGiinPage, "testGIIN")
@@ -89,7 +90,7 @@ class NavigatorSpec extends SpecBase {
           navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
         }
         "to /check-your-file-details when elections made already" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = CRS, electionsRequired = false)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(RequiredGiinPage, "testGIIN")
@@ -100,7 +101,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from /elections/fatca/thresholds" - {
         "to /check-your-answers when elections made already" in {
-          val msd = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = FATCA, electionsRequired = false)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(ElectFatcaThresholdsPage, true)
@@ -110,7 +111,7 @@ class NavigatorSpec extends SpecBase {
       }
       "must go from elections/fatca/us-treasury-regulations page" - {
         "to  /elections/fatca/thresholds" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(FATCA)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(TreasuryRegulationsPage, true)
@@ -122,7 +123,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from elections/crs/dormant-accounts page" - {
         "to  /elections/crs/thresholds" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = CRS)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(DormantAccountsPage, true)
@@ -133,7 +134,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from elections/crs/contracts page" - {
         "to  /elections/crs/dormant-accounts" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = CRS)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(ElectCrsContractPage, true)
@@ -145,7 +146,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from  /elections/crs/gross-proceeds page" - {
         "to  /check-your-file-details" in {
-          val msd = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, "testFiNameFromFim")
+          val msd = getMessageSpecData(messageType = CRS)
           val userAnswers = emptyUserAnswers
             .withPage(ValidXMLPage, getValidatedFileData(msd))
             .withPage(ElectCrsGrossProceedsPage, true)
@@ -159,7 +160,7 @@ class NavigatorSpec extends SpecBase {
         val baseAnswers = emptyUserAnswers.withPage(ThresholdsPage, true)
 
         "to /elections/crs/gross-proceeds when the reporting period is 2026 or later" in {
-          val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2026, 1, 1), giin = None, "testFiNameFromFim")
+          val msd         = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2026, 1, 1))
           val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
           navigator.nextPage(ThresholdsPage, NormalMode, userAnswers) mustBe
@@ -167,7 +168,7 @@ class NavigatorSpec extends SpecBase {
         }
 
         "to /check-your-file-details when the reporting period is 2025 or earlier" in {
-          val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
+          val msd         = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2025, 12, 31))
           val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
 
           navigator.nextPage(ThresholdsPage, NormalMode, userAnswers) mustBe
