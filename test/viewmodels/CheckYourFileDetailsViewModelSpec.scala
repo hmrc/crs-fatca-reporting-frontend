@@ -31,7 +31,7 @@ import java.time.LocalDate
 class CheckYourFileDetailsViewModelSpec extends SpecBase {
   "CheckYourFileDetailsViewModel" - {
 
-    ".getYourFileDetailsRows" - {
+    ".fileDetailsSummary" - {
       "must return the getSummaryList for File Details when No Election Required for CRS" in {
         val expectedSummary = SummaryList(
           List(
@@ -78,7 +78,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
         val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
         val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
         val modelHelper          = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getYourFileDetailsRows mustBe expectedSummary
+        modelHelper.fileDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for File Details when No Election Required for FATCA" in {
         val expectedSummary = SummaryList(
@@ -126,11 +126,11 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
         val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
         val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
         val modelHelper          = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getYourFileDetailsRows mustBe expectedSummary
+        modelHelper.fileDetailsSummary mustBe expectedSummary
       }
     }
 
-    ".getFIDetailsRows" - {
+    ".financialInstitutionDetailsSummary" - {
       "must return the getSummaryList for FIDetails when report Election is false for CRS" in {
         val reportingPeriodYear = 2025
         val expectedSummary = SummaryList(
@@ -175,7 +175,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(ValidXMLPage, crsValidatedFileData)
           .withPage(ReportElectionsPage, false)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is true and reporting period lesser than 2026 for CRS" in {
         val reportingPeriodYear = 2025
@@ -272,7 +272,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(DormantAccountsPage, true)
           .withPage(ThresholdsPage, true)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is true and reporting period is 2026 And Carf Gross Proceed is false for CRS" in {
         val reportingPeriodYear = 2026
@@ -386,7 +386,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(ThresholdsPage, true)
           .withPage(ElectCrsCarfGrossProceedsPage, false)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is true and reporting period is 2026 And Carf Gross Proceed is true for CRS" in {
         val reportingPeriodYear = 2026
@@ -517,7 +517,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(ElectCrsCarfGrossProceedsPage, true)
           .withPage(ElectCrsGrossProceedsPage, true)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is false for FATCA" in {
         val reportingPeriodYear = 2025
@@ -563,7 +563,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(ValidXMLPage, crsValidatedFileData)
           .withPage(ReportElectionsPage, false)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is true for FATCA and No GIIN required" in {
         val reportingPeriodYear = 2025
@@ -643,7 +643,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(TreasuryRegulationsPage, true)
           .withPage(ElectFatcaThresholdsPage, true)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when report Election is true for FATCA and GIIN required" in {
         val reportingPeriodYear = 2025
@@ -741,7 +741,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(TreasuryRegulationsPage, true)
           .withPage(ElectFatcaThresholdsPage, true)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for FIDetails when GIIN required and no report election" in {
         val reportingPeriodYear = 2025
@@ -788,7 +788,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           .withPage(ValidXMLPage, crsValidatedFileData)
           .withPage(RequiredGiinPage, testGIINValue)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-        modelHelper.getFIDetailsRows mustBe expectedSummary
+        modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
       }
     }
 

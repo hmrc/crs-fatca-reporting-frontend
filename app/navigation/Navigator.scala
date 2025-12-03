@@ -24,7 +24,7 @@ import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import play.api.mvc.Call
-import utils.thresholdDate
+import utils.ReportingConstants.*
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -128,7 +128,7 @@ class Navigator @Inject() () {
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
       messageSpecData =>
-        if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
+        if (messageSpecData.reportingPeriod.getYear >= THRESHOLD_DATE.getYear) {
           controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
         } else {
           controllers.routes.CheckYourFileDetailsController.onPageLoad()
