@@ -18,7 +18,7 @@ package controllers.elections
 
 import controllers.actions.*
 import forms.elections.ReportElectionsFormProvider
-import models.UserAnswers.getMessageSpecData
+import models.UserAnswers.extractMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.ReportElectionsPage
@@ -52,7 +52,7 @@ class ReportElectionsController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
+      extractMessageSpecData(request.userAnswers) {
         messageSpecData =>
 
           val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
@@ -69,7 +69,7 @@ class ReportElectionsController @Inject() (
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      getMessageSpecData(request.userAnswers) {
+      extractMessageSpecData(request.userAnswers) {
         messageSpecData =>
           val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
           val regime          = messageSpecData.messageType.toString
@@ -89,7 +89,7 @@ class ReportElectionsController @Inject() (
                   } else {
                     regime match {
                       case "FATCA" =>
-                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode))
+                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode)) //todo handle in navigator
                       case "CRS" =>
                         Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
                       case unknownRegime =>

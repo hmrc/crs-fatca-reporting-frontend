@@ -17,7 +17,7 @@
 package models
 
 import base.SpecBase
-import models.UserAnswers.getMessageSpecData
+import models.UserAnswers.extractMessageSpecData
 import org.scalatestplus.mockito.MockitoSugar
 import pages.ValidXMLPage
 
@@ -25,9 +25,10 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
 
   "getMessageSpecData" - {
     "return MessageSpecData when ValidXMLPage exists" in {
-      val ua = emptyUserAnswers.set(ValidXMLPage, getValidatedFileData(testMsd)).get
+      val testMsd = getMessageSpecData(FATCA)
+      val ua      = emptyUserAnswers.set(ValidXMLPage, getValidatedFileData()).get
 
-      val result = getMessageSpecData(ua) {
+      val result = extractMessageSpecData(ua) {
         data =>
           data mustBe testMsd
           "ok"
@@ -37,7 +38,7 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
     }
     "throw IllegalStateException when ValidXMLPage is missing" in {
       val ex = intercept[IllegalStateException] {
-        getMessageSpecData(emptyUserAnswers) {
+        extractMessageSpecData(emptyUserAnswers) {
           _ => "should not reach here"
         }
       }

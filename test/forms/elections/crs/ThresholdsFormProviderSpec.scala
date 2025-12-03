@@ -17,7 +17,6 @@
 package forms.elections.crs
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.elections.crs.ThresholdsFormProvider
 import play.api.data.FormError
 
 class ThresholdsFormProviderSpec extends BooleanFieldBehaviours {

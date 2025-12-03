@@ -18,7 +18,7 @@ package controllers.elections
 
 import base.SpecBase
 import forms.elections.ReportElectionsFormProvider
-import models.{CRS, FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, FATCA, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -41,16 +41,9 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
   val FileChecksum        = "checksum"
   val expectedFiName      = "fi-name"
 
-  val crsMessageSpec = MessageSpecData(
-    messageType = CRS,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = Some("giin"),
-    fiNameFromFim = expectedFiName
-  )
-  val crsValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsMessageSpec = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))
+
+  val crsValidatedFileData = getValidatedFileData(crsMessageSpec)
   val crsUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
   val crsRegime            = crsMessageSpec.messageType.toString
 

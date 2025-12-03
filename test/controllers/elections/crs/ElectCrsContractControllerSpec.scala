@@ -18,7 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
-import models.{CRS, MessageSpecData, NormalMode}
+import models.{CRS, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,7 +32,6 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.ElectCrsContractView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
@@ -43,7 +42,7 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
   val form         = formProvider()
   val fiNameFM     = "testFIFromFM"
 
-  val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
+  val messageSpecData = getMessageSpecData(CRS, fiNameFromFim = fiNameFM)
 
   lazy val electCrsContractRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl    = controllers.routes.PageUnavailableController.onPageLoad().url
@@ -59,8 +58,6 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, electCrsContractRoute)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ElectCrsContractView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual pageUnavailableUrl

@@ -31,9 +31,10 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 import uk.gov.hmrc.play.bootstrap.dispatchers.MDCPropagatingExecutorService
 
-import java.time.{Clock, Instant, ZoneId}
 import java.time.temporal.ChronoUnit
+import java.time.{Clock, Instant, ZoneId}
 import java.util.concurrent.Executors
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionRepositorySpec
@@ -57,7 +58,7 @@ class SessionRepositorySpec
     mongoComponent = mongoComponent,
     appConfig = mockAppConfig,
     clock = stubClock
-  )(scala.concurrent.ExecutionContext.Implicits.global)
+  )
 
   ".set" - {
 

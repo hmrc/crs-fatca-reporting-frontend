@@ -47,7 +47,7 @@ import scala.util.control.NonFatal
 
 class ValidationConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
-  val url = url"${config.crsUrl}/crs-fatca-reporting/validate-submission"
+  val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/validate-submission"
 
   def sendForValidation(fileValidateRequest: FileValidateRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Errors, MessageSpecData]] =
     http

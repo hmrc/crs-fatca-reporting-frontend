@@ -17,9 +17,7 @@
 package models.upscan
 
 import base.SpecBase
-import play.api.libs.json.Json
 
-import java.time.Instant
 import java.util.UUID
 
 class UploadIdSpec extends SpecBase {

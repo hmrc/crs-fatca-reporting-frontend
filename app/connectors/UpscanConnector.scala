@@ -107,7 +107,7 @@ class UpscanConnector @Inject() (configuration: FrontendAppConfig, httpClient: H
   }
 
   private[connectors] val upscanInitiatePath: String = "/upscan/v2/initiate"
-  private val backendUrl                             = s"${configuration.crsUrl}/crs-fatca-reporting"
+  private val backendUrl                             = s"${configuration.crsFatcaBackendUrl}/crs-fatca-reporting" //todo double check path
   private val upscanInitiateUrl                      = s"${configuration.upscanInitiateHost}$upscanInitiatePath"
   private val upscanRedirectBase                     = configuration.upscanRedirectBase
   private val upscanMaxSize                          = configuration.upscanMaxFileSize
