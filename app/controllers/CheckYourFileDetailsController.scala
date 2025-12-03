@@ -42,7 +42,7 @@ class CheckYourFileDetailsController @Inject() (
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)
       userAnswers.get(ValidXMLPage) match {
         case Some(validData) =>
-          Ok(view(viewModelHelper.getYourFileDetailsRows, viewModelHelper.getFIDetailsRows, validData.messageSpecData.fiNameFromFim))
+          Ok(view(viewModelHelper.fileDetailsSummary, viewModelHelper.financialInstitutionDetailsSummary, validData.messageSpecData.fiNameFromFim))
         case None => Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
 

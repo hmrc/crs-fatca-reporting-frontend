@@ -52,8 +52,8 @@ class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
       val application         = applicationBuilder(userAnswers = Some(answers)).build()
       val messagesApi         = messages(application)
       val helperModel         = CheckYourFileDetailsViewModel(answers)(using messagesApi)
-      val expectedFileDetails = helperModel.getYourFileDetailsRows
-      val expectedFIDetails   = helperModel.getFIDetailsRows
+      val expectedFileDetails = helperModel.fileDetailsSummary
+      val expectedFIDetails   = helperModel.financialInstitutionDetailsSummary
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourFileDetailsController.onPageLoad().url)

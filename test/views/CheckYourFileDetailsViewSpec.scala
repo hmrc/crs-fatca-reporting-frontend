@@ -17,8 +17,10 @@
 package views
 
 import base.SpecBase
-import models.{CRS, FATCA, MessageSpecData, ValidatedFileData}
+import models.{CRS, FATCA, MessageSpecData, MessageType, ValidatedFileData}
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import play.api.i18n.{Lang, Messages}
@@ -40,123 +42,83 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "CheckYourFileDetailsView" - {
+    val summaryKeyLocator   = ".govuk-summary-list__key"
+    val summaryValueLocator = ".govuk-summary-list__value"
+
     "should render page components with a summary list without election" in {
-      val expectedFiName      = "fi-name"
-      val fileName            = "test-file.xml"
-      val FileSize            = 100L
-      val FileChecksum        = "checksum"
-      val reportingPeriodYear = 2025
-      val messageSpecData = MessageSpecData(
-        messageType = CRS,
-        sendingCompanyIN = "sendingCompanyIN",
-        messageRefId = "messageRefId",
-        reportingFIName = "reportingFIName",
-        reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-        giin = None,
-        fiNameFromFim = expectedFiName
-      )
-
-      val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-      val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
-
+      val expectedFiName  = "fi-name"
+      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, validatedFileData(expectedFiName, CRS))
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-      val fileDetails     = viewModelHelper.getYourFileDetailsRows
-      val fiDetails       = viewModelHelper.getFIDetailsRows
+      val fileDetails     = viewModelHelper.fileDetailsSummary
+      val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
 
       val renderedHtml: HtmlFormat.Appendable = view(fileDetails, fiDetails, expectedFiName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
-      getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
-      getPageHeading(doc) mustEqual s"Check your file details are correct for $expectedFiName"
-
+      verifyPageHeading(doc, expectedFiName)
       doc.select(".govuk-summary-list").size() mustBe 1
-      doc.select(".govuk-summary-list__row").size() mustBe 5
-
-      doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__key").text() mustBe "File ID (MessageRefId)"
-      doc.select(".govuk-summary-list__row:nth-child(1) .govuk-summary-list__value").text() mustBe "messageRefId"
-
-      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__key").text() mustBe "Reporting regime (MessageType)"
-      doc.select(".govuk-summary-list__row:nth-child(2) .govuk-summary-list__value").text() mustBe "CRS"
-
-      doc.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__key").text() mustBe "FI ID (SendingCompanyIN)"
-      doc.select(".govuk-summary-list__row:nth-child(3) .govuk-summary-list__value").text() mustBe "sendingCompanyIN"
-
-      doc.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__key").text() mustBe "Financial institution (ReportingFI Name)"
-      doc.select(".govuk-summary-list__row:nth-child(4) .govuk-summary-list__value").text() mustBe "reportingFIName"
-
-      doc.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__key").text() mustBe "File information"
-      doc.select(".govuk-summary-list__row:nth-child(5) .govuk-summary-list__value").text() mustBe "New information"
-
+      val elements = doc.select(".govuk-summary-list__row")
+      elements.size() mustBe 5
+      verifyFileDetails(elements, "CRS")
       doc.select("#submit").text() mustBe "Continue"
 
       doc.text() must not include "File details"
       doc.text() must not include "Financial institution details"
     }
     "should render page components with a summary list without election & required GIIN for FATCA" in {
-      val expectedFiName      = "fi-name"
-      val fileName            = "test-file.xml"
-      val FileSize            = 100L
-      val FileChecksum        = "checksum"
-      val reportingPeriodYear = 2025
-      val messageSpecData = MessageSpecData(
-        messageType = FATCA,
-        sendingCompanyIN = "sendingCompanyIN",
-        messageRefId = "messageRefId",
-        reportingFIName = "reportingFIName",
-        reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-        giin = None,
-        fiNameFromFim = expectedFiName
-      )
-
-      val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
+      val expectedFiName = "fi-name"
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, crsValidatedFileData)
+        .withPage(ValidXMLPage, validatedFileData(expectedFiName, FATCA))
         .withPage(RequiredGiinPage, "testGIINValue")
-
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-      val fileDetails     = viewModelHelper.getYourFileDetailsRows
-      val fiDetails       = viewModelHelper.getFIDetailsRows
+      val fileDetails     = viewModelHelper.fileDetailsSummary
+      val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
 
       val renderedHtml: HtmlFormat.Appendable = view(fileDetails, fiDetails, expectedFiName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
-      getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
-      getPageHeading(doc) mustEqual s"Check your file details are correct for $expectedFiName"
-
+      verifyPageHeading(doc, expectedFiName)
       doc.select(".govuk-summary-list").size() mustBe 2
-      val elements = doc.select(".govuk-summary-list__row")
-      elements.size() mustBe 6
-
-      elements.get(0).select(".govuk-summary-list__key").text() mustBe "File ID (MessageRefId)"
-      elements.get(0).select(".govuk-summary-list__value").text() mustBe "messageRefId"
-
-      elements.get(1).select(".govuk-summary-list__key").text() mustBe "Reporting regime (MessageType)"
-      elements.get(1).select(".govuk-summary-list__value").text() mustBe "FATCA"
-
-      elements.get(2).select(".govuk-summary-list__key").text() mustBe "FI ID (SendingCompanyIN)"
-      elements.get(2).select(".govuk-summary-list__value").text() mustBe "sendingCompanyIN"
-
-      elements.get(3).select(".govuk-summary-list__key").text() mustBe "Financial institution (ReportingFI Name)"
-      elements.get(3).select(".govuk-summary-list__value").text() mustBe "reportingFIName"
-
-      elements.get(4).select(".govuk-summary-list__key").text() mustBe "File information"
-      elements.get(4).select(".govuk-summary-list__value").text() mustBe "New information"
-
-      elements.get(5).select(".govuk-summary-list__key").text() mustBe "Global Intermediary Identification Number"
-      elements.get(5).select(".govuk-summary-list__value").text() mustBe "testGIINValue"
-
       val headings = doc.getElementsByTag("h2")
       headings.get(0).text() mustBe "File details"
       headings.get(1).text() mustBe "Financial institution details"
+      val elements = doc.select(".govuk-summary-list__row")
+      elements.size() mustBe 6
+      verifyFileDetails(elements, "FATCA")
+      assertRowValue(elements, 5, summaryKeyLocator, "Global Intermediary Identification Number")
+      assertRowValue(elements, 5, summaryValueLocator, "testGIINValue")
     }
     "should render page components with a summary list with report election as false" in {
-      val expectedFiName      = "fi-name"
+      val expectedFiName  = "fi-name"
+      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, validatedFileData(expectedFiName, CRS)).withPage(ReportElectionsPage, false)
+      val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
+      val fileDetails     = viewModelHelper.fileDetailsSummary
+      val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
+
+      val renderedHtml: HtmlFormat.Appendable = view(fileDetails, fiDetails, expectedFiName)
+      lazy val doc                            = Jsoup.parse(renderedHtml.body)
+
+      verifyPageHeading(doc, expectedFiName)
+      val headings = doc.getElementsByTag("h2")
+      headings.get(0).text() mustBe "File details"
+      headings.get(1).text() mustBe "Financial institution details"
+
+      doc.select(".govuk-summary-list").size() mustBe 2
+      val elements = doc.select(".govuk-summary-list__row")
+      elements.size() mustBe 6
+
+      verifyFileDetails(elements, "CRS")
+      assertRowValue(elements, 5, summaryKeyLocator, "Do you want to make any elections for the CRS reporting period 2025?")
+      assertRowValue(elements, 5, summaryValueLocator, "No")
+    }
+
+    def validatedFileData(expectedFiName: String, messageType: MessageType) =
       val fileName            = "test-file.xml"
       val FileSize            = 100L
       val FileChecksum        = "checksum"
       val reportingPeriodYear = 2025
       val messageSpecData = MessageSpecData(
-        messageType = CRS,
+        messageType = messageType,
         sendingCompanyIN = "sendingCompanyIN",
         messageRefId = "messageRefId",
         reportingFIName = "reportingFIName",
@@ -164,45 +126,24 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
         giin = None,
         fiNameFromFim = expectedFiName
       )
+      ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
 
-      val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-      val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData).withPage(ReportElectionsPage, false)
-
-      val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
-      val fileDetails     = viewModelHelper.getYourFileDetailsRows
-      val fiDetails       = viewModelHelper.getFIDetailsRows
-
-      val renderedHtml: HtmlFormat.Appendable = view(fileDetails, fiDetails, expectedFiName)
-      lazy val doc                            = Jsoup.parse(renderedHtml.body)
-
+    def verifyPageHeading(doc: Document, expectedFiName: String) =
       getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"Check your file details are correct for $expectedFiName"
 
-      doc.select(".govuk-summary-list").size() mustBe 2
-      val elements = doc.select(".govuk-summary-list__row")
-      elements.size() mustBe 6
+    def verifyFileDetails(elements: Elements, messageType: String) =
+      assertRowValue(elements, 0, summaryKeyLocator, "File ID (MessageRefId)")
+      assertRowValue(elements, 0, summaryValueLocator, "messageRefId")
+      assertRowValue(elements, 1, summaryKeyLocator, "Reporting regime (MessageType)")
+      assertRowValue(elements, 1, summaryValueLocator, messageType)
+      assertRowValue(elements, 2, summaryKeyLocator, "FI ID (SendingCompanyIN)")
+      assertRowValue(elements, 2, summaryValueLocator, "sendingCompanyIN")
+      assertRowValue(elements, 3, summaryKeyLocator, "Financial institution (ReportingFI Name)")
+      assertRowValue(elements, 3, summaryValueLocator, "reportingFIName")
+      assertRowValue(elements, 4, summaryKeyLocator, "File information")
+      assertRowValue(elements, 4, summaryValueLocator, "New information")
 
-      elements.get(0).select(".govuk-summary-list__key").text() mustBe "File ID (MessageRefId)"
-      elements.get(0).select(".govuk-summary-list__value").text() mustBe "messageRefId"
-
-      elements.get(1).select(".govuk-summary-list__key").text() mustBe "Reporting regime (MessageType)"
-      elements.get(1).select(".govuk-summary-list__value").text() mustBe "CRS"
-
-      elements.get(2).select(".govuk-summary-list__key").text() mustBe "FI ID (SendingCompanyIN)"
-      elements.get(2).select(".govuk-summary-list__value").text() mustBe "sendingCompanyIN"
-
-      elements.get(3).select(".govuk-summary-list__key").text() mustBe "Financial institution (ReportingFI Name)"
-      elements.get(3).select(".govuk-summary-list__value").text() mustBe "reportingFIName"
-
-      elements.get(4).select(".govuk-summary-list__key").text() mustBe "File information"
-      elements.get(4).select(".govuk-summary-list__value").text() mustBe "New information"
-
-      elements.get(5).select(".govuk-summary-list__key").text() mustBe "Do you want to make any elections for the CRS reporting period 2025?"
-      elements.get(5).select(".govuk-summary-list__value").text() mustBe "No"
-
-      val headings = doc.getElementsByTag("h2")
-      headings.get(0).text() mustBe "File details"
-      headings.get(1).text() mustBe "Financial institution details"
-    }
+    def assertRowValue(elements: Elements, index: Int, key: String, value: String) = elements.get(index).select(key).text() mustBe value
   }
 }
