@@ -63,19 +63,8 @@ class Navigator @Inject() () {
           case Some(false) =>
             routes.CheckYourFileDetailsController.onPageLoad()
         }
-    case ElectCrsGrossProceedsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ThresholdsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case DormantAccountsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ElectCrsContractPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ElectFatcaThresholdsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case TreasuryRegulationsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case RequiredGiinPage =>
+    case ElectCrsGrossProceedsPage | ThresholdsPage | DormantAccountsPage | ElectCrsContractPage | ElectFatcaThresholdsPage | TreasuryRegulationsPage |
+        RequiredGiinPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
     case _ =>
       _ => routes.IndexController.onPageLoad()
