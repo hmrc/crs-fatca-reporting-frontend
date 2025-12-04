@@ -109,7 +109,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def thresholdsRow = summaryRowForBooleanPages(ThresholdsPage, messages("checkYourFileDetails.crs.threshold"))
 
   private def grossProceedRow(reportingPeriod: Int): Seq[SummaryListRow] =
-    if reportingPeriod >= THRESHOLD_DATE.getYear then electCRSCarfGrossProceedRows else Seq.empty
+    if reportingPeriod >= ThresholdDate.getYear then electCRSCarfGrossProceedRows else Seq.empty
 
   private def electCRSCarfGrossProceedRows: Seq[SummaryListRow] =
     userAnswers
@@ -148,7 +148,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
 
   private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
     SummaryListRow(
-      key = Key(content = Text(messages(key))),
+      key = Key(content = Text(key)),
       value = Value(content = Text(value)),
       classes = rowClasses.getOrElse(""),
       actions = actionItem.map(

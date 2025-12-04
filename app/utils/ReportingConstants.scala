@@ -19,4 +19,4 @@ package utils
 import java.time.LocalDate
 
 object ReportingConstants:
-  val THRESHOLD_DATE: LocalDate = LocalDate.of(2026, 1, 1)
+  val ThresholdDate: LocalDate = LocalDate.of(2026, 1, 1)
