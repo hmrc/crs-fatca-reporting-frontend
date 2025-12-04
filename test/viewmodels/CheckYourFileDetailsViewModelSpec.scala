@@ -480,7 +480,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
                       visuallyHiddenText = Some("Change")
                     )

@@ -47,20 +47,6 @@ class Navigator @Inject() () {
           case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
           case None        => routes.JourneyRecoveryController.onPageLoad()
         }
-    case ElectCrsGrossProceedsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ThresholdsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case DormantAccountsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ElectCrsContractPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case ElectFatcaThresholdsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case TreasuryRegulationsPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
-    case RequiredGiinPage =>
-      _ => routes.CheckYourFileDetailsController.onPageLoad()
     case ReportElectionsPage =>
       userAnswers =>
         userAnswers.get(ReportElectionsPage) match {
@@ -77,6 +63,20 @@ class Navigator @Inject() () {
           case Some(false) =>
             routes.CheckYourFileDetailsController.onPageLoad()
         }
+    case ElectCrsGrossProceedsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case DormantAccountsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ElectCrsContractPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ElectFatcaThresholdsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case TreasuryRegulationsPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case RequiredGiinPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }

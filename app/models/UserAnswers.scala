@@ -65,7 +65,6 @@ final case class UserAnswers(
     }
   }
 
-  // scala
   def removeAllFrom(pages: Seq[Settable[_]]): Try[UserAnswers] = {
     import scala.util.Success
 

@@ -18,7 +18,7 @@ package viewmodels
 
 import controllers.routes
 import models.UserAnswers.getMessageSpecData
-import models.{name, CRS, FATCA, MessageType, UserAnswers}
+import models.{name, CRS, CheckMode, FATCA, MessageType, UserAnswers}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
@@ -63,7 +63,8 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               summaryListRowHelper(
                 key = messages("reportElections.title", messageSpecData.messageType.name, reportingYear),
                 value = reportElectionValue.toYesNo,
-                actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
+                actionItem =
+                  Some(singleActionItemForChangeLink(messages("site.change"), controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url))
               )
             ) ++ messageTypeSpecificRows(reportElectionValue, messageSpecData.messageType, reportingYear)
         }
@@ -87,7 +88,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               Actions(
                 items = Seq(
                   ActionItem(
-                    href = routes.IndexController.onPageLoad().url,
+                    href = routes.RequiredGiinController.onPageLoad(mode = CheckMode).url,
                     content = Text(messages("site.change")),
                     visuallyHiddenText = Some(messages("site.change"))
                   )
@@ -102,11 +103,23 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
 
   private def electionFATCARows: Seq[SummaryListRow] = Seq(TreasuryRegulationsRow, electFatcaThresholdsRow)
 
-  private def electCRSContractRow = summaryRowForBooleanPages(ElectCrsContractPage, messages("checkYourFileDetails.crs.contracts"))
+  private def electCRSContractRow = summaryRowForBooleanPages(
+    ElectCrsContractPage,
+    messages("checkYourFileDetails.crs.contracts"),
+    actionUrl = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
+  )
 
-  private def dormantAccountRow = summaryRowForBooleanPages(DormantAccountsPage, messages("checkYourFileDetails.crs.dormantAccounts"))
+  private def dormantAccountRow = summaryRowForBooleanPages(
+    DormantAccountsPage,
+    messages("checkYourFileDetails.crs.dormantAccounts"),
+    actionUrl = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
+  )
 
-  private def thresholdsRow = summaryRowForBooleanPages(ThresholdsPage, messages("checkYourFileDetails.crs.threshold"))
+  private def thresholdsRow = summaryRowForBooleanPages(
+    ThresholdsPage,
+    messages("checkYourFileDetails.crs.threshold"),
+    actionUrl = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
+  )
 
   private def grossProceedRow(reportingPeriod: Int): Seq[SummaryListRow] =
     if reportingPeriod >= THRESHOLD_DATE.getYear then electCRSCarfGrossProceedRows else Seq.empty
@@ -120,7 +133,11 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
             summaryListRowHelper(
               messages("checkYourFileDetails.crs.grossProceed"),
               value.toYesNo,
-              actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
+              actionItem = Some(
+                singleActionItemForChangeLink(messages("site.change"),
+                                              controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
+                )
+              )
             )
           ) ++ electCRSGrossProceedRows(value)
       }
@@ -128,21 +145,32 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def electCRSGrossProceedRows(crsCarfGrossProceedValue: Boolean): Seq[SummaryListRow] =
     if crsCarfGrossProceedValue then Seq(electCRSGrossProceedsRow) else Seq.empty
 
-  private def electCRSGrossProceedsRow = summaryRowForBooleanPages(ElectCrsGrossProceedsPage, messages("checkYourFileDetails.crs.reportingGrossProceed"))
+  private def electCRSGrossProceedsRow = summaryRowForBooleanPages(
+    ElectCrsGrossProceedsPage,
+    messages("checkYourFileDetails.crs.reportingGrossProceed"),
+    actionUrl = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url
+  )
 
-  private def TreasuryRegulationsRow = summaryRowForBooleanPages(TreasuryRegulationsPage, messages("checkYourFileDetails.fatca.treasuryRegulation"))
+  private def TreasuryRegulationsRow = summaryRowForBooleanPages(
+    TreasuryRegulationsPage,
+    messages("checkYourFileDetails.fatca.treasuryRegulation"),
+    actionUrl = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
+  )
 
-  private def electFatcaThresholdsRow = summaryRowForBooleanPages(ElectFatcaThresholdsPage, messages("checkYourFileDetails.fatca.threshold"))
+  private def electFatcaThresholdsRow = summaryRowForBooleanPages(
+    ElectFatcaThresholdsPage,
+    messages("checkYourFileDetails.fatca.threshold"),
+    actionUrl = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
+  )
 
-  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String): SummaryListRow =
+  private def summaryRowForBooleanPages(page: QuestionPage[Boolean],
+                                        keyValue: String,
+                                        actionUrl: String = routes.IndexController.onPageLoad().url
+  ): SummaryListRow =
     userAnswers
       .get(page)
       .map(
-        value =>
-          summaryListRowHelper(keyValue,
-                               value.toYesNo,
-                               actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
-          )
+        value => summaryListRowHelper(keyValue, value.toYesNo, actionItem = Some(singleActionItemForChangeLink(messages("site.change"), actionUrl)))
       )
       .getOrElse(throw new IllegalStateException(s"$page is missing"))
 
