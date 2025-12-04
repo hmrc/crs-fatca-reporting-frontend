@@ -117,7 +117,7 @@ class Navigator @Inject() () {
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =
     getMessageSpecData(userAnswers) {
       messageSpecData =>
-        if (messageSpecData.reportingPeriod.getYear >= THRESHOLD_DATE.getYear) {
+        if (messageSpecData.reportingPeriod.getYear >= ThresholdDate.getYear) {
           controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
         } else {
           controllers.routes.CheckYourFileDetailsController.onPageLoad()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package utils
 
-import java.time.LocalDate
+object Extension {
 
-object ReportingConstants:
-  val ThresholdDate: LocalDate = LocalDate.of(2026, 1, 1)
+  extension (b: Boolean)
+
+    def toYesNo: String =
+      if b then "Yes" else "No"
+
+}
