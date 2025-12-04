@@ -20,7 +20,17 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{FATCA, CRS, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{
+  CRS,
+  FATCA,
+  FIIDNotMatchingError,
+  IncorrectMessageTypeError,
+  InvalidXmlFileError,
+  NormalMode,
+  ReportingPeriodError,
+  UserAnswers,
+  ValidatedFileData
+}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -33,7 +43,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
+import play.api.{inject, Application}
 import repositories.SessionRepository
 import views.html.ThereIsAProblemView
 

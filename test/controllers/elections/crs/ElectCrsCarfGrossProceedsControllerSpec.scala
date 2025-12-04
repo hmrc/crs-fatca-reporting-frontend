@@ -42,8 +42,8 @@ class ElectCrsCarfGrossProceedsControllerSpec extends SpecBase with MockitoSugar
   private val mockFiName: String     = "Test Financial Institution"
   private val mockReportingYear: Int = LocalDate.now().getYear
 
-  private val mockMessageSpecData: MessageSpecData =getMessageSpecData(CRS, fiNameFromFim = mockFiName)
-  private val requiredUserAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(mockMessageSpecData))
+  private val mockMessageSpecData: MessageSpecData = getMessageSpecData(CRS, fiNameFromFim = mockFiName)
+  private val requiredUserAnswers: UserAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(mockMessageSpecData))
 
   private val formProvider = new ElectCrsCarfGrossProceedsFormProvider()
   private val form         = formProvider(mockReportingYear)

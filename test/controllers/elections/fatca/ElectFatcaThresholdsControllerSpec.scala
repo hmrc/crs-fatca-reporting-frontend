@@ -48,7 +48,7 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
   lazy val electFatcaThresholdsRoute: String = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String        = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val fatcaValidatedFileData        = getValidatedFileData(getMessageSpecData(FATCA,fiNameFromFim = fiName))
+  val fatcaValidatedFileData        = getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = fiName))
   val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "ElectFatcaThresholds Controller" - {

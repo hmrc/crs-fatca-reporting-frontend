@@ -50,7 +50,7 @@ trait SpecBase
     with Injecting {
 
   val userAnswersId: String = "FATCAID"
-  val testFIName:String = "fi-name"
+  val testFIName: String    = "fi-name"
 
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
@@ -62,13 +62,12 @@ trait SpecBase
                          sendingCompanyIN: String = "testFI",
                          messageRefId: String = "testRefId",
                          reportingFIName: String = "testReportingName",
-                         reportingPeriod: LocalDate = LocalDate.now(), //LocalDate.of(2000, 1, 1)
+                         reportingPeriod: LocalDate = LocalDate.now(), // LocalDate.of(2000, 1, 1)
                          giin: Option[String] = None,
                          fiNameFromFim: String = "fi-name",
                          electionsRequired: Boolean = true
-                        ): MessageSpecData =
+  ): MessageSpecData =
     MessageSpecData(messageType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
-
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

@@ -94,12 +94,11 @@ class Navigator @Inject() () {
         redirectToElectionPageOrCheckFileDetails(messageSpecData.electionsRequired)
     }
 
-  private def redirectToElectionPageOrCheckFileDetails(electionsRequired: Boolean): Call = {
+  private def redirectToElectionPageOrCheckFileDetails(electionsRequired: Boolean): Call =
     if (electionsRequired) {
       controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
     } else {
       routes.CheckYourFileDetailsController.onPageLoad()
     }
-  }
 
 }

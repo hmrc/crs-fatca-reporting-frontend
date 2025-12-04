@@ -43,7 +43,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val form          = formProvider()
 
   private val messageSpecData2025: MessageSpecData = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2025, 12, 31))
-  val validatedFileData2025 = getValidatedFileData(messageSpecData2025)
+  val validatedFileData2025                        = getValidatedFileData(messageSpecData2025)
 
   val userAnswers2025: UserAnswers = emptyUserAnswers
     .set(ValidXMLPage, validatedFileData2025)

@@ -89,7 +89,7 @@ class ReportElectionsController @Inject() (
                   } else {
                     regime match {
                       case "FATCA" =>
-                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode)) //todo handle in navigator
+                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode)) // todo handle in navigator
                       case "CRS" =>
                         Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
                       case unknownRegime =>
