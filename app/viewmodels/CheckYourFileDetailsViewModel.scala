@@ -98,9 +98,13 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
       )
 
   private def electionCRSRows(reportingYear: String): Seq[SummaryListRow] =
-    Seq(electCRSContractRow, dormantAccountRow, thresholdsRow) ++ grossProceedRow(reportingYear.toInt)
+    Seq(
+      electCRSContractRow,
+      dormantAccountRow,
+      thresholdsRow
+    ).flatten ++ grossProceedRow(reportingYear.toInt)
 
-  private def electionFATCARows: Seq[SummaryListRow] = Seq(TreasuryRegulationsRow, electFatcaThresholdsRow)
+  private def electionFATCARows: Seq[SummaryListRow] = Seq(treasuryRegulationsRow, electFatcaThresholdsRow).flatten
 
   private def electCRSContractRow = summaryRowForBooleanPages(ElectCrsContractPage, messages("checkYourFileDetails.crs.contracts"))
 
@@ -114,7 +118,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def electCRSCarfGrossProceedRows: Seq[SummaryListRow] =
     userAnswers
       .get(ElectCrsCarfGrossProceedsPage)
-      .fold(throw new IllegalStateException("ElectCrsCarfGrossProceedsPage is missing")) {
+      .map {
         value =>
           Seq(
             summaryListRowHelper(
@@ -124,17 +128,22 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
             )
           ) ++ electCRSGrossProceedRows(value)
       }
+      .getOrElse(Seq.empty)
 
   private def electCRSGrossProceedRows(crsCarfGrossProceedValue: Boolean): Seq[SummaryListRow] =
-    if crsCarfGrossProceedValue then Seq(electCRSGrossProceedsRow) else Seq.empty
+    electCRSGrossProceedsRow
+      .filter(
+        _ => crsCarfGrossProceedValue
+      )
+      .toSeq
 
   private def electCRSGrossProceedsRow = summaryRowForBooleanPages(ElectCrsGrossProceedsPage, messages("checkYourFileDetails.crs.reportingGrossProceed"))
 
-  private def TreasuryRegulationsRow = summaryRowForBooleanPages(TreasuryRegulationsPage, messages("checkYourFileDetails.fatca.treasuryRegulation"))
+  private def treasuryRegulationsRow = summaryRowForBooleanPages(TreasuryRegulationsPage, messages("checkYourFileDetails.fatca.treasuryRegulation"))
 
   private def electFatcaThresholdsRow = summaryRowForBooleanPages(ElectFatcaThresholdsPage, messages("checkYourFileDetails.fatca.threshold"))
 
-  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String): SummaryListRow =
+  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String): Option[SummaryListRow] =
     userAnswers
       .get(page)
       .map(
@@ -144,7 +153,6 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                                actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
           )
       )
-      .head
 
   private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
     SummaryListRow(
