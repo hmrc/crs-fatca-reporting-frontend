@@ -18,7 +18,7 @@ package viewmodels
 
 import controllers.routes
 import models.UserAnswers.getMessageSpecData
-import models.{name, CRS, FATCA, MessageType, UserAnswers}
+import models.{CRS, FATCA, MessageType, UserAnswers}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
@@ -27,6 +27,8 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 import utils.ReportingConstants.*
+import utils.Extension.toYesNo
+import models.MessageSpecData.name
 
 class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Messages):
 
@@ -173,8 +175,3 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
       content = Text(changeLink),
       visuallyHiddenText = Some(changeLink)
     )
-
-extension (b: Boolean)
-
-  private def toYesNo: String =
-    if b then "Yes" else "No"
