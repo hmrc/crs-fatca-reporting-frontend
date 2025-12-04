@@ -144,7 +144,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                                actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
           )
       )
-      .getOrElse(throw new IllegalStateException(s"$page is missing"))
+      .head
 
   private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
     SummaryListRow(
