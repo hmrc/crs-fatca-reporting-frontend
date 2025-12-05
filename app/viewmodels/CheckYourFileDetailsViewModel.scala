@@ -17,50 +17,161 @@
 package viewmodels
 
 import controllers.routes
+import models.MessageSpecData.name
+import models.UserAnswers.extractMessageSpecData
+import models.{CRS, FATCA, MessageType, UserAnswers}
+import pages.elections.crs.*
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
+import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
 import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
+import utils.Extension.toYesNo
+import utils.ReportingConstants.*
 
-object CheckYourFileDetailsViewModel {
+class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Messages):
 
-  def getYourFileDetailsRows()(implicit messages: Messages): SummaryList =
-    SummaryList(
-      rows = Seq(
-        SummaryListRow(
-          key = Key(content = Text(messages("checkYourFileDetails.fileId.key"))),
-          value = Value(content = Text("MyFATCAReportMessageRefId234567890LONGONGLONGLONGLONG")),
-          classes = "no-border-bottom"
-        ),
-        SummaryListRow(
-          key = Key(content = Text(messages("checkYourFileDetails.reportingRegime.key"))),
-          value = Value(content = Text("CRS")),
-          classes = "no-border-bottom"
-        ),
-        SummaryListRow(
-          key = Key(content = Text(messages("checkYourFileDetails.fiId.key"))),
-          value = Value(content = Text("ABC00000124")),
-          classes = "no-border-bottom"
-        ),
-        SummaryListRow(
-          key = Key(content = Text(messages("checkYourFileDetails.financialInstitution.key"))),
-          value = Value(content = Text("EFG Bank plc")),
-          classes = "no-border-bottom"
-        ),
-        SummaryListRow(
-          key = Key(content = Text(messages("File information"))),
-          value = Value(content = Text("New information")),
-          actions = Some(
-            Actions(
-              items = Seq(
-                ActionItem(
-                  href = routes.IndexController.onPageLoad().url,
-                  content = Text(messages("checkYourFileDetails.fileInformation.change")),
-                  visuallyHiddenText = Some(messages("checkYourFileDetails.fileInformation.change"))
+  def fileDetailsSummary: SummaryList =
+    extractMessageSpecData(userAnswers) {
+      messageSpecData =>
+        SummaryList(
+          rows = Seq(
+            summaryListRowHelper(messages("checkYourFileDetails.fileId.key"), messageSpecData.messageRefId, rowClasses = Some("no-border-bottom")),
+            summaryListRowHelper(messages("checkYourFileDetails.reportingRegime.key"), messageSpecData.messageType.name, rowClasses = Some("no-border-bottom")),
+            summaryListRowHelper(messages("checkYourFileDetails.fiId.key"), messageSpecData.sendingCompanyIN, rowClasses = Some("no-border-bottom")),
+            summaryListRowHelper(messages("checkYourFileDetails.financialInstitution.key"),
+                                 messageSpecData.reportingFIName,
+                                 rowClasses = Some("no-border-bottom")
+            ),
+            summaryListRowHelper(
+              messages("checkYourFileDetails.fileInformation.key"),
+              messages("checkYourFileDetails.fileInformation.value"),
+              actionItem = Some(singleActionItemForChangeLink(messages("checkYourFileDetails.fileInformation.change"), routes.IndexController.onPageLoad().url))
+            )
+          )
+        )
+    }
+
+  def financialInstitutionDetailsSummary: SummaryList = SummaryList(rows = requiredGIINRow.toSeq ++ reportElectionRow)
+
+  private def reportElectionRow: Seq[SummaryListRow] =
+    userAnswers.get(ReportElectionsPage) match
+      case Some(reportElectionValue) =>
+        extractMessageSpecData(userAnswers) {
+          messageSpecData =>
+            val reportingYear = messageSpecData.reportingPeriod.getYear.toString
+            Seq(
+              summaryListRowHelper(
+                key = messages("reportElections.title", messageSpecData.messageType.name, reportingYear),
+                value = reportElectionValue.toYesNo,
+                actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
+              )
+            ) ++ messageTypeSpecificRows(reportElectionValue, messageSpecData.messageType, reportingYear)
+        }
+      case None => Seq.empty
+
+  private def messageTypeSpecificRows(requireData: Boolean, messageType: MessageType, reportingYear: String) = if requireData then
+    messageType match
+      case CRS   => electionCRSRows(reportingYear)
+      case FATCA => electionFATCARows
+  else Seq.empty
+
+  private def requiredGIINRow: Option[SummaryListRow] =
+    userAnswers
+      .get(RequiredGiinPage)
+      .map(
+        value =>
+          SummaryListRow(
+            key = Key(content = Text(messages("checkYourFileDetails.fatca.requireGIIN"))),
+            value = Value(content = Text(value)),
+            actions = Some(
+              Actions(
+                items = Seq(
+                  ActionItem(
+                    href = routes.IndexController.onPageLoad().url,
+                    content = Text(messages("site.change")),
+                    visuallyHiddenText = Some(messages("site.change"))
+                  )
                 )
               )
             )
           )
-        )
+      )
+
+  private def electionCRSRows(reportingYear: String): Seq[SummaryListRow] =
+    Seq(
+      electCRSContractRow,
+      dormantAccountRow,
+      thresholdsRow
+    ).flatten ++ grossProceedRow(reportingYear.toInt)
+
+  private def electionFATCARows: Seq[SummaryListRow] = Seq(treasuryRegulationsRow, electFatcaThresholdsRow).flatten
+
+  private def electCRSContractRow = summaryRowForBooleanPages(ElectCrsContractPage, messages("checkYourFileDetails.crs.contracts"))
+
+  private def dormantAccountRow = summaryRowForBooleanPages(DormantAccountsPage, messages("checkYourFileDetails.crs.dormantAccounts"))
+
+  private def thresholdsRow = summaryRowForBooleanPages(ThresholdsPage, messages("checkYourFileDetails.crs.threshold"))
+
+  private def grossProceedRow(reportingPeriod: Int): Seq[SummaryListRow] =
+    if reportingPeriod >= ThresholdDate.getYear then electCRSCarfGrossProceedRows else Seq.empty
+
+  private def electCRSCarfGrossProceedRows: Seq[SummaryListRow] =
+    userAnswers
+      .get(ElectCrsCarfGrossProceedsPage)
+      .map {
+        value =>
+          Seq(
+            summaryListRowHelper(
+              messages("checkYourFileDetails.crs.grossProceed"),
+              value.toYesNo,
+              actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
+            )
+          ) ++ electCRSGrossProceedRows(value)
+      }
+      .getOrElse(Seq.empty)
+
+  private def electCRSGrossProceedRows(crsCarfGrossProceedValue: Boolean): Seq[SummaryListRow] =
+    electCRSGrossProceedsRow
+      .filter(
+        _ => crsCarfGrossProceedValue
+      )
+      .toSeq
+
+  private def electCRSGrossProceedsRow = summaryRowForBooleanPages(ElectCrsGrossProceedsPage, messages("checkYourFileDetails.crs.reportingGrossProceed"))
+
+  private def treasuryRegulationsRow = summaryRowForBooleanPages(TreasuryRegulationsPage, messages("checkYourFileDetails.fatca.treasuryRegulation"))
+
+  private def electFatcaThresholdsRow = summaryRowForBooleanPages(ElectFatcaThresholdsPage, messages("checkYourFileDetails.fatca.threshold"))
+
+  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String): Option[SummaryListRow] =
+    userAnswers
+      .get(page)
+      .map(
+        value =>
+          summaryListRowHelper(keyValue,
+                               value.toYesNo,
+                               actionItem = Some(singleActionItemForChangeLink(messages("site.change"), routes.IndexController.onPageLoad().url))
+          )
+      )
+
+  private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
+    SummaryListRow(
+      key = Key(content = Text(key)),
+      value = Value(content = Text(value)),
+      classes = rowClasses.getOrElse(""),
+      actions = actionItem.map(
+        action =>
+          Actions(
+            items = Seq(action)
+          )
       )
     )
-}
+
+  private def singleActionItemForChangeLink(changeLink: String, hrefUrl: String) =
+    ActionItem(
+      href = hrefUrl,
+      content = Text(changeLink),
+      visuallyHiddenText = Some(changeLink)
+    )

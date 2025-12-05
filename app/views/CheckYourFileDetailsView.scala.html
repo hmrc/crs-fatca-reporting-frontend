@@ -21,16 +21,26 @@
         govukButton: GovukButton
 )
 
-@(institutions: SummaryList, fiName: String)(implicit request: Request[_], messages: Messages)
+@(fileDetails: SummaryList, fiDetails: SummaryList, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("checkYourFileDetails.title"))) {
 
     <h1 class="govuk-heading-l">@messages("checkYourFileDetails.heading", fiName)</h1>
 
-    @if(institutions.rows.nonEmpty) {
-     <div class="govuk-form-group govuk-!-margin-bottom-9">
-       @govukSummaryList(institutions)
-     </div>
+    @if(fileDetails.rows.nonEmpty) {
+        @if(fiDetails.rows.nonEmpty) {
+            <h2 class="govuk-heading-m">@messages("checkYourFileDetails.fileInformation.heading")</h2>
+        }
+        <div class="govuk-form-group govuk-!-margin-bottom-9">
+           @govukSummaryList(fileDetails)
+         </div>
+    }
+
+    @if(fiDetails.rows.nonEmpty) {
+    <h2 class="govuk-heading-m">@messages("checkYourFileDetails.fIDetails.heading")</h2>
+    <div class="govuk-form-group govuk-!-margin-bottom-9">
+        @govukSummaryList(fiDetails)
+    </div>
     }
 
     <p class="govuk-body">

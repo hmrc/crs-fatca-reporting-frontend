@@ -67,6 +67,8 @@ object MessageSpecData {
   )
 
   implicit val format: OFormat[MessageSpecData] = Json.format[MessageSpecData]
+
+  extension (messageType: MessageType) def name: String = messageType.toString
 }
 
 case class SubmissionValidationSuccess(messageSpecData: MessageSpecData) extends SubmissionValidationResult

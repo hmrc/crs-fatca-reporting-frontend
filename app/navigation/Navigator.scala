@@ -20,17 +20,15 @@ import controllers.routes
 import models.*
 import models.UserAnswers.extractMessageSpecData
 import pages.*
-import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
-import pages.elections.fatca.TreasuryRegulationsPage
+import pages.elections.crs.*
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import play.api.mvc.Call
+import utils.ReportingConstants.*
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class Navigator @Inject() () {
-
-  private val thresholdDate = LocalDate.of(2026, 1, 1)
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {
     case NormalMode =>
@@ -71,7 +69,7 @@ class Navigator @Inject() () {
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =
     extractMessageSpecData(userAnswers) {
       messageSpecData =>
-        if (messageSpecData.reportingPeriod.getYear >= thresholdDate.getYear) {
+        if (messageSpecData.reportingPeriod.getYear >= ThresholdDate.getYear) {
           controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(NormalMode)
         } else {
           controllers.routes.CheckYourFileDetailsController.onPageLoad()

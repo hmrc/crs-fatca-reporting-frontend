@@ -20,17 +20,7 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{
-  CRS,
-  FATCA,
-  FIIDNotMatchingError,
-  IncorrectMessageTypeError,
-  InvalidXmlFileError,
-  NormalMode,
-  ReportingPeriodError,
-  UserAnswers,
-  ValidatedFileData
-}
+import models.{FATCA, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -55,14 +45,12 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
   private val mockValidationConnector: ValidationConnector = mock[ValidationConnector]
   private val fakeUpscanConnector: FakeUpscanConnector     = app.injector.instanceOf[FakeUpscanConnector]
 
-  private val currentYear               = 2025
-  private val reportingPeriodLowerBound = currentYear - 12
-  private val downloadURL               = "http://dummy-url.com"
-  private val FileSize                  = 100L
-  private val fileName                  = "testFile"
-  private val fileReferenceId           = Reference("fileReferenceId")
-  private val uploadId                  = UploadId("123")
-  private val checksum                  = "testCheckSum"
+  private val downloadURL     = "http://dummy-url.com"
+  private val FileSize        = 100L
+  private val fileName        = "testFile"
+  private val fileReferenceId = Reference("fileReferenceId")
+  private val uploadId        = UploadId("123")
+  private val checksum        = "testCheckSum"
 
   private val uploadDetails = UploadSessionDetails(
     new ObjectId(),
