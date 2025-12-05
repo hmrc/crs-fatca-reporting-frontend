@@ -17,15 +17,15 @@
 package controllers
 
 import controllers.actions.*
-import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, DocRefIDFormat, InvalidMessageRefIDFormat}
+import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.FileRejectedViewModel
 import views.html.RulesErrorView
+
+import javax.inject.Inject
 
 class RulesErrorController @Inject() (
   override val messagesApi: MessagesApi,

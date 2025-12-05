@@ -19,7 +19,6 @@ package controllers
 import controllers.actions.*
 import forms.RequiredGiinFormProvider
 import models.Mode
-import models.UserAnswers.getMessageSpecData
 import navigation.Navigator
 import pages.{RequiredGiinPage, ValidXMLPage}
 import play.api.data.Form

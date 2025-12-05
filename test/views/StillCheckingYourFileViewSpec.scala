@@ -24,8 +24,8 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
-import viewmodels.{CheckYourFileDetailsViewModel, FileCheckViewModel}
-import views.html.{CheckYourFileDetailsView, StillCheckingYourFileView}
+import viewmodels.FileCheckViewModel
+import views.html.StillCheckingYourFileView
 
 class StillCheckingYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 

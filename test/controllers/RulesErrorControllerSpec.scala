@@ -17,12 +17,9 @@
 package controllers
 
 import base.SpecBase
-import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
-import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import utils.RulesErrorHelper
-import viewmodels.FileRejectedViewModel
 import views.html.RulesErrorView
 
 class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {

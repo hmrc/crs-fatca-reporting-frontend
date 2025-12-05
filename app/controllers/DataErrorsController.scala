@@ -22,7 +22,6 @@ import pages.{GenericErrorPage, InvalidXMLPage, MessageTypePage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.ErrorViewHelper
 import views.html.{DataErrorsView, ThereIsAProblemView}

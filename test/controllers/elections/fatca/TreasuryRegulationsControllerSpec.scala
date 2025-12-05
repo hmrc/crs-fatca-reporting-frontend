@@ -18,7 +18,7 @@ package controllers.elections.fatca
 
 import base.SpecBase
 import forms.elections.fatca.TreasuryRegulationsFormProvider
-import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,33 +30,17 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.fatca.TreasuryRegulationsView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class TreasuryRegulationsControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider        = new TreasuryRegulationsFormProvider()
-  private val form                = formProvider()
-  private val reportingPeriodYear = 2024
-  private val fiName              = "fi-name"
-  private val fileName            = "test-file.xml"
-  private val FileSize            = 100L
-  private val FileChecksum        = "checksum"
-
+  private val formProvider                  = new TreasuryRegulationsFormProvider()
+  private val form                          = formProvider()
+  private val fiName                        = "fi-name"
   lazy val treasuryRegulationsRoute: String = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String       = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val fatcaMessageSpec = MessageSpecData(
-    messageType = FATCA,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = None,
-    fiNameFromFim = fiName
-  )
-
-  val fatcaValidatedFileData        = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
+  val fatcaValidatedFileData        = getValidatedFileData()
   val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "TreasuryRegulations Controller" - {

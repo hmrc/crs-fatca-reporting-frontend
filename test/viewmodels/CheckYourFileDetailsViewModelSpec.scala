@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, FATCA, MessageSpecData, ValidatedFileData}
+import models.{CRS, FATCA, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
@@ -29,16 +29,22 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList,
 import java.time.LocalDate
 
 class CheckYourFileDetailsViewModelSpec extends SpecBase {
+
+  def crsValidatedFileData(year: Int) = getValidatedFileData(getMessageSpecData(CRS, reportingPeriod = LocalDate.of(year, 1, 1)))
+
+  def fatcaValidatedFileData(year: Int) =
+    getValidatedFileData(getMessageSpecData(FATCA, reportingPeriod = LocalDate.of(year, 1, 1)))
+
   "CheckYourFileDetailsViewModel" - {
 
     ".fileDetailsSummary" - {
       "must return the getSummaryList for File Details when No Election Required for CRS" in {
         val expectedSummary = SummaryList(
           List(
-            SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("messageRefId")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("testRefId")), "no-border-bottom", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("CRS")), "no-border-bottom", None),
-            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("sendingCompanyIN")), "no-border-bottom", None),
-            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("reportingFIName")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
               Value(Text("New information")),
@@ -60,33 +66,18 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName      = "fi-name"
-        val fileName            = "test-file.xml"
-        val FileSize            = 100L
-        val FileChecksum        = "checksum"
         val reportingPeriodYear = 2025
-        val messageSpecData = MessageSpecData(
-          messageType = CRS,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-        val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
-        val modelHelper          = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
+        val userAnswers         = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
+        val modelHelper         = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.fileDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for File Details when No Election Required for FATCA" in {
         val expectedSummary = SummaryList(
           List(
-            SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("messageRefId")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("testRefId")), "no-border-bottom", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("FATCA")), "no-border-bottom", None),
-            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("sendingCompanyIN")), "no-border-bottom", None),
-            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("reportingFIName")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
               Value(Text("New information")),
@@ -108,24 +99,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName      = "fi-name"
-        val fileName            = "test-file.xml"
-        val FileSize            = 100L
-        val FileChecksum        = "checksum"
-        val reportingPeriodYear = 2025
-        val messageSpecData = MessageSpecData(
-          messageType = FATCA,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
 
-        val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-        val userAnswers          = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
-        val modelHelper          = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
+        val reportingPeriodYear = 2025
+        val userAnswers         = emptyUserAnswers.withPage(ValidXMLPage, fatcaValidatedFileData(reportingPeriodYear))
+        val modelHelper         = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.fileDetailsSummary mustBe expectedSummary
       }
     }
@@ -156,23 +133,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = CRS,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, false)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
@@ -250,23 +212,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = CRS,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
 
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, true)
           .withPage(ElectCrsContractPage, true)
           .withPage(DormantAccountsPage, true)
@@ -363,23 +311,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = CRS,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, true)
           .withPage(ElectCrsContractPage, true)
           .withPage(DormantAccountsPage, true)
@@ -493,23 +426,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = CRS,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, true)
           .withPage(ElectCrsContractPage, true)
           .withPage(DormantAccountsPage, true)
@@ -544,23 +462,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = FATCA,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, fatcaValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, false)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary
@@ -622,23 +525,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = FATCA,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, fatcaValidatedFileData(reportingPeriodYear))
           .withPage(ReportElectionsPage, true)
           .withPage(TreasuryRegulationsPage, true)
           .withPage(ElectFatcaThresholdsPage, true)
@@ -719,23 +607,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = FATCA,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, fatcaValidatedFileData(reportingPeriodYear))
           .withPage(RequiredGiinPage, testGIINValue)
           .withPage(ReportElectionsPage, true)
           .withPage(TreasuryRegulationsPage, true)
@@ -769,23 +642,8 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
           "",
           Map()
         )
-        val expectedFiName = "fi-name"
-        val fileName       = "test-file.xml"
-        val FileSize       = 100L
-        val FileChecksum   = "checksum"
-        val fatcaMessageSpec = MessageSpecData(
-          messageType = FATCA,
-          sendingCompanyIN = "sendingCompanyIN",
-          messageRefId = "messageRefId",
-          reportingFIName = "reportingFIName",
-          reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-          giin = None,
-          fiNameFromFim = expectedFiName
-        )
-
-        val crsValidatedFileData = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
         val userAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage, crsValidatedFileData)
+          .withPage(ValidXMLPage, fatcaValidatedFileData(reportingPeriodYear))
           .withPage(RequiredGiinPage, testGIINValue)
         val modelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.financialInstitutionDetailsSummary mustBe expectedSummary

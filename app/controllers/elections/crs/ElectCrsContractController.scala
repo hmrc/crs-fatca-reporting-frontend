@@ -18,8 +18,7 @@ package controllers.elections.crs
 
 import controllers.actions.*
 import forms.ElectCrsContractFormProvider
-import models.UserAnswers.getMessageSpecData
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
 import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsContractPage

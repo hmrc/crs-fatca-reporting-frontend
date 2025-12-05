@@ -24,7 +24,7 @@ import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.{RulesErrorHelper, ViewHelper}
-import views.html.{DataErrorsView, RulesErrorView}
+import views.html.RulesErrorView
 
 class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper with RulesErrorHelper {
   val view: RulesErrorView                                              = app.injector.instanceOf[RulesErrorView]

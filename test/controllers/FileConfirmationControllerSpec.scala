@@ -18,8 +18,7 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import views.html.FileConfirmationView
+import play.api.test.Helpers.*
 
 class FileConfirmationControllerSpec extends SpecBase {
 
@@ -33,8 +32,6 @@ class FileConfirmationControllerSpec extends SpecBase {
         val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad().url)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[FileConfirmationView]
 
         status(result) mustEqual OK
         val resultHtml = contentAsString(result)

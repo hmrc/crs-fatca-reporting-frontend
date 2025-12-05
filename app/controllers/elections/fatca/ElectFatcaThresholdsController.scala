@@ -18,7 +18,7 @@ package controllers.elections.fatca
 
 import controllers.actions.*
 import forms.elections.fatca.ElectFatcaThresholdsFormProvider
-import models.{Mode, UserAnswers}
+import models.Mode
 import navigation.Navigator
 import pages.ValidXMLPage
 import pages.elections.fatca.ElectFatcaThresholdsPage

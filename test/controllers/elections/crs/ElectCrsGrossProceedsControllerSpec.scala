@@ -19,7 +19,7 @@ package controllers.elections.crs
 import base.SpecBase
 import controllers.routes
 import forms.ElectCrsGrossProceedsFormProvider
-import models.{CRS, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,7 +31,6 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.ElectCrsGrossProceedsView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
@@ -48,15 +47,7 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   lazy val electCrsGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val crsMessageSpec = MessageSpecData(
-    messageType = CRS,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = None,
-    fiNameFromFim = fiName
-  )
+  val crsMessageSpec = getMessageSpecData(CRS, fiNameFromFim = fiName)
 
   val fatcaValidatedFileData      = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
   val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
@@ -87,8 +78,6 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
         val request = FakeRequest(GET, electCrsGrossProceedsRoute)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[ElectCrsGrossProceedsView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual pageUnavailableUrl

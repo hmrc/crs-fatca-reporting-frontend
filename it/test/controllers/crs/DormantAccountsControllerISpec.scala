@@ -16,19 +16,15 @@
 
 package controllers.crs
 
-import models.{CRS, MessageSpecData}
+import models.CRS
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
-import java.time.LocalDate
-
-
 class DormantAccountsControllerISpec extends ISpecBehaviours {
 
-  private val path = "/report/elections/crs/dormant-accounts"
-  val fiNameFM = "testFIFromFM"
-  val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
-  val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+  private val path            = "/report/elections/crs/dormant-accounts"
+  private val messageSpecData = getMessageSpecData(CRS)
+  private val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET DormantAccountsController.onPageLoad" must {
     behave like pageLoads(path = path, pageTitle = "dormantAccounts.title", userAnswers = userAnswers)

@@ -25,7 +25,7 @@ import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
 import utils.ViewHelper
 import viewmodels.FileCheckViewModel
-import views.html.{FileFailedChecksView, FilePassedChecksView}
+import views.html.FileFailedChecksView
 
 class FileFailedChecksSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
   val view: FileFailedChecksView                                        = app.injector.instanceOf[FileFailedChecksView]

@@ -19,7 +19,7 @@ package controllers.elections.fatca
 import base.SpecBase
 import controllers.routes
 import forms.elections.fatca.ElectFatcaThresholdsFormProvider
-import models.{FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{FATCA, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,7 +32,6 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.fatca.ElectFatcaThresholdsView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
@@ -50,17 +49,7 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
   lazy val electFatcaThresholdsRoute: String = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String        = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val fatcaMessageSpec = MessageSpecData(
-    messageType = FATCA,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = None,
-    fiNameFromFim = fiName
-  )
-
-  val fatcaValidatedFileData        = ValidatedFileData(fileName, fatcaMessageSpec, FileSize, FileChecksum)
+  val fatcaValidatedFileData        = getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = fiName))
   val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "ElectFatcaThresholds Controller" - {

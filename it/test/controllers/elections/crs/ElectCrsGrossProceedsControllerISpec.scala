@@ -16,18 +16,15 @@
 
 package controllers.elections.crs
 
-import models.{CRS, MessageSpecData, UserAnswers}
+import models.{CRS, UserAnswers}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
-import java.time.LocalDate
-
 class ElectCrsGrossProceedsControllerISpec extends ISpecBehaviours {
 
-  private val path = "/report/elections/crs/gross-proceeds"
-  val fiNameFM = "testFIFromFM"
-  val messageSpecData = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2000, 1, 1), giin = None, fiNameFM)
-  val userAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+  private val path                     = "/report/elections/crs/gross-proceeds"
+  private val messageSpecData          = getMessageSpecData(CRS)
+  private val userAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET ElectCrsGrossProceedsController.onPageLoad" must {
     behave like pageLoads(path = path, pageTitle = "elections.crs.grossProceeds.title", userAnswers = userAnswers)
