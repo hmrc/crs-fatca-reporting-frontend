@@ -50,12 +50,9 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
   "Remove" - {
     "a list of pages should be removed from UserAnswers" in {
       val ua = emptyUserAnswers
-        .set(ReportElectionsPage, true)
-        .get
-        .set(RequiredGiinPage, "some data")
-        .get
-        .set(MessageTypePage, "msg type")
-        .get
+        .withPage(ReportElectionsPage, true)
+        .withPage(RequiredGiinPage, "some data")
+        .withPage(MessageTypePage, "msg type")
 
       val result = ua.removeAllFrom(Seq(ReportElectionsPage, MessageTypePage)).get
 
@@ -65,9 +62,7 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
     }
 
     "a list of pages that do not exist should be ignored when removing from UserAnswers" in {
-      val ua = emptyUserAnswers
-        .set(RequiredGiinPage, "some data")
-        .get
+      val ua = emptyUserAnswers.withPage(RequiredGiinPage, "some data")
 
       val result = ua.removeAllFrom(Seq(ReportElectionsPage, MessageTypePage)).get
 
