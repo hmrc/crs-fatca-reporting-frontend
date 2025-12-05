@@ -21,7 +21,7 @@ import controllers.routes
 import models.*
 import pages.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
-import pages.elections.fatca.TreasuryRegulationsPage
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 
 import java.time.LocalDate

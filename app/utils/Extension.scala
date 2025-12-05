@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package pages
+package utils
 
-import play.api.libs.json.JsPath
+object Extension {
 
-object MessageTypePage extends QuestionPage[String] {
+  extension (b: Boolean)
 
-  override def path: JsPath = JsPath \ toString
+    def toYesNo: String =
+      if b then "Yes" else "No"
 
-  override def toString: String = "messageType"
 }

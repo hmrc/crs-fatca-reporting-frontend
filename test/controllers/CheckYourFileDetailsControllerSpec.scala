@@ -17,32 +17,52 @@
 package controllers
 
 import base.SpecBase
+import models.{CRS, MessageSpecData, ValidatedFileData}
+import org.scalatest.matchers.must.Matchers
+import pages.ValidXMLPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.CheckYourFileDetailsView
 import viewmodels.CheckYourFileDetailsViewModel
-import org.scalatest.matchers.must.Matchers
+import views.html.CheckYourFileDetailsView
+
+import java.time.LocalDate
 
 class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
 
   "CheckYourFileDetails Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val expectedFiName      = "fi-name"
+      val fileName            = "test-file.xml"
+      val FileSize            = 100L
+      val FileChecksum        = "checksum"
+      val reportingPeriodYear = 2025
+      val messageSpecData = MessageSpecData(
+        messageType = CRS,
+        sendingCompanyIN = "sendingCompanyIN",
+        messageRefId = "messageRefId",
+        reportingFIName = "reportingFIName",
+        reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
+        giin = None,
+        fiNameFromFim = expectedFiName
+      )
+      val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
+      val answers              = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application         = applicationBuilder(userAnswers = Some(answers)).build()
+      val messagesApi         = messages(application)
+      val helperModel         = CheckYourFileDetailsViewModel(answers)(using messagesApi)
+      val expectedFileDetails = helperModel.fileDetailsSummary
+      val expectedFIDetails   = helperModel.financialInstitutionDetailsSummary
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourFileDetailsController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        val view = application.injector.instanceOf[CheckYourFileDetailsView]
-
-        val messagesApi         = messages(application)
-        val expectedSummaryList = CheckYourFileDetailsViewModel.getYourFileDetailsRows()(messagesApi)
+        val view    = application.injector.instanceOf[CheckYourFileDetailsView]
+        val result  = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(expectedSummaryList, "Placeholder Name")(request, messagesApi).toString
+        contentAsString(result) mustEqual
+          view(expectedFileDetails, expectedFIDetails, crsValidatedFileData.messageSpecData.fiNameFromFim)(request, messagesApi).toString
       }
     }
   }

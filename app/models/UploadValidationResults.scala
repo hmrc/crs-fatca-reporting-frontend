@@ -65,6 +65,8 @@ object MessageSpecData {
     Writes.temporalWrites[LocalDate, DateTimeFormatter](DateTimeFormatter.ISO_LOCAL_DATE)
   )
   implicit val format: OFormat[MessageSpecData] = Json.format[MessageSpecData]
+
+  extension (messageType: MessageType) def name: String = messageType.toString
 }
 
 case class SubmissionValidationSuccess(messageSpecData: MessageSpecData) extends SubmissionValidationResult
