@@ -42,34 +42,17 @@ class Navigator @Inject() () {
   private val checkRouteMap: Page => UserAnswers => Call = {
     case ElectCrsCarfGrossProceedsPage =>
       userAnswers =>
-        userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
-          case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
-          case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
+        electCrsCarfGrossProceedsRedirect(userAnswers)
     case ReportElectionsPage =>
       userAnswers =>
-        userAnswers.get(ReportElectionsPage) match {
-          case Some(true) =>
-            getMessageSpecData(userAnswers) {
-              messageSpecData =>
-                messageSpecData.messageType match {
-                  case CRS =>
-                    controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
-                  case FATCA =>
-                    controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
-                }
-            }
-          case Some(false) =>
-            routes.CheckYourFileDetailsController.onPageLoad()
-        }
+        reportElectionPageRedirect(userAnswers)
     case ElectCrsGrossProceedsPage | ThresholdsPage | DormantAccountsPage | ElectCrsContractPage | ElectFatcaThresholdsPage | TreasuryRegulationsPage |
         RequiredGiinPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
-
+  
   private val normalRoutes: Page => UserAnswers => Call = {
     case ValidXMLPage =>
       userAnswers => validFileUploadedNavigation(userAnswers)
@@ -85,33 +68,41 @@ class Navigator @Inject() () {
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case ElectCrsCarfGrossProceedsPage =>
       userAnswers =>
-        userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
-          case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
-          case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
+        electCrsCarfGrossProceedsRedirect(userAnswers)
     case ThresholdsPage =>
       userAnswers => thresholdsNavigation(userAnswers)
     case ElectCrsGrossProceedsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
     case ReportElectionsPage =>
       userAnswers =>
-        userAnswers.get(ReportElectionsPage) match {
-          case Some(true) =>
-            getMessageSpecData(userAnswers) {
-              messageSpecData =>
-                messageSpecData.messageType match {
-                  case CRS =>
-                    controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
-                  case FATCA =>
-                    controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
-                }
-            }
-          case Some(false) =>
-            routes.CheckYourFileDetailsController.onPageLoad()
-        }
-
+        reportElectionPageRedirect(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
+  }
+
+  private def electCrsCarfGrossProceedsRedirect(userAnswers: UserAnswers) = {
+    userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
+      case Some(true) => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
+      case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
+      case None => routes.JourneyRecoveryController.onPageLoad()
+    }
+  }
+
+  private def reportElectionPageRedirect(userAnswers: UserAnswers) = {
+    userAnswers.get(ReportElectionsPage) match {
+      case Some(true) =>
+        getMessageSpecData(userAnswers) {
+          messageSpecData =>
+            messageSpecData.messageType match {
+              case CRS =>
+                controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
+              case FATCA =>
+                controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
+            }
+        }
+      case Some(false) =>
+        routes.CheckYourFileDetailsController.onPageLoad()
+      case None => routes.JourneyRecoveryController.onPageLoad()
+    }
   }
 
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =

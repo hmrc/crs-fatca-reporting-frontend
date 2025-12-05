@@ -19,14 +19,13 @@ package controllers.elections
 import controllers.actions.*
 import forms.elections.ReportElectionsFormProvider
 import models.UserAnswers.getMessageSpecData
-import models.{CheckMode, Mode, UserAnswers}
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.ReportElectionsPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.reportElectionPages
 import views.html.ThereIsAProblemView
 import views.html.elections.ReportElectionsView
 

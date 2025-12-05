@@ -16,7 +16,7 @@
 
 package utils
 
-import pages.{InvalidXMLPage, ReportElectionsPage, ValidXMLPage}
+import pages.{InvalidXMLPage, ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import queries.Settable
@@ -33,7 +33,7 @@ def reportElectionPages(): Seq[Settable[_]] =
   )
 
 def uploadFilePagesForValidXml(): Seq[Settable[_]] =
-  reportElectionPages() ++ Seq(ReportElectionsPage, InvalidXMLPage)
+  reportElectionPages() ++ Seq(ReportElectionsPage, RequiredGiinPage, InvalidXMLPage)
 
 def uploadFilePagesForInValidXml(): Seq[Settable[_]] =
-  reportElectionPages() ++ Seq(ReportElectionsPage, ValidXMLPage)
+  reportElectionPages() ++ Seq(ReportElectionsPage, RequiredGiinPage, ValidXMLPage)
