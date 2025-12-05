@@ -82,10 +82,7 @@ class ReportElectionsController @Inject() (
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportElectionsPage, value))
-                  uaFromCheckMode <-
-                    if (mode == CheckMode && !value) Future.fromTry(updatedAnswers.removeAllFrom(reportElectionPages(messageSpecData.messageType)))
-                    else Future(updatedAnswers)
-                  _ <- sessionRepository.set(uaFromCheckMode)
+                  _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(ReportElectionsPage, mode, updatedAnswers))
             )
       }

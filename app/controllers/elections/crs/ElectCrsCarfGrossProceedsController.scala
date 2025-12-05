@@ -83,10 +83,7 @@ class ElectCrsCarfGrossProceedsController @Inject() (
               value =>
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ElectCrsCarfGrossProceedsPage, value))
-                  uaFromCheckMode <-
-                    if (mode == CheckMode && !value) Future.fromTry(updatedAnswers.removeAllFrom(Seq(ElectCrsGrossProceedsPage)))
-                    else Future(updatedAnswers)
-                  _ <- sessionRepository.set(uaFromCheckMode)
+                  _              <- sessionRepository.set(updatedAnswers)
                 } yield Redirect(navigator.nextPage(ElectCrsCarfGrossProceedsPage, mode, updatedAnswers))
             )
         case _ =>

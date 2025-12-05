@@ -180,27 +180,24 @@ class NavigatorSpec extends SpecBase {
         "to /report/check-your-file-details  when elections are not required" in {
           Seq(CRS, FATCA).foreach {
             regime =>
-              val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, false)
               val msd = MessageSpecData(regime, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-              val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+              val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, false)
 
               navigator.nextPage(ReportElectionsPage, NormalMode, userAnswers) mustBe controllers.routes.CheckYourFileDetailsController.onPageLoad()
           }
         }
 
         "to /report/elections/crs/contracts when regime is crs and elections are required" in {
-          val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, true)
           val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, true)
 
           navigator.nextPage(ReportElectionsPage, NormalMode, userAnswers) mustBe controllers.elections.crs.routes.ElectCrsContractController
             .onPageLoad(NormalMode)
         }
 
         "to /report/elections/fatca/us-treasury-regulations  when regime is fatca and elections are required" in {
-          val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, true)
           val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, true)
 
           navigator.nextPage(ReportElectionsPage, NormalMode, userAnswers) mustBe controllers.elections.fatca.routes.TreasuryRegulationsController
             .onPageLoad(NormalMode)
@@ -245,27 +242,24 @@ class NavigatorSpec extends SpecBase {
         "to /report/check-your-file-details  when elections are not required" in {
           Seq(CRS, FATCA).foreach {
             regime =>
-              val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, false)
               val msd = MessageSpecData(regime, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-              val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+              val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, false)
 
               navigator.nextPage(ReportElectionsPage, CheckMode, userAnswers) mustBe controllers.routes.CheckYourFileDetailsController.onPageLoad()
           }
         }
 
         "to /report/elections/crs/contracts when regime is crs and elections are required" in {
-          val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, true)
           val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, true)
 
           navigator.nextPage(ReportElectionsPage, CheckMode, userAnswers) mustBe controllers.elections.crs.routes.ElectCrsContractController
             .onPageLoad(NormalMode)
         }
 
         "to /report/elections/fatca/us-treasury-regulations  when regime is fatca and elections are required" in {
-          val baseAnswers = emptyUserAnswers.withPage(ReportElectionsPage, true)
           val msd         = MessageSpecData(FATCA, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ReportElectionsPage, true)
 
           navigator.nextPage(ReportElectionsPage, CheckMode, userAnswers) mustBe controllers.elections.fatca.routes.TreasuryRegulationsController
             .onPageLoad(NormalMode)
@@ -329,19 +323,15 @@ class NavigatorSpec extends SpecBase {
 
       "must go from /report/elections/crs/carf-gross-proceeds" - {
         "to /report/check-your-file-details when ElectCrsCarfGrossProceedsPage is false" in {
-          val baseAnswers = emptyUserAnswers.withPage(ElectCrsCarfGrossProceedsPage, false)
-
           val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ElectCrsCarfGrossProceedsPage, false)
 
           navigator.nextPage(ElectCrsCarfGrossProceedsPage, CheckMode, userAnswers) mustBe controllers.routes.CheckYourFileDetailsController.onPageLoad()
         }
 
         "to /report/elections/crs/gross-proceeds when ElectCrsCarfGrossProceedsPage is true" in {
-          val baseAnswers = emptyUserAnswers.withPage(ElectCrsCarfGrossProceedsPage, true)
-
           val msd         = MessageSpecData(CRS, "testFI", "testRefId", "testReportingName", LocalDate.of(2025, 12, 31), giin = None, "testFiNameFromFim")
-          val userAnswers = baseAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+          val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd)).withPage(ElectCrsCarfGrossProceedsPage, true)
 
           navigator.nextPage(ElectCrsCarfGrossProceedsPage, CheckMode, userAnswers) mustBe controllers.elections.crs.routes.ElectCrsGrossProceedsController
             .onPageLoad(NormalMode)

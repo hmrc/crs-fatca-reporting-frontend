@@ -16,23 +16,24 @@
 
 package utils
 
-import models.{CRS, FATCA, MessageType}
+import pages.{InvalidXMLPage, ReportElectionsPage, ValidXMLPage}
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import queries.Settable
 
-def reportElectionPages(regime: MessageType): Seq[Settable[_]] = regime match {
-  case FATCA =>
-    Seq(
-      TreasuryRegulationsPage,
-      ElectFatcaThresholdsPage
-    )
-  case CRS =>
-    Seq(
-      ElectCrsContractPage,
-      DormantAccountsPage,
-      ThresholdsPage,
-      ElectCrsCarfGrossProceedsPage,
-      ElectCrsGrossProceedsPage
-    )
-}
+def reportElectionPages(): Seq[Settable[_]] =
+  Seq(
+    TreasuryRegulationsPage,
+    ElectFatcaThresholdsPage,
+    ElectCrsContractPage,
+    DormantAccountsPage,
+    ThresholdsPage,
+    ElectCrsGrossProceedsPage,
+    ElectCrsCarfGrossProceedsPage
+  )
+
+def uploadFilePagesForValidXml(): Seq[Settable[_]] =
+  reportElectionPages() ++ Seq(ReportElectionsPage, InvalidXMLPage)
+
+def uploadFilePagesForInValidXml(): Seq[Settable[_]] =
+  reportElectionPages() ++ Seq(ReportElectionsPage, ValidXMLPage)

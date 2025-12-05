@@ -16,12 +16,24 @@
 
 package pages.elections.crs
 
+import models.UserAnswers
 import pages.QuestionPage
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object ElectCrsCarfGrossProceedsPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "electCrsCarfGrossProceeds"
+
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
+    value match {
+      case Some(false) =>
+        userAnswers
+          .remove(ElectCrsGrossProceedsPage)
+      case _ =>
+        super.cleanup(value, userAnswers)
+    }
 }

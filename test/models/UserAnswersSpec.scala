@@ -19,7 +19,9 @@ package models
 import base.SpecBase
 import models.UserAnswers.getMessageSpecData
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{MessageTypePage, ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
+import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
+import pages.{InvalidXMLPage, MessageTypePage, ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 
 class UserAnswersSpec extends SpecBase with MockitoSugar {
 
@@ -70,4 +72,109 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
     }
   }
 
+  "set reportElectionPages false" - {
+    "removes all election related pages" in new TestContext {
+      electionPages.foreach {
+        p =>
+          electionUserAnswers.get(p) mustEqual Some(true)
+      }
+
+      val result = electionUserAnswers.withPage(ReportElectionsPage, false)
+
+      electionPages.foreach {
+        p =>
+          result.get(p) mustEqual None
+      }
+    }
+  }
+
+  "set ElectCrsCarfGrossProceedsPage to false" - {
+    "removes ElectCrsGrossProceedsPage value" in {
+      val userAnswers = emptyUserAnswers.withPage(ElectCrsGrossProceedsPage, false)
+
+      userAnswers.get(ElectCrsGrossProceedsPage) mustEqual Some(false)
+
+      val result = userAnswers.withPage(ElectCrsCarfGrossProceedsPage, false)
+
+      result.get(ElectCrsGrossProceedsPage) mustEqual None
+      result.get(ElectCrsCarfGrossProceedsPage) mustEqual Some(false)
+    }
+  }
+
+  "adding ValidXmlPage" - {
+    "removes election pages" in new TestContext {
+      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true)
+
+      uploadXmlPages.foreach {
+        p =>
+          userAnswers.get(p).isDefined mustEqual true
+      }
+
+      val result = userAnswers.withPage(ValidXMLPage, getValidatedFileData())
+
+      uploadXmlPages.foreach {
+        p =>
+          result.get(p) mustEqual None
+      }
+    }
+
+    "removes invalid xml page" in new TestContext {
+      val userAnswers: UserAnswers = emptyUserAnswers.withPage(InvalidXMLPage, "some-string")
+
+      userAnswers.get(InvalidXMLPage) mustEqual Some("some-string")
+
+      val result = userAnswers.withPage(ValidXMLPage, getValidatedFileData())
+
+      result.get(InvalidXMLPage) mustEqual None
+    }
+  }
+
+  "adding InValidXmlPage" - {
+    "removes election pages" in new TestContext {
+      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true)
+
+      uploadXmlPages.foreach {
+        p =>
+          userAnswers.get(p).isDefined mustEqual true
+      }
+
+      val result = userAnswers.withPage(InvalidXMLPage, "some-string")
+
+      uploadXmlPages.foreach {
+        p =>
+          result.get(p) mustEqual None
+      }
+    }
+
+    "removes valid xml page" in new TestContext {
+      val userAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData())
+
+      userAnswers.get(ValidXMLPage) mustEqual Some(getValidatedFileData())
+
+      val result = userAnswers.withPage(InvalidXMLPage, "some-string")
+
+      result.get(ValidXMLPage) mustEqual None
+    }
+  }
+
+  trait TestContext {
+
+    val electionPages = Seq(
+      TreasuryRegulationsPage,
+      ElectFatcaThresholdsPage,
+      ElectCrsContractPage,
+      DormantAccountsPage,
+      ThresholdsPage,
+      ElectCrsCarfGrossProceedsPage,
+      ElectCrsGrossProceedsPage,
+      ElectCrsCarfGrossProceedsPage
+    )
+    val uploadXmlPages = electionPages ++ Seq(ReportElectionsPage)
+    val tuple          = electionPages.map((_, true))
+
+    val electionUserAnswers = tuple.foldLeft(emptyUserAnswers) {
+      case (acc, (x, y)) =>
+        acc.withPage(x, y)
+    }
+  }
 }
