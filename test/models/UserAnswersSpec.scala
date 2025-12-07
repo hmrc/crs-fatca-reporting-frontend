@@ -123,7 +123,6 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
     "removes invalid xml page" in new TestContext {
       val userAnswers: UserAnswers = emptyUserAnswers.withPage(InvalidXMLPage, "some-string")
 
-
       userAnswers.get(InvalidXMLPage) mustEqual Some("some-string")
 
       val result = userAnswers.withPage(ValidXMLPage, getValidatedFileData())
