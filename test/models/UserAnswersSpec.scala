@@ -103,12 +103,13 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
 
   "adding ValidXmlPage" - {
     "removes election pages" in new TestContext {
-      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true)
+      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true).withPage(RequiredGiinPage, "some-gin")
 
       uploadXmlPages.foreach {
         p =>
           userAnswers.get(p).isDefined mustEqual true
       }
+      userAnswers.get(RequiredGiinPage) mustEqual Some("some-gin")
 
       val result = userAnswers.withPage(ValidXMLPage, getValidatedFileData())
 
@@ -116,10 +117,12 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
         p =>
           result.get(p) mustEqual None
       }
+      result.get(RequiredGiinPage) mustEqual None
     }
 
     "removes invalid xml page" in new TestContext {
       val userAnswers: UserAnswers = emptyUserAnswers.withPage(InvalidXMLPage, "some-string")
+
 
       userAnswers.get(InvalidXMLPage) mustEqual Some("some-string")
 
@@ -131,12 +134,13 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
 
   "adding InValidXmlPage" - {
     "removes election pages" in new TestContext {
-      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true)
+      val userAnswers: UserAnswers = electionUserAnswers.withPage(ReportElectionsPage, true).withPage(RequiredGiinPage, "some-gin")
 
       uploadXmlPages.foreach {
         p =>
           userAnswers.get(p).isDefined mustEqual true
       }
+      userAnswers.get(RequiredGiinPage) mustEqual Some("some-gin")
 
       val result = userAnswers.withPage(InvalidXMLPage, "some-string")
 
@@ -144,6 +148,7 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
         p =>
           result.get(p) mustEqual None
       }
+      result.get(RequiredGiinPage) mustEqual None
     }
 
     "removes valid xml page" in new TestContext {
