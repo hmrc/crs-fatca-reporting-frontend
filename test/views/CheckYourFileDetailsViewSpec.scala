@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.{CRS, FATCA, MessageSpecData, MessageType, ValidatedFileData}
+import models.{CRS, FATCA, ValidatedFileData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -30,8 +30,6 @@ import play.twirl.api.HtmlFormat
 import utils.ViewHelper
 import viewmodels.CheckYourFileDetailsViewModel
 import views.html.CheckYourFileDetailsView
-
-import java.time.LocalDate
 
 class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
@@ -47,7 +45,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
 
     "should render page components with a summary list without election" in {
       val expectedFiName  = "fi-name"
-      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, validatedFileData(expectedFiName, CRS))
+      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName)))
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary
       val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
@@ -68,7 +66,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     "should render page components with a summary list without election & required GIIN for FATCA" in {
       val expectedFiName = "fi-name"
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, validatedFileData(expectedFiName, FATCA))
+        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = expectedFiName)))
         .withPage(RequiredGiinPage, "testGIINValue")
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary
@@ -89,8 +87,10 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       assertRowValue(elements, 5, summaryValueLocator, "testGIINValue")
     }
     "should render page components with a summary list with report election as false" in {
-      val expectedFiName  = "fi-name"
-      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, validatedFileData(expectedFiName, CRS)).withPage(ReportElectionsPage, false)
+      val expectedFiName = "fi-name"
+      val userAnswers = emptyUserAnswers
+        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName)))
+        .withPage(ReportElectionsPage, false)
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary
       val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
@@ -112,35 +112,19 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       assertRowValue(elements, 5, summaryValueLocator, "No")
     }
 
-    def validatedFileData(expectedFiName: String, messageType: MessageType) =
-      val fileName            = "test-file.xml"
-      val FileSize            = 100L
-      val FileChecksum        = "checksum"
-      val reportingPeriodYear = 2025
-      val messageSpecData = MessageSpecData(
-        messageType = messageType,
-        sendingCompanyIN = "sendingCompanyIN",
-        messageRefId = "messageRefId",
-        reportingFIName = "reportingFIName",
-        reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-        giin = None,
-        fiNameFromFim = expectedFiName
-      )
-      ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-
     def verifyPageHeading(doc: Document, expectedFiName: String) =
       getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"Check your file details are correct for $expectedFiName"
 
     def verifyFileDetails(elements: Elements, messageType: String) =
       assertRowValue(elements, 0, summaryKeyLocator, "File ID (MessageRefId)")
-      assertRowValue(elements, 0, summaryValueLocator, "messageRefId")
+      assertRowValue(elements, 0, summaryValueLocator, "testRefId")
       assertRowValue(elements, 1, summaryKeyLocator, "Reporting regime (MessageType)")
       assertRowValue(elements, 1, summaryValueLocator, messageType)
       assertRowValue(elements, 2, summaryKeyLocator, "FI ID (SendingCompanyIN)")
-      assertRowValue(elements, 2, summaryValueLocator, "sendingCompanyIN")
+      assertRowValue(elements, 2, summaryValueLocator, "testFI")
       assertRowValue(elements, 3, summaryKeyLocator, "Financial institution (ReportingFI Name)")
-      assertRowValue(elements, 3, summaryValueLocator, "reportingFIName")
+      assertRowValue(elements, 3, summaryValueLocator, "testReportingName")
       assertRowValue(elements, 4, summaryKeyLocator, "File information")
       assertRowValue(elements, 4, summaryValueLocator, "New information")
 

@@ -94,7 +94,7 @@ object UserAnswers {
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)
 
-  def getMessageSpecData[T](userAnswers: UserAnswers)(
+  def extractMessageSpecData[T](userAnswers: UserAnswers)(
     f: MessageSpecData => T
   ): T =
     userAnswers.get(ValidXMLPage) match {

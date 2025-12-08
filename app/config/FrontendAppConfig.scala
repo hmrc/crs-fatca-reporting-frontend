@@ -68,5 +68,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val upscanCallbackDelayInSeconds: Int = configuration.get[Int]("microservice.services.upscan.callbackDelayInSeconds")
   val upscanMaxFileSize: Int            = configuration.get[Int]("microservice.services.upscan.max-file-size-in-mb")
   val upscanMaxFileNameLength: Int      = configuration.get[Int]("microservice.services.upscan.max-file-name-length")
-  val crsUrl: String                    = servicesConfig.baseUrl("crs-fatca-reporting")
+  val crsFatcaBackendUrl: String        = servicesConfig.baseUrl("crs-fatca-reporting")
 }

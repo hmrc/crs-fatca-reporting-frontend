@@ -17,7 +17,6 @@
 package forms.elections.fatca
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.elections.fatca.TreasuryRegulationsFormProvider
 import play.api.data.FormError
 
 class TreasuryRegulationsFormProviderSpec extends BooleanFieldBehaviours {

@@ -18,7 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.DormantAccountsFormProvider
-import models.{CRS, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,7 +31,6 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.elections.crs.DormantAccountsView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
@@ -49,17 +48,9 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl           = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val crsMessageSpec = MessageSpecData(
-    messageType = CRS,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = None,
-    fiNameFromFim = fiName
-  )
+  val crsMessageSpec = getMessageSpecData(CRS)
 
-  val crsValidatedFileData        = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsValidatedFileData        = getValidatedFileData(crsMessageSpec)
   val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
 
   "DormantAccounts Controller" - {

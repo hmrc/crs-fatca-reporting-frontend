@@ -16,35 +16,28 @@
 
 package controllers.elections.crs
 
-import models.{CRS, MessageSpecData, ValidatedFileData}
+import models.{CRS, ValidatedFileData}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
+
 import java.time.LocalDate
 
 class ThresholdsControllerISpec extends ISpecBehaviours {
 
-  private val path = "/report/elections/crs/thresholds"
-  val fiNameFM = "Test Financial Institution"
+  private val path                                  = "/report/elections/crs/thresholds"
   private val requestBody: Map[String, Seq[String]] = Map("value" -> Seq("true"))
 
   private def userAnswersWithReportingPeriod(year: Int) = {
-    val messageSpec = MessageSpecData(
-      messageType = CRS,
-      sendingCompanyIN = "IN",
-      messageRefId = "ref",
-      reportingFIName = "FIName",
-      reportingPeriod = LocalDate.of(year, 12, 31),
-      giin = Some("giin"),
-      fiNameFromFim = fiNameFM
-    )
+    val messageSpec = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(year, 12, 31))
+
     emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpec))
   }
 
-  val userAnswers2025 = userAnswersWithReportingPeriod(2025)
-  val userAnswers2026 = userAnswersWithReportingPeriod(2026)
+  private val userAnswers2025 = userAnswersWithReportingPeriod(2025)
+  private val userAnswers2026 = userAnswersWithReportingPeriod(2026)
 
   private val routeFor2025OrEarlier = "/report/check-your-file-details"
-  private val routeFor2026OrLater = "/report/elections/crs/carf-gross-proceeds"
+  private val routeFor2026OrLater   = "/report/elections/crs/carf-gross-proceeds"
 
   "GET ThresholdsController.onPageLoad" must {
     behave like pageLoads(path = path, pageTitle = "elections.crs.thresholds.title", userAnswers = userAnswers2025)

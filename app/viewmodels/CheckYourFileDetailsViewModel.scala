@@ -17,7 +17,8 @@
 package viewmodels
 
 import controllers.routes
-import models.UserAnswers.getMessageSpecData
+import models.MessageSpecData.name
+import models.UserAnswers.extractMessageSpecData
 import models.{CRS, FATCA, MessageType, UserAnswers}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
@@ -26,14 +27,13 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
-import utils.ReportingConstants.*
 import utils.Extension.toYesNo
-import models.MessageSpecData.name
+import utils.ReportingConstants.*
 
 class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Messages):
 
   def fileDetailsSummary: SummaryList =
-    getMessageSpecData(userAnswers) {
+    extractMessageSpecData(userAnswers) {
       messageSpecData =>
         SummaryList(
           rows = Seq(
@@ -58,7 +58,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def reportElectionRow: Seq[SummaryListRow] =
     userAnswers.get(ReportElectionsPage) match
       case Some(reportElectionValue) =>
-        getMessageSpecData(userAnswers) {
+        extractMessageSpecData(userAnswers) {
           messageSpecData =>
             val reportingYear = messageSpecData.reportingPeriod.getYear.toString
             Seq(

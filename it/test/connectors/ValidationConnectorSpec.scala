@@ -16,8 +16,8 @@
 
 package connectors
 
-import models.{CRS, FIIDNotMatchingError, GenericError, IncorrectMessageTypeError, InvalidMessageTypeError, InvalidXmlFileError, Message, MessageSpecData, NonFatalErrors, ReportingPeriodError, SchemaValidationErrors, SubmissionValidationFailure, ValidationErrors}
 import models.upscan.FileValidateRequest
+import models.{CRS, Errors, FIIDNotMatchingError, GenericError, IncorrectMessageTypeError, InvalidXmlFileError, Message, MessageSpecData, NonFatalErrors, ReportingPeriodError, SchemaValidationErrors, ValidationErrors}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
@@ -27,41 +27,43 @@ import utils.ISpecBase
 import java.time.LocalDate
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
+
+class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
 
   lazy val connector: ValidationConnector = app.injector.instanceOf[ValidationConnector]
 
-  "ValidationConnector" - {
-    "must return messageSpec when status is okay  response is for a successful upload" in new TestContext{
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
+  private val fileValidateRequest =
+    FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
+  "ValidationConnector" - {
+    "must return messageSpec when status is okay  response is for a successful upload" in new TestContext {
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         OK,
         body = messageSpecResponse
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
       result.isRight mustBe true
-      result.getOrElse(fail("Expected Right but got Left")) mustBe  MessageSpecData(
+      result.getOrElse(fail("Expected Right but got Left")) mustBe MessageSpecData(
         messageType = CRS,
         sendingCompanyIN = "COMP123",
         messageRefId = "MSGREF001",
         reportingFIName = "Test FI",
         reportingPeriod = LocalDate.parse("2024-01-01"),
         giin = Some("GIIN123"),
-        fiNameFromFim = "fi-name"
+        fiNameFromFim = "fi-name",
+        electionsRequired = true
       )
     }
 
     "must return schemavalidationErrors when status is okay response is for schemavalidation errors" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         OK,
         body = schemeValidationError
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      private val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")) mustBe SchemaValidationErrors(
@@ -77,79 +79,74 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
     }
 
     "must return FIIDNotMatchingError when status is okay and response is for fiid not matching errors" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         OK,
         body = fiidErrorResponse
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")) mustBe FIIDNotMatchingError
     }
 
     "must return ReportingPeriodError when status is okay and response is for invalid reporting date" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         OK,
         body = reportingPeriodResponse
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")) mustBe ReportingPeriodError
     }
 
     "must return InvalidMessageTypeError when status is ok request and response is for invalid message type" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         OK,
         body = invalidMessageTypeResponse
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")) mustBe IncorrectMessageTypeError
     }
 
     "must return invalid xml when status is bad request request and response is for invalid xml" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         BAD_REQUEST,
         body = invalidXmlResponse
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")) mustBe InvalidXmlFileError
     }
 
     "must return non fatal error for a internal server response" in new TestContext {
-      val fileValidateRequest = FileValidateRequest(url = "/some-url", conversationId = "conversation-id", subscriptionId = "subscription-id", fileReferenceId = "file-reference-id")
 
       stubPostResponse(
         s"/crs-fatca-reporting/validate-submission",
         INTERNAL_SERVER_ERROR,
         body = "invalidXmlResponse"
       )
-      val result = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
+      val result: Either[Errors, MessageSpecData] = Await.result(connector.sendForValidation(fileValidateRequest), 2.seconds)
 
       result.isLeft mustBe true
       result.left.getOrElse(fail("Expecting value in left")).isInstanceOf[NonFatalErrors] mustBe true
     }
 
-
   }
 
   trait TestContext {
+
     val messageSpecResponse: String =
       """
         |{
@@ -161,7 +158,8 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
         |    "reportingFIName": "Test FI",
         |    "reportingPeriod": "2024-01-01",
         |    "giin": "GIIN123",
-        |    "fiNameFromFim": "fi-name"
+        |    "fiNameFromFim": "fi-name",
+        |    "electionsRequired": true
         |  }
         |}
             """.stripMargin
@@ -204,7 +202,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
         |}
         |""".stripMargin
 
-    val reportingPeriodResponse: String = 
+    val reportingPeriodResponse: String =
       """
         |{
         |  "error": "Invalid reporting period",
@@ -212,7 +210,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
         |}
         |""".stripMargin
 
-    val invalidMessageTypeResponse = 
+    val invalidMessageTypeResponse: String =
       """
         |{
         |  "error": "Invalid message type",
@@ -220,14 +218,13 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase{
         |}
         |""".stripMargin
 
-    val invalidXmlResponse =
+    val invalidXmlResponse: String =
       """
         |{
         |  "error": "Invalid xml",
         |  "type": "InvalidXml"
         |}
         |""".stripMargin
-
 
   }
 

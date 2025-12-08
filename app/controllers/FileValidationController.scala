@@ -18,13 +18,15 @@ package controllers
 
 import connectors.{UpscanConnector, ValidationConnector}
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.TimeZones.EUROPE_LONDON_TIME_ZONE
 import models.requests.DataRequest
 import models.upscan.*
 import models.{
+  Errors,
   FIIDNotMatchingError,
+  GenericError,
   IncorrectMessageTypeError,
   InvalidXmlFileError,
+  MessageSpecData,
   NormalMode,
   ReportingPeriodError,
   SchemaValidationErrors,
@@ -35,12 +37,11 @@ import navigation.Navigator
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ThereIsAProblemView
 
-import java.time.{LocalDate, ZoneId}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -64,8 +65,6 @@ class FileValidationController @Inject() (
     implicit request =>
       extractIds(request.userAnswers) match {
         case Some((uploadId, fileReference)) =>
-          val subscriptionId = request.fatcaId
-
           upscanConnector.getUploadDetails(uploadId) flatMap {
             uploadSessions =>
               getDownloadUrl(uploadSessions).fold {
@@ -73,10 +72,7 @@ class FileValidationController @Inject() (
                 Future.successful(InternalServerError(errorView()))
               } {
                 downloadDetails =>
-                  val downloadUrl = downloadDetails.downloadUrl
-                  val fileName    = downloadDetails.name
-
-                  handleFileValidation(downloadDetails, uploadId, fileReference, downloadUrl)
+                  handleFileValidation(downloadDetails, uploadId, fileReference, downloadDetails.downloadUrl)
               }
           }
 
@@ -84,15 +80,99 @@ class FileValidationController @Inject() (
           logger.error("Missing Upload ID or File Reference from user answers")
           Future.successful(InternalServerError(errorView()))
       }
-
   }
 
-  private def isReportingYearValid(reportingYear: Int): Boolean = {
-    val currentYear = LocalDate.now(EUROPE_LONDON_TIME_ZONE).getYear
-    reportingYear >= (currentYear - 12) && reportingYear <= currentYear
+  private def handleFileValidation(
+    downloadDetails: ExtractedFileStatus,
+    uploadId: UploadId,
+    fileReference: Reference,
+    downloadUrl: String
+  )(implicit request: DataRequest[_]): Future[Result] =
+    validationConnector
+      .sendForValidation(
+        FileValidateRequest(downloadUrl, uploadId.value, request.fatcaId, fileReference.value)
+      )
+      .flatMap {
+        case Right(messageSpecData) =>
+          handleSuccessfulValidation(downloadDetails, downloadUrl, messageSpecData)
+        case Left(error) =>
+          handleValidationErrors(downloadDetails, error)
+      }
+
+  private def handleSuccessfulValidation(
+    downloadDetails: ExtractedFileStatus,
+    downloadUrl: String,
+    messageSpecData: MessageSpecData
+  )(implicit request: DataRequest[_]): Future[Result] = {
+
+    val validatedFileData = ValidatedFileData(downloadDetails.name, messageSpecData, downloadDetails.size, downloadDetails.checksum)
+
+    val resultFuture = Future
+      .fromTry {
+        request.userAnswers
+          .set(ValidXMLPage, validatedFileData)
+          .flatMap(_.set(URLPage, downloadUrl))
+          .flatMap(_.set(RequiresElectionsPage, messageSpecData.electionsRequired))
+      }
+      .flatMap {
+        updatedAnswersWithFileData =>
+          sessionRepository.set(updatedAnswersWithFileData).map {
+            _ =>
+              Redirect(navigator.nextPage(ValidXMLPage, NormalMode, updatedAnswersWithFileData))
+          }
+      }
+
+    resultFuture.recoverWith {
+      case e: Throwable =>
+        logger.error(s"Error during successful validation flow (session update): ${e.getMessage}", e)
+        Future.successful(InternalServerError(errorView()))
+    }
   }
 
-  private def hasElectionsHappened(): Boolean = false
+  private def handleValidationErrors(
+    downloadDetails: ExtractedFileStatus,
+    error: Errors
+  )(implicit request: DataRequest[_]): Future[Result] = error match {
+
+    case SchemaValidationErrors(validationErrors, messageType) =>
+      handleSchemaValidationErrors(downloadDetails.name, validationErrors.errors, messageType)
+
+    case ReportingPeriodError =>
+      Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
+
+    case FIIDNotMatchingError =>
+      Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
+
+    case IncorrectMessageTypeError =>
+      Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
+
+    case InvalidXmlFileError =>
+      handleInvalidXmlFileError(downloadDetails.name)
+
+    case other =>
+      logger.error(s"Other validation error occurred during file validation: $other")
+      Future.successful(InternalServerError(errorView()))
+  }
+
+  private def handleSchemaValidationErrors(
+    fileName: String,
+    errors: Seq[GenericError],
+    messageType: String
+  )(implicit request: DataRequest[_]): Future[Result] =
+    for {
+      updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, fileName))
+      updatedAnswersWithMsgType <- Future.fromTry(updatedAnswers.set(MessageTypePage, messageType))
+      updatedAnswersWithErrors  <- Future.fromTry(updatedAnswersWithMsgType.set(GenericErrorPage, errors))
+      _                         <- sessionRepository.set(updatedAnswersWithErrors)
+    } yield Redirect(routes.DataErrorsController.onPageLoad())
+
+  private def handleInvalidXmlFileError(
+    fileName: String
+  )(implicit request: DataRequest[_]): Future[Result] =
+    for {
+      updatedAnswers <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, fileName))
+      _              <- sessionRepository.set(updatedAnswers)
+    } yield Redirect(routes.FileErrorController.onPageLoad())
 
   private def extractIds(answers: UserAnswers): Option[(UploadId, Reference)] =
     for {
@@ -101,56 +181,12 @@ class FileValidationController @Inject() (
     } yield (uploadId, fileReference)
 
   private def getDownloadUrl(uploadSessions: Option[UploadSessionDetails]): Option[ExtractedFileStatus] =
-    uploadSessions match {
-      case Some(uploadDetails) =>
+    uploadSessions.flatMap {
+      uploadDetails =>
         uploadDetails.status match {
           case UploadedSuccessfully(name, downloadUrl, size, checksum) =>
-            Option(ExtractedFileStatus(name, downloadUrl, size, checksum))
+            Some(ExtractedFileStatus(name, downloadUrl, size, checksum))
           case _ => None
         }
-      case _ => None
     }
-
-  private def handleFileValidation(
-    downloadDetails: ExtractedFileStatus,
-    uploadId: UploadId,
-    fileReference: Reference,
-    downloadUrl: String
-  )(implicit request: DataRequest[_]) =
-    validationConnector
-      .sendForValidation(
-        FileValidateRequest(downloadUrl, uploadId.value, request.fatcaId, fileReference.value)
-      )
-      .flatMap {
-        case Right(messageSpecData) =>
-          val validatedFileData = ValidatedFileData(downloadDetails.name, messageSpecData, downloadDetails.size, downloadDetails.checksum)
-          val reportingYear     = messageSpecData.reportingPeriod.getYear
-          for {
-            updatedAnswers        <- Future.fromTry(request.userAnswers.set(ValidXMLPage, validatedFileData))
-            updatedAnswersWithURL <- Future.fromTry(updatedAnswers.set(URLPage, downloadUrl))
-            _                     <- sessionRepository.set(updatedAnswersWithURL)
-          } yield Redirect(navigator.nextPage(ValidXMLPage, NormalMode, updatedAnswersWithURL))
-        case Left(SchemaValidationErrors(validationErrors, messageType)) =>
-          for {
-            updatedAnswers            <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
-            updatedAnswersWithMsgType <- Future.fromTry(updatedAnswers.set(MessageTypePage, messageType))
-            updatedAnswersWithErrors  <- Future.fromTry(updatedAnswersWithMsgType.set(GenericErrorPage, validationErrors.errors))
-            _                         <- sessionRepository.set(updatedAnswersWithErrors)
-          } yield Redirect(routes.DataErrorsController.onPageLoad())
-        case Left(ReportingPeriodError) =>
-          Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))
-        case Left(FIIDNotMatchingError) =>
-          Future.successful(Redirect(routes.FINotMatchingController.onPageLoad()))
-        case Left(IncorrectMessageTypeError) =>
-          Future.successful(Redirect(routes.InvalidMessageTypeErrorController.onPageLoad()))
-        case Left(InvalidXmlFileError) =>
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(InvalidXMLPage, downloadDetails.name))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.FileErrorController.onPageLoad())
-        case Left(_) =>
-          logger.error("Other validation error occurred during file validation")
-          Future.successful(InternalServerError(errorView()))
-      }
-
 }
