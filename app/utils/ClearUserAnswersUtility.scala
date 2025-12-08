@@ -32,8 +32,8 @@ def reportElectionPages: Seq[Settable[_]] =
     ElectCrsCarfGrossProceedsPage
   )
 
-def uploadFilePagesForValidXml(): Seq[Settable[_]] =
+def uploadFilePagesForValidXml: Seq[Settable[_]] =
   reportElectionPages ++ Seq(ReportElectionsPage, RequiredGiinPage, InvalidXMLPage)
 
-def uploadFilePagesForInvalidXml(): Seq[Settable[_]] =
+def uploadFilePagesForInvalidXml: Seq[Settable[_]] =
   reportElectionPages ++ Seq(ReportElectionsPage, RequiredGiinPage, ValidXMLPage)

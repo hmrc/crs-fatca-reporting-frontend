@@ -32,7 +32,7 @@ case object ValidXMLPage extends QuestionPage[ValidatedFileData] {
     value match {
       case Some(_) =>
         userAnswers
-          .removeAllFrom(uploadFilePagesForValidXml())
+          .removeAllFrom(uploadFilePagesForValidXml)
       case _ => super.cleanup(value, userAnswers)
     }
 }
