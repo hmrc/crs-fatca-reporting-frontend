@@ -21,7 +21,7 @@ import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, 
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import queries.Settable
 
-def reportElectionPages(): Seq[Settable[_]] =
+def reportElectionPages: Seq[Settable[_]] =
   Seq(
     TreasuryRegulationsPage,
     ElectFatcaThresholdsPage,
@@ -33,7 +33,7 @@ def reportElectionPages(): Seq[Settable[_]] =
   )
 
 def uploadFilePagesForValidXml(): Seq[Settable[_]] =
-  reportElectionPages() ++ Seq(ReportElectionsPage, RequiredGiinPage, InvalidXMLPage)
+  reportElectionPages ++ Seq(ReportElectionsPage, RequiredGiinPage, InvalidXMLPage)
 
-def uploadFilePagesForInValidXml(): Seq[Settable[_]] =
-  reportElectionPages() ++ Seq(ReportElectionsPage, RequiredGiinPage, ValidXMLPage)
+def uploadFilePagesForInvalidXml(): Seq[Settable[_]] =
+  reportElectionPages ++ Seq(ReportElectionsPage, RequiredGiinPage, ValidXMLPage)

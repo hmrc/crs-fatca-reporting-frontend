@@ -66,7 +66,6 @@ final case class UserAnswers(
   }
 
   def removeAllFrom(pages: Seq[Settable[_]]): Try[UserAnswers] = {
-    import scala.util.Success
 
     val updatedDataTry: Try[JsObject] =
       pages.foldLeft[Try[JsObject]](Success(data)) {

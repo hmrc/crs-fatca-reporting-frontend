@@ -170,8 +170,7 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
       DormantAccountsPage,
       ThresholdsPage,
       ElectCrsCarfGrossProceedsPage,
-      ElectCrsGrossProceedsPage,
-      ElectCrsCarfGrossProceedsPage
+      ElectCrsGrossProceedsPage
     )
     val uploadXmlPages = electionPages ++ Seq(ReportElectionsPage)
     val tuple          = electionPages.map((_, true))

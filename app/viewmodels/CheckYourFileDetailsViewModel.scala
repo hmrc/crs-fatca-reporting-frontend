@@ -174,10 +174,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
     actionUrl = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
   )
 
-  private def summaryRowForBooleanPages(page: QuestionPage[Boolean],
-                                        keyValue: String,
-                                        actionUrl: String = routes.IndexController.onPageLoad().url
-  ): Option[SummaryListRow] =
+  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String, actionUrl: String): Option[SummaryListRow] =
     userAnswers
       .get(page)
       .map(

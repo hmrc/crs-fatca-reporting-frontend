@@ -32,7 +32,7 @@ case object ReportElectionsPage extends QuestionPage[Boolean] {
     value match {
       case Some(false) =>
         userAnswers
-          .removeAllFrom(reportElectionPages())
+          .removeAllFrom(reportElectionPages)
       case _ =>
         super.cleanup(value, userAnswers)
     }

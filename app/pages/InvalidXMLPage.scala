@@ -18,7 +18,7 @@ package pages
 
 import models.UserAnswers
 import play.api.libs.json.JsPath
-import utils.uploadFilePagesForInValidXml
+import utils.uploadFilePagesForInvalidXml
 
 import scala.util.Try
 
@@ -32,7 +32,7 @@ case object InvalidXMLPage extends QuestionPage[String] {
     value match {
       case Some(_) =>
         userAnswers
-          .removeAllFrom(uploadFilePagesForInValidXml())
+          .removeAllFrom(uploadFilePagesForInvalidXml())
       case _ => super.cleanup(value, userAnswers)
     }
 
