@@ -55,7 +55,8 @@ case class MessageSpecData(messageType: MessageType,
                            reportingFIName: String,
                            reportingPeriod: LocalDate,
                            giin: Option[String] = None,
-                           fiNameFromFim: String
+                           fiNameFromFim: String,
+                           electionsRequired: Boolean
 )
 
 object MessageSpecData {
@@ -64,6 +65,7 @@ object MessageSpecData {
     Reads.localDateReads("yyyy-MM-dd"),
     Writes.temporalWrites[LocalDate, DateTimeFormatter](DateTimeFormatter.ISO_LOCAL_DATE)
   )
+
   implicit val format: OFormat[MessageSpecData] = Json.format[MessageSpecData]
 
   extension (messageType: MessageType) def name: String = messageType.toString

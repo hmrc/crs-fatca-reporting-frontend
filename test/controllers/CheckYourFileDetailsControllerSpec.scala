@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{CRS, MessageSpecData, ValidatedFileData}
+import models.{CRS, ValidatedFileData}
 import org.scalatest.matchers.must.Matchers
 import pages.ValidXMLPage
 import play.api.test.FakeRequest
@@ -32,22 +32,10 @@ class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
   "CheckYourFileDetails Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val expectedFiName      = "fi-name"
-      val fileName            = "test-file.xml"
-      val FileSize            = 100L
-      val FileChecksum        = "checksum"
+
       val reportingPeriodYear = 2025
-      val messageSpecData = MessageSpecData(
-        messageType = CRS,
-        sendingCompanyIN = "sendingCompanyIN",
-        messageRefId = "messageRefId",
-        reportingFIName = "reportingFIName",
-        reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-        giin = None,
-        fiNameFromFim = expectedFiName
-      )
-      val crsValidatedFileData = ValidatedFileData(fileName, messageSpecData, FileSize, FileChecksum)
-      val answers              = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData)
+      val answers =
+        emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))))
 
       val application         = applicationBuilder(userAnswers = Some(answers)).build()
       val messagesApi         = messages(application)
@@ -62,7 +50,7 @@ class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(expectedFileDetails, expectedFIDetails, crsValidatedFileData.messageSpecData.fiNameFromFim)(request, messagesApi).toString
+          view(expectedFileDetails, expectedFIDetails, getMessageSpecData(CRS).fiNameFromFim)(request, messagesApi).toString
       }
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package models.upscan
+package pages
 
-import base.SpecBase
+import play.api.libs.json.JsPath
 
-import java.util.UUID
+case object RequiresElectionsPage extends QuestionPage[Boolean] {
 
-class UploadIdSpec extends SpecBase {
+  override def path: JsPath = JsPath \ toString
 
-  "generate" - {
-    "must return with uuid" in {
-
-      val actual = UploadId.generate
-
-      noException should be thrownBy {
-        UUID.fromString(actual.value)
-      }
-
-    }
-  }
+  override def toString: String = "requiresElections"
 
 }

@@ -42,16 +42,9 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
   val FileChecksum        = "checksum"
   val expectedFiName      = "fi-name"
 
-  val crsMessageSpec = MessageSpecData(
-    messageType = CRS,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1),
-    giin = Some("giin"),
-    fiNameFromFim = expectedFiName
-  )
-  val crsValidatedFileData = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
+  val crsMessageSpec = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))
+
+  val crsValidatedFileData = getValidatedFileData(crsMessageSpec)
   val crsUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value
   val crsRegime            = crsMessageSpec.messageType.toString
 

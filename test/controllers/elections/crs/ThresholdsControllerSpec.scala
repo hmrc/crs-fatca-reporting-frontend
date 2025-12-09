@@ -42,28 +42,16 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider  = new ThresholdsFormProvider()
   val form          = formProvider()
 
-  val testFIName = "FI Test Name PLC"
-
-  private val messageSpecData2025: MessageSpecData = MessageSpecData(
-    messageType = CRS,
-    sendingCompanyIN = "sendingCompanyIN",
-    messageRefId = "messageRefId",
-    reportingFIName = "reportingFIName",
-    reportingPeriod = LocalDate.of(2025, 12, 31),
-    giin = Some("giin"),
-    fiNameFromFim = testFIName
-  )
-  private val validatedFileData2025 = ValidatedFileData("file.xml", messageSpecData2025, 100L, "checksum")
+  private val messageSpecData2025: MessageSpecData = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2025, 12, 31))
+  val validatedFileData2025                        = getValidatedFileData(messageSpecData2025)
 
   val userAnswers2025: UserAnswers = emptyUserAnswers
     .set(ValidXMLPage, validatedFileData2025)
     .success
     .value
 
-  private val messageSpecData2026: MessageSpecData = messageSpecData2025.copy(
-    reportingPeriod = LocalDate.of(2026, 1, 1)
-  )
-  private val validatedFileData2026 = ValidatedFileData("file.xml", messageSpecData2026, 100L, "checksum")
+  private val messageSpecData2026: MessageSpecData = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2026, 1, 1))
+  private val validatedFileData2026                = getValidatedFileData(messageSpecData2026)
 
   val userAnswers2026: UserAnswers = emptyUserAnswers
     .set(ValidXMLPage, validatedFileData2026)
