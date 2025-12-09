@@ -83,7 +83,7 @@ class Navigator @Inject() () {
   private def reportElectionPageRedirect(userAnswers: UserAnswers) =
     userAnswers.get(ReportElectionsPage) match {
       case Some(true) =>
-        getMessageSpecData(userAnswers) {
+        extractMessageSpecData(userAnswers) {
           messageSpecData =>
             messageSpecData.messageType match {
               case CRS =>

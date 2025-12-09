@@ -41,6 +41,7 @@ class ReportElectionsController @Inject() (
   formProvider: ReportElectionsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: ReportElectionsView,
+  navigator: Navigator,
   errorView: ThereIsAProblemView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
