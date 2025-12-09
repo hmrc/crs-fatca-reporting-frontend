@@ -22,7 +22,6 @@ import models.UserAnswers.extractMessageSpecData
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.ReportElectionsPage
-import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -42,6 +41,7 @@ class ReportElectionsController @Inject() (
   formProvider: ReportElectionsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: ReportElectionsView,
+  navigator: Navigator,
   errorView: ThereIsAProblemView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
@@ -82,20 +82,7 @@ class ReportElectionsController @Inject() (
                 for {
                   updatedAnswers <- Future.fromTry(request.userAnswers.set(ReportElectionsPage, value))
                   _              <- sessionRepository.set(updatedAnswers)
-                } yield
-                  if (!value) {
-                    Redirect(controllers.routes.CheckYourFileDetailsController.onPageLoad())
-                  } else {
-                    regime match {
-                      case "FATCA" =>
-                        Redirect(controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(mode)) // todo handle in navigator
-                      case "CRS" =>
-                        Redirect(controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(mode))
-                      case unknownRegime =>
-                        logger.error(s"Unknown regime: $unknownRegime encountered during ReportElections submission.")
-                        InternalServerError(errorView())
-                    }
-                  }
+                } yield Redirect(navigator.nextPage(ReportElectionsPage, mode, updatedAnswers))
             )
       }
   }

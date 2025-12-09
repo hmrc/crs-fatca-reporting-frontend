@@ -304,3 +304,13 @@ fileConfirmation.list.l2 = Upload another file for a financial institution
 pageUnavailable.title = This page is no longer available
 pageUnavailable.heading = This page is no longer available
 pageUnavailable.link.text = Back to manage your CRS and FATCA reports
+
+change.giin.hidden.text =Change the Global Intermediary Identification Number
+change.election.hidden.text =Change if you want to make any elections for {0}
+change.crs.contract.hidden.text = Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS
+change.crs.dormant.accounts.hidden.text= Change if they are treating dormant accounts as not being reportable accounts for CRS
+change.crs.apply.threshold.hidden.text= Change if they are applying thresholds to any of their accounts in their due diligence process for CRS
+change.crs.reporting.gross.proceeds.cryptoasset.hidden.text= Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for {0}
+change.crs.reporting.gross.proceeds.for.carf.hidden.text = Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
+change.fatca.treasuryRegulation.hidden.text = Change if they are using due diligence procedures from US Treasury Regulations for FATCA
+change.fatca.threshold.hidden.text = Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA
