@@ -47,7 +47,13 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
             summaryListRowHelper(
               messages("checkYourFileDetails.fileInformation.key"),
               messages("checkYourFileDetails.fileInformation.value"),
-              actionItem = Some(singleActionItemForChangeLink(messages("checkYourFileDetails.fileInformation.change"), routes.IndexController.onPageLoad().url))
+              actionItem = Some(
+                singleActionItemForChangeLink(
+                  messages("checkYourFileDetails.fileInformation.change"),
+                  routes.IndexController.onPageLoad().url,
+                  messages("checkYourFileDetails.fileInformation.change")
+                )
+              )
             )
           )
         )
@@ -65,8 +71,13 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               summaryListRowHelper(
                 key = messages("reportElections.title", messageSpecData.messageType.name, reportingYear),
                 value = reportElectionValue.toYesNo,
-                actionItem =
-                  Some(singleActionItemForChangeLink(messages("site.change"), controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url))
+                actionItem = Some(
+                  singleActionItemForChangeLink(
+                    messages("site.change"),
+                    controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
+                    messages("change.election.hidden.text", messageSpecData.messageType.name)
+                  )
+                )
               )
             ) ++ messageTypeSpecificRows(reportElectionValue, messageSpecData.messageType, reportingYear)
         }
@@ -92,7 +103,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                   ActionItem(
                     href = routes.RequiredGiinController.onPageLoad(mode = CheckMode).url,
                     content = Text(messages("site.change")),
-                    visuallyHiddenText = Some(messages("site.change"))
+                    visuallyHiddenText = Some(messages("change.giin.hidden.text"))
                   )
                 )
               )
@@ -112,42 +123,50 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def electCRSContractRow = summaryRowForBooleanPages(
     ElectCrsContractPage,
     messages("checkYourFileDetails.crs.contracts"),
-    actionUrl = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
+    messages("change.crs.contract.hidden.text")
   )
 
   private def dormantAccountRow = summaryRowForBooleanPages(
     DormantAccountsPage,
     messages("checkYourFileDetails.crs.dormantAccounts"),
-    actionUrl = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
+    messages("change.crs.dormant.accounts.hidden.text")
   )
 
   private def thresholdsRow = summaryRowForBooleanPages(
     ThresholdsPage,
     messages("checkYourFileDetails.crs.threshold"),
-    actionUrl = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
+    messages("change.crs.apply.threshold.hidden.text")
   )
 
   private def grossProceedRow(reportingPeriod: Int): Seq[SummaryListRow] =
     if reportingPeriod >= ThresholdDate.getYear then electCRSCarfGrossProceedRows else Seq.empty
 
   private def electCRSCarfGrossProceedRows: Seq[SummaryListRow] =
-    userAnswers
-      .get(ElectCrsCarfGrossProceedsPage)
-      .map {
-        value =>
-          Seq(
-            summaryListRowHelper(
-              messages("checkYourFileDetails.crs.grossProceed"),
-              value.toYesNo,
-              actionItem = Some(
-                singleActionItemForChangeLink(messages("site.change"),
-                                              controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
+    extractMessageSpecData(userAnswers) {
+      messageSpecData =>
+        userAnswers
+          .get(ElectCrsCarfGrossProceedsPage)
+          .map {
+            value =>
+              Seq(
+                summaryListRowHelper(
+                  messages("checkYourFileDetails.crs.grossProceed"),
+                  value.toYesNo,
+                  actionItem = Some(
+                    singleActionItemForChangeLink(
+                      messages("site.change"),
+                      controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
+                      messages("change.crs.reporting.gross.proceeds.cryptoasset.hidden.text", messageSpecData.reportingPeriod.getYear.toString)
+                    )
+                  )
                 )
-              )
-            )
-          ) ++ electCRSGrossProceedRows(value)
-      }
-      .getOrElse(Seq.empty)
+              ) ++ electCRSGrossProceedRows(value)
+          }
+          .getOrElse(Seq.empty)
+    }
 
   private def electCRSGrossProceedRows(crsCarfGrossProceedValue: Boolean): Seq[SummaryListRow] =
     electCRSGrossProceedsRow
@@ -159,26 +178,29 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   private def electCRSGrossProceedsRow = summaryRowForBooleanPages(
     ElectCrsGrossProceedsPage,
     messages("checkYourFileDetails.crs.reportingGrossProceed"),
-    actionUrl = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url,
+    messages("change.crs.reporting.gross.proceeds.for.carf.hidden.text")
   )
 
   private def treasuryRegulationsRow = summaryRowForBooleanPages(
     TreasuryRegulationsPage,
     messages("checkYourFileDetails.fatca.treasuryRegulation"),
-    actionUrl = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url,
+    messages("change.fatca.treasuryRegulation.hidden.text")
   )
 
   private def electFatcaThresholdsRow = summaryRowForBooleanPages(
     ElectFatcaThresholdsPage,
     messages("checkYourFileDetails.fatca.threshold"),
-    actionUrl = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
+    actionUrl = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
+    messages("change.fatca.threshold.hidden.text")
   )
 
-  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String, actionUrl: String): Option[SummaryListRow] =
+  private def summaryRowForBooleanPages(page: QuestionPage[Boolean], keyValue: String, actionUrl: String, hiddenText: String): Option[SummaryListRow] =
     userAnswers
       .get(page)
       .map(
-        value => summaryListRowHelper(keyValue, value.toYesNo, actionItem = Some(singleActionItemForChangeLink(messages("site.change"), actionUrl)))
+        value => summaryListRowHelper(keyValue, value.toYesNo, actionItem = Some(singleActionItemForChangeLink(messages("site.change"), actionUrl, hiddenText)))
       )
 
   private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
@@ -194,9 +216,9 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
       )
     )
 
-  private def singleActionItemForChangeLink(changeLink: String, hrefUrl: String) =
+  private def singleActionItemForChangeLink(changeLink: String, hrefUrl: String, hiddenText: String) =
     ActionItem(
       href = hrefUrl,
       content = Text(changeLink),
-      visuallyHiddenText = Some(changeLink)
+      visuallyHiddenText = Some(hiddenText)
     )
