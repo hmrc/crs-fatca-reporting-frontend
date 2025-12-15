@@ -37,7 +37,17 @@ class Navigator @Inject() () {
       checkRouteMap(page)(userAnswers)
   }
 
-  private val checkRouteMap: Page => UserAnswers => Call = _ => _ => routes.IndexController.onPageLoad()
+  private val checkRouteMap: Page => UserAnswers => Call = {
+    case ElectCrsCarfGrossProceedsPage =>
+      userAnswers => electCrsCarfGrossProceedsRedirect(userAnswers)
+    case ReportElectionsPage =>
+      userAnswers => reportElectionPageRedirect(userAnswers)
+    case ElectCrsGrossProceedsPage | ThresholdsPage | DormantAccountsPage | ElectCrsContractPage | ElectFatcaThresholdsPage | TreasuryRegulationsPage |
+        RequiredGiinPage =>
+      _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case _ =>
+      _ => routes.IndexController.onPageLoad()
+  }
 
   private val normalRoutes: Page => UserAnswers => Call = {
     case ValidXMLPage =>
@@ -53,18 +63,39 @@ class Navigator @Inject() () {
     case ElectCrsContractPage =>
       userAnswers => controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode)
     case ElectCrsCarfGrossProceedsPage =>
-      userAnswers =>
-        userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
-          case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
-          case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
-          case None        => routes.JourneyRecoveryController.onPageLoad()
-        }
+      userAnswers => electCrsCarfGrossProceedsRedirect(userAnswers)
     case ThresholdsPage =>
       userAnswers => thresholdsNavigation(userAnswers)
     case ElectCrsGrossProceedsPage =>
       _ => routes.CheckYourFileDetailsController.onPageLoad()
+    case ReportElectionsPage =>
+      userAnswers => reportElectionPageRedirect(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
   }
+
+  private def electCrsCarfGrossProceedsRedirect(userAnswers: UserAnswers) =
+    userAnswers.get(ElectCrsCarfGrossProceedsPage) match {
+      case Some(true)  => controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode)
+      case Some(false) => routes.CheckYourFileDetailsController.onPageLoad()
+      case None        => routes.JourneyRecoveryController.onPageLoad()
+    }
+
+  private def reportElectionPageRedirect(userAnswers: UserAnswers) =
+    userAnswers.get(ReportElectionsPage) match {
+      case Some(true) =>
+        extractMessageSpecData(userAnswers) {
+          messageSpecData =>
+            messageSpecData.messageType match {
+              case CRS =>
+                controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode)
+              case FATCA =>
+                controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode)
+            }
+        }
+      case Some(false) =>
+        routes.CheckYourFileDetailsController.onPageLoad()
+      case None => routes.JourneyRecoveryController.onPageLoad()
+    }
 
   private def thresholdsNavigation(userAnswers: UserAnswers): Call =
     extractMessageSpecData(userAnswers) {

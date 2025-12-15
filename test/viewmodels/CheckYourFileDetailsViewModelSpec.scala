@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, FATCA, ValidatedFileData}
+import models.{CRS, CheckMode, FATCA, MessageSpecData, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
@@ -120,9 +120,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for CRS")
                     )
                   )
                 )
@@ -151,9 +151,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for CRS")
                     )
                   )
                 )
@@ -167,9 +167,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS")
                     )
                   )
                 )
@@ -183,9 +183,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are treating dormant accounts as not being reportable accounts for CRS")
                     )
                   )
                 )
@@ -199,9 +199,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are applying thresholds to any of their accounts in their due diligence process for CRS")
                     )
                   )
                 )
@@ -234,9 +234,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for CRS")
                     )
                   )
                 )
@@ -250,9 +250,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS")
                     )
                   )
                 )
@@ -266,9 +266,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are treating dormant accounts as not being reportable accounts for CRS")
                     )
                   )
                 )
@@ -282,9 +282,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are applying thresholds to any of their accounts in their due diligence process for CRS")
                     )
                   )
                 )
@@ -298,9 +298,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026")
                     )
                   )
                 )
@@ -333,9 +333,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for CRS")
                     )
                   )
                 )
@@ -349,9 +349,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS")
                     )
                   )
                 )
@@ -365,9 +365,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are treating dormant accounts as not being reportable accounts for CRS")
                     )
                   )
                 )
@@ -381,9 +381,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are applying thresholds to any of their accounts in their due diligence process for CRS")
                     )
                   )
                 )
@@ -397,9 +397,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026")
                     )
                   )
                 )
@@ -413,9 +413,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText =
+                        Some("Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS")
                     )
                   )
                 )
@@ -449,9 +450,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for FATCA")
                     )
                   )
                 )
@@ -480,9 +481,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for FATCA")
                     )
                   )
                 )
@@ -496,9 +497,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are using due diligence procedures from US Treasury Regulations for FATCA")
                     )
                   )
                 )
@@ -512,9 +513,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA")
                     )
                   )
                 )
@@ -546,9 +547,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.RequiredGiinController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change the Global Intermediary Identification Number")
                     )
                   )
                 )
@@ -562,9 +563,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if you want to make any elections for FATCA")
                     )
                   )
                 )
@@ -578,9 +579,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are using due diligence procedures from US Treasury Regulations for FATCA")
                     )
                   )
                 )
@@ -594,9 +595,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA")
                     )
                   )
                 )
@@ -629,9 +630,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.RequiredGiinController.onPageLoad(CheckMode).url,
                       content = Text("Change"),
-                      visuallyHiddenText = Some("Change")
+                      visuallyHiddenText = Some("Change the Global Intermediary Identification Number")
                     )
                   )
                 )

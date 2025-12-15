@@ -17,8 +17,9 @@
 package controllers.elections
 
 import base.SpecBase
+import controllers.routes
 import forms.elections.ReportElectionsFormProvider
-import models.{CRS, FATCA, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CheckMode, FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -55,10 +56,12 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new ReportElectionsFormProvider()
   val crsForm      = formProvider(crsRegime)
 
-  lazy val reportElectionsRoute = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
+  lazy val reportElectionsRoute          = controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
+  lazy val reportElectionsRouteCheckMode = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
 
-  lazy val fatcaOnwardRoute = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
-  lazy val crsOnwardRoute   = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
+  lazy val fatcaOnwardRoute                = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(NormalMode).url
+  lazy val crsOnwardRoute                  = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
+  lazy val checkYourFileDetailsOnwardRoute = routes.CheckYourFileDetailsController.onPageLoad().url
 
   "ReportElections Controller" - {
 
@@ -143,6 +146,78 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual fatcaOnwardRoute
+      }
+    }
+
+    "must redirect to TreasuryRegulationsController on submission when regime is FATCA on checkmode" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, reportElectionsRouteCheckMode)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual fatcaOnwardRoute
+      }
+    }
+
+    "must redirect to Check your file detail on submission when user does not require elections" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, reportElectionsRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual checkYourFileDetailsOnwardRoute
+      }
+    }
+
+    "must redirect to Check your file detail on submission when user does not require elections on check mode for FATCA" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(fatcaUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, reportElectionsRouteCheckMode)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual checkYourFileDetailsOnwardRoute
       }
     }
 

@@ -64,6 +64,33 @@ final case class UserAnswers(
         page.cleanup(None, updatedAnswers)
     }
   }
+
+  def removeAllFrom(pages: Seq[Settable[_]]): Try[UserAnswers] = {
+
+    val updatedDataTry: Try[JsObject] =
+      pages.foldLeft[Try[JsObject]](Success(data)) {
+        case (accT, page) =>
+          accT.flatMap {
+            acc =>
+              acc.removeObject(page.path) match {
+                case JsSuccess(jsValue, _) => Success(jsValue)
+                case JsError(_)            => Success(acc)
+              }
+          }
+      }
+
+    updatedDataTry.flatMap {
+      d =>
+        val initialUA = copy(data = d)
+        pages.foldLeft[Try[UserAnswers]](Success(initialUA)) {
+          (uaTry, page) =>
+            uaTry.flatMap {
+              ua => page.cleanup(None, ua)
+            }
+        }
+    }
+  }
+
 }
 
 object UserAnswers {
