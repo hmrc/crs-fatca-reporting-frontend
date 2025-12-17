@@ -55,7 +55,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                   items = Seq(
                     ActionItem(
                       href = routes.IndexController.onPageLoad().url,
-                      content = Text("Change file"),
+                      content = Text("Change file")
                     )
                   )
                 )
@@ -87,7 +87,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                   items = Seq(
                     ActionItem(
                       href = routes.IndexController.onPageLoad().url,
-                      content = Text("Change file"),
+                      content = Text("Change file")
                     )
                   )
                 )
@@ -119,7 +119,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""
+                      ),
                       href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -149,7 +151,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""
+                      ),
                       href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -164,7 +168,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
                     )
                   )
@@ -179,7 +185,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -194,7 +202,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -228,7 +238,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""
+                      ),
                       href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -243,7 +255,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
                     )
                   )
@@ -258,7 +272,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -273,7 +289,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""
+                      ),
                       href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -288,8 +306,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026</span>"""),
-                      href =controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -322,8 +342,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""),
-                      href =  controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for CRS</span>"""
+                      ),
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -337,8 +359,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""),
-                      href =  controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are excluding cash value insurance contracts or annuity contracts from their reporting for CRS</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -352,8 +376,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""),
-                      href =  controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are treating dormant accounts as not being reportable accounts for CRS</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -367,8 +393,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""),
-                      href =  controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for CRS</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.ThresholdsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -382,8 +410,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026</span>"""),
-                      href =  controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are reporting gross proceeds under the Cryptoasset Reporting Framework (CARF) for 2026</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -397,8 +427,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS</span>"""),
-                      href =  controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS</span>"""
+                      ),
+                      href = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -432,7 +464,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""
+                      ),
                       href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -462,7 +496,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""
+                      ),
                       href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -477,7 +513,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are using due diligence procedures from US Treasury Regulations for FATCA</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are using due diligence procedures from US Treasury Regulations for FATCA</span>"""
+                      ),
                       href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -492,7 +530,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA</span>"""
+                      ),
                       href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
                     )
                   )
@@ -525,7 +565,9 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change the Global Intermediary Identification Number</span>"""),
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change the Global Intermediary Identification Number</span>"""
+                      ),
                       href = routes.RequiredGiinController.onPageLoad(CheckMode).url
                     )
                   )
@@ -540,8 +582,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""),
-                      href =controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if you want to make any elections for FATCA</span>"""
+                      ),
+                      href = controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -555,8 +599,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are using due diligence procedures from US Treasury Regulations for FATCA</span>"""),
-                      href =controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are using due diligence procedures from US Treasury Regulations for FATCA</span>"""
+                      ),
+                      href = controllers.elections.fatca.routes.TreasuryRegulationsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -570,8 +616,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA</span>"""),
-                      href =controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url,
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA</span>"""
+                      ),
+                      href = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(CheckMode).url
                     )
                   )
                 )
@@ -604,8 +652,10 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItemViewModel(
-                      content = HtmlContent(s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change the Global Intermediary Identification Number</span>"""),
-                      href =routes.RequiredGiinController.onPageLoad(CheckMode).url
+                      content = HtmlContent(
+                        s"""<span aria-hidden="true">Change</span><span class="govuk-visually-hidden">Change the Global Intermediary Identification Number</span>"""
+                      ),
+                      href = routes.RequiredGiinController.onPageLoad(CheckMode).url
                     )
                   )
                 )
