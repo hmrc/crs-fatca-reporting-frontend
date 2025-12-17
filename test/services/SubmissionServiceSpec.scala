@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.SubmissionConnector
 import models.{CRS, UserAnswers}
 import models.requests.DataRequest
-import models.submission.{ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.submission.{ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, GiinUpdateRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -53,7 +53,7 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
     "returns (None, None) when there are no giin or elections to submit" in {
       val result = service.submitElectionsAndGiin(baseUa).futureValue
 
-      result mustBe (None, None)
+      result mustBe ElectionsGiinSubmissionResults(None, None)
       verifyGiinUpdateNeverCalled()
       verifyElectionsSubmitNeverCalled()
     }
@@ -66,7 +66,7 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = service.submitElectionsAndGiin(uaWithBoth).futureValue
 
-      result mustBe (Some(true), Some(true))
+      result mustBe ElectionsGiinSubmissionResults(Some(true), Some(true))
       verifyGiinUpdateCalledOnce()
       verifyElectionsSubmitCalledOnce()
     }
@@ -77,7 +77,7 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = service.submitElectionsAndGiin(uaWithElections).futureValue
 
-      result mustBe (None, Some(true))
+      result mustBe ElectionsGiinSubmissionResults(None, Some(true))
       verifyGiinUpdateNeverCalled()
       verifyElectionsSubmitCalledOnce()
     }
@@ -88,7 +88,7 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = service.submitElectionsAndGiin(uaWithGiin).futureValue
 
-      result mustBe (Some(false), None)
+      result mustBe ElectionsGiinSubmissionResults(Some(false), None)
       verifyGiinUpdateCalledOnce()
       verifyElectionsSubmitNeverCalled()
     }

@@ -20,7 +20,7 @@ import connectors.SubmissionConnector
 import models.UserAnswers
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
-import models.submission.{CrsElectionsDetails, ElectionsSubmissionDetails, FatcaElectionsDetails, GiinUpdateRequest}
+import models.submission.{CrsElectionsDetails, ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, FatcaElectionsDetails, GiinUpdateRequest}
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{RequiredGiinPage, RequiresElectionsPage}
@@ -36,7 +36,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
     request: DataRequest[_],
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[(Option[Boolean], Option[Boolean])] = {
+  ): Future[ElectionsGiinSubmissionResults] = {
 
     val giinUpdateRequest: Option[GiinUpdateRequest]                   = getGiinRequest(userAnswers)
     val electionsSubmissionRequest: Option[ElectionsSubmissionDetails] = getElectionsRequest(userAnswers)
@@ -53,7 +53,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
     for {
       giinResult      <- giinFuture
       electionsResult <- electionsFuture
-    } yield (giinResult, electionsResult)
+    } yield ElectionsGiinSubmissionResults(giinResult, electionsResult)
   }
 
   private def getGiinRequest(userAnswers: UserAnswers)(using request: DataRequest[_]): Option[GiinUpdateRequest] =
@@ -72,7 +72,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
 
   private def getElectionsRequest(userAnswers: UserAnswers)(using request: DataRequest[_]): Option[ElectionsSubmissionDetails] =
     userAnswers.get(RequiresElectionsPage).fold(None: Option[ElectionsSubmissionDetails]) {
-      electionsNeeded =>
+      _ =>
         extractMessageSpecData(userAnswers) {
           messageSpecData =>
             val fiId            = request.fatcaId
