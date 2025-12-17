@@ -18,9 +18,9 @@ package services
 
 import base.SpecBase
 import connectors.SubmissionConnector
-import models.{CRS, UserAnswers}
 import models.requests.DataRequest
 import models.submission.{ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.{CRS, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -43,15 +43,24 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
     super.beforeEach()
     reset(mockConnector)
 
-  lazy val baseUa: UserAnswers          = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS)))
-  lazy val uaWithGiin: UserAnswers      = baseUa.withPage(RequiredGiinPage, "testGiin")
-  lazy val uaWithElections: UserAnswers = baseUa.withPage(RequiresElectionsPage, true)
-  lazy val uaWithBoth: UserAnswers      = uaWithGiin.withPage(RequiresElectionsPage, true)
+  lazy val baseUa: UserAnswers                  = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS)))
+  lazy val uaWithGiin: UserAnswers              = baseUa.withPage(RequiredGiinPage, "testGiin")
+  lazy val uaWithElections: UserAnswers         = baseUa.withPage(RequiresElectionsPage, true)
+  lazy val uaWithElectionsNotGiven: UserAnswers = baseUa.withPage(RequiresElectionsPage, false)
+  lazy val uaWithBoth: UserAnswers              = uaWithGiin.withPage(RequiresElectionsPage, true)
 
   "submitElectionsAndGiin" - {
 
     "returns (None, None) when there are no giin or elections to submit" in {
       val result = service.submitElectionsAndGiin(baseUa).futureValue
+
+      result mustBe ElectionsGiinSubmissionResults(None, None)
+      verifyGiinUpdateNeverCalled()
+      verifyElectionsSubmitNeverCalled()
+    }
+
+    "returns (None, None) when there are no giin and user chose not to submit elections" in {
+      val result = service.submitElectionsAndGiin(uaWithElectionsNotGiven).futureValue
 
       result mustBe ElectionsGiinSubmissionResults(None, None)
       verifyGiinUpdateNeverCalled()

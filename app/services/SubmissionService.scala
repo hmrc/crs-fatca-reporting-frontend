@@ -20,7 +20,7 @@ import connectors.SubmissionConnector
 import models.UserAnswers
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
-import models.submission.{CrsElectionsDetails, ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, FatcaElectionsDetails, GiinUpdateRequest}
+import models.submission.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{RequiredGiinPage, RequiresElectionsPage}
@@ -72,7 +72,8 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
 
   private def getElectionsRequest(userAnswers: UserAnswers)(using request: DataRequest[_]): Option[ElectionsSubmissionDetails] =
     userAnswers.get(RequiresElectionsPage).fold(None: Option[ElectionsSubmissionDetails]) {
-      _ =>
+      case false => None
+      case true =>
         extractMessageSpecData(userAnswers) {
           messageSpecData =>
             val fiId            = request.fatcaId
