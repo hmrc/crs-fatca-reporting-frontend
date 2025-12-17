@@ -29,6 +29,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
 import utils.Extension.toYesNo
 import utils.ReportingConstants.*
+import viewmodels.govuk.all.ActionItemViewModel
 
 class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Messages):
 
@@ -48,10 +49,9 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               messages("checkYourFileDetails.fileInformation.key"),
               messages("checkYourFileDetails.fileInformation.value"),
               actionItem = Some(
-                singleActionItemForChangeLink(
-                  messages("checkYourFileDetails.fileInformation.change"),
-                  routes.IndexController.onPageLoad().url,
-                  messages("checkYourFileDetails.fileInformation.change")
+                ActionItem(
+                  href = routes.IndexController.onPageLoad().url,
+                  content = Text(messages("checkYourFileDetails.fileInformation.change"))
                 )
               )
             )
@@ -73,7 +73,6 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                 value = reportElectionValue.toYesNo,
                 actionItem = Some(
                   singleActionItemForChangeLink(
-                    messages("site.change"),
                     controllers.elections.routes.ReportElectionsController.onPageLoad(CheckMode).url,
                     messages("change.election.hidden.text", messageSpecData.messageType.name)
                   )
@@ -100,10 +99,9 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
             actions = Some(
               Actions(
                 items = Seq(
-                  ActionItem(
-                    href = routes.RequiredGiinController.onPageLoad(mode = CheckMode).url,
-                    content = Text(messages("site.change")),
-                    visuallyHiddenText = Some(messages("change.giin.hidden.text"))
+                  singleActionItemForChangeLink(
+                    routes.RequiredGiinController.onPageLoad(mode = CheckMode).url,
+                    messages("change.giin.hidden.text")
                   )
                 )
               )
@@ -157,7 +155,6 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
                   value.toYesNo,
                   actionItem = Some(
                     singleActionItemForChangeLink(
-                      messages("site.change"),
                       controllers.elections.crs.routes.ElectCrsCarfGrossProceedsController.onPageLoad(CheckMode).url,
                       messages("change.crs.reporting.gross.proceeds.cryptoasset.hidden.text", messageSpecData.reportingPeriod.getYear.toString)
                     )
@@ -200,7 +197,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
     userAnswers
       .get(page)
       .map(
-        value => summaryListRowHelper(keyValue, value.toYesNo, actionItem = Some(singleActionItemForChangeLink(messages("site.change"), actionUrl, hiddenText)))
+        value => summaryListRowHelper(keyValue, value.toYesNo, actionItem = Some(singleActionItemForChangeLink(actionUrl, hiddenText)))
       )
 
   private def summaryListRowHelper(key: String, value: String, rowClasses: Option[String] = None, actionItem: Option[ActionItem] = None) =
@@ -216,9 +213,8 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
       )
     )
 
-  private def singleActionItemForChangeLink(changeLink: String, hrefUrl: String, hiddenText: String) =
-    ActionItem(
-      href = hrefUrl,
-      content = Text(changeLink),
-      visuallyHiddenText = Some(hiddenText)
+  private def singleActionItemForChangeLink(hrefUrl: String, hiddenText: String) =
+    ActionItemViewModel(
+      content = HtmlContent(s"""<span aria-hidden="true">${messages("site.change")}</span><span class="govuk-visually-hidden">$hiddenText</span>"""),
+      href = hrefUrl
     )
