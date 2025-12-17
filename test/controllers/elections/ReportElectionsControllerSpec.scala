@@ -19,7 +19,7 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.ReportElectionsFormProvider
-import models.{CRS, CheckMode, FATCA, MessageSpecData, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CheckMode, FATCA, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

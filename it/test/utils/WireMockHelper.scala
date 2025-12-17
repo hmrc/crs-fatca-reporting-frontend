@@ -18,8 +18,9 @@ package utils
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import com.github.tomakehurst.wiremock.http.Fault
 import com.github.tomakehurst.wiremock.matching.{EqualToJsonPattern, EqualToPattern}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
@@ -85,6 +86,15 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach with Auth
         )
     )
 
+  def stubPostFault(url: String, fault: Fault): StubMapping =
+    server.stubFor(
+      post(urlPathMatching(url))
+        .willReturn(
+          aResponse()
+            .withFault(fault)
+        )
+    )
+    
   protected def getWireMockAppConfig(endpointNames: Seq[String]): Map[String, Any] =
     endpointNames
       .flatMap(
