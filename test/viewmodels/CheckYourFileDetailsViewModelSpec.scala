@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, CheckMode, FATCA, MessageSpecData, ValidatedFileData}
+import models.{CRS, CheckMode, FATCA, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
