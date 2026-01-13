@@ -5,14 +5,19 @@ $("#uploadForm").submit(function (e) {
     e.preventDefault();
     const fileLength = $("#file-upload")[0].files.length;
     var errorRequestId = $("[name='x-amz-meta-request-id']").val();
+
     if (fileLength === 0) {
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=filenotselected&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else if (isFileEmpty()){
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=fileisempty&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
-    }else if (isFileNameInvalid()) {
+    } else if (isFileNameInvalidLength()) {
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=invalidfilenamelength&errorRequestId=" + errorRequestId;
+        window.location = errorUrl;
+    } else if (isFileNameContainsDisallowedCharacters()) {
+        // New error message key: disallowedcharacters
+        var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=disallowedcharacters&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else {
         function disableFileUpload() {
@@ -37,13 +42,19 @@ $("#uploadForm").submit(function (e) {
 
 });
 
-function isFileNameInvalid() {
+function isFileNameInvalidLength() {
     var fileName = $("#file-upload")[0].files[0].name;
     var trimmedFileName = fileName.replace(".xml", "");
-    if (trimmedFileName.length > 170) {
+    if (trimmedFileName.length > 100) {
         return true;
     }
     return false;
+}
+
+function isFileNameContainsDisallowedCharacters() {
+    var fileName = $("#file-upload")[0].files[0].name;
+    var trimmedFileName = fileName.replace(".xml", "");
+    return /[<>:"'&\/\\|?*]/.test(trimmedFileName);
 }
 
 function isFileEmpty() {

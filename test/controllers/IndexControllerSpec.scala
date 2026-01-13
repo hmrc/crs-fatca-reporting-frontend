@@ -214,7 +214,7 @@ class IndexControllerSpec extends SpecBase {
         contentAsString(result) must include("The selected file contains a virus")
       }
 
-      "must show returned error when file name length is more than 170 char" in {
+      "must show returned error when file name length is more than 100 char" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -226,7 +226,24 @@ class IndexControllerSpec extends SpecBase {
         val result  = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) must include("File name must be 170 characters or less")
+        contentAsString(result) must include("File name must be 100 characters or less and match the MessageRefId in the file")
+      }
+
+      "must show returned error when file name includes a disallowed character" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[UpscanConnector].toInstance(fakeUpscanConnector)
+          )
+          .build()
+
+        val request = FakeRequest(GET, routes.IndexController.showError("InvalidArgument", "disallowedcharacters", "").url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) must include(
+          """File name must not include less than signs (&lt;), greater than signs (&gt;), colons (:), straight double quotes (&quot;), apostrophes (’), ampersands (&amp;), forward slashes (/), backslashes (\), vertical bars (|), question marks (?) or asterisks (*)"""
+        )
       }
 
       "must show returned error when file size is zero kb - JS enabled flow" in {
