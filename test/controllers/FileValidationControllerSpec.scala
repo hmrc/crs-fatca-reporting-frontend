@@ -110,7 +110,6 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       val result  = route(application, request).value
 
       status(result) mustBe SEE_OTHER
-      // Check it redirects to IndexController.showError with specific error message
       redirectLocation(result).value mustEqual routes.IndexController.showError("invalidargument", "invalidfilenamelength", uploadId.value).url
     }
 

@@ -77,7 +77,6 @@ class FileValidationController @Inject() (
                 downloadDetails =>
                   val trimmedFileName = downloadDetails.name.stripSuffix(".xml")
 
-                  // Server-side Gatekeeper Checks
                   (isFileNameLengthInvalid(trimmedFileName), isDisallowedCharactersPresent(trimmedFileName)) match {
                     case (true, _) => navigateToErrorPage(uploadId, "invalidfilenamelength")
                     case (_, true) => navigateToErrorPage(uploadId, "disallowedcharacters")

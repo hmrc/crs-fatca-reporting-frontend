@@ -16,7 +16,6 @@ $("#uploadForm").submit(function (e) {
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=invalidfilenamelength&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else if (isFileNameContainsDisallowedCharacters()) {
-        // New error message key: disallowedcharacters
         var errorUrl = $("#upScanErrorRedirectUrl").val() + "?errorCode=invalidargument&errorMessage=disallowedcharacters&errorRequestId=" + errorRequestId;
         window.location = errorUrl;
     } else {
