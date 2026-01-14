@@ -22,7 +22,7 @@ import controllers.Execution.trampoline
 import controllers.actions.{DataCreationAction, DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import forms.UploadXMLFormProvider
 import models.ErrorCode.*
-import models.InvalidArgumentErrorMessage.{FileIsEmpty, InvalidFileNameLength, TypeMismatch}
+import models.InvalidArgumentErrorMessage.{DisallowedCharacters, FileIsEmpty, InvalidFileNameLength, TypeMismatch}
 import models.requests.DataRequest
 import models.upscan.*
 import models.{ErrorCode, InvalidArgumentErrorMessage}
@@ -73,6 +73,7 @@ class IndexController @Inject() (
         case Some(InvalidArgument | OctetStream) =>
           InvalidArgumentErrorMessage.fromMessage(errorMessage) match {
             case Some(InvalidFileNameLength) => form.withError("file-upload", "uploadFile.error.file.name.length")
+            case Some(DisallowedCharacters)  => form.withError("file-upload", "uploadFile.error.file.name.disallowed.characters")
             case Some(TypeMismatch)          => form.withError("file-upload", "uploadFile.error.file.type.invalid")
             case Some(FileIsEmpty)           => form.withError("file-upload", "uploadFile.error.file.content.empty")
             case None                        => form.withError("file-upload", "uploadFile.error.file.select")

@@ -37,7 +37,6 @@ import play.api.{inject, Application}
 import repositories.SessionRepository
 import views.html.ThereIsAProblemView
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
@@ -86,6 +85,32 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       redirectLocation(result).value mustEqual controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode).url
       verify(mockSessionRepository, times(1)).set(userAnswersCaptor.capture())
       userAnswersCaptor.getValue.data mustEqual getExpectedData(validatedFileData)
+    }
+
+    "must redirect to error page when file name contains disallowed characters" in {
+      val invalidFileName              = "test<file.xml"
+      val uploadDetailsWithInvalidChar = uploadDetails.copy(status = UploadedSuccessfully(invalidFileName, downloadURL, FileSize, checksum))
+
+      fakeUpscanConnector.setDetails(uploadDetailsWithInvalidChar)
+
+      val request = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val result  = route(application, request).value
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.IndexController.showError("invalidargument", "disallowedcharacters", uploadId.value).url
+    }
+
+    "must redirect to error page when file name exceeds 100 characters" in {
+      val longFileName              = "a" * 101 + ".xml"
+      val uploadDetailsWithLongName = uploadDetails.copy(status = UploadedSuccessfully(longFileName, downloadURL, FileSize, checksum))
+
+      fakeUpscanConnector.setDetails(uploadDetailsWithLongName)
+
+      val request = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val result  = route(application, request).value
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.IndexController.showError("invalidargument", "invalidfilenamelength", uploadId.value).url
     }
 
     "must redirect to invalid reporting period page if an invalid reporting period error is returned" in {

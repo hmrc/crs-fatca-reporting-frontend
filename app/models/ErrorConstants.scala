@@ -29,6 +29,7 @@ enum InvalidArgumentErrorMessage(val message: String):
   case InvalidFileNameLength extends InvalidArgumentErrorMessage("invalidfilenamelength")
   case TypeMismatch extends InvalidArgumentErrorMessage("typemismatch")
   case FileIsEmpty extends InvalidArgumentErrorMessage("fileisempty")
+  case DisallowedCharacters extends InvalidArgumentErrorMessage("disallowedcharacters")
 
 object InvalidArgumentErrorMessage:
   def fromMessage(message: String): Option[InvalidArgumentErrorMessage] = values.find(_.message.equalsIgnoreCase(message))

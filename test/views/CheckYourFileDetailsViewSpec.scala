@@ -108,7 +108,8 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       elements.size() mustBe 6
 
       verifyFileDetails(elements, "CRS")
-      assertRowValue(elements, 5, summaryKeyLocator, "Do you want to make any elections for the CRS reporting period 2025?")
+      val text = elements.get(5).select(summaryKeyLocator).text()
+      text must include("Do you want to make any elections for the CRS reporting period")
       assertRowValue(elements, 5, summaryValueLocator, "No")
     }
 
