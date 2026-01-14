@@ -17,19 +17,30 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.submission.{ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.submission.{ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, GiinAndElectionSubmissionRequest, GiinUpdateRequest}
 import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.Json
 import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps, UpstreamErrorResponse}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
+
+  def submitGinAndElections(request: GiinAndElectionSubmissionRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[ElectionsGiinSubmissionResults] =
+    for {
+      giinUpdated <- if (request.giinUpdateRequest.isDefined) updateGiin(request.giinUpdateRequest.get) else Future.successful(true)
+      electionsSubmitted <-
+        if (request.electionsSubmissionRequest.isDefined) submitElections(request.electionsSubmissionRequest.get) else Future.successful(true)
+    } yield ElectionsGiinSubmissionResults(
+      giinUpdated = Some(giinUpdated),
+      electionsSubmitted = Some(electionsSubmitted)
+    )
 
   def updateGiin(request: GiinUpdateRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/update/giin"

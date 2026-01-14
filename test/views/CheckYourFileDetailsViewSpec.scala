@@ -31,6 +31,8 @@ import utils.ViewHelper
 import viewmodels.CheckYourFileDetailsViewModel
 import views.html.CheckYourFileDetailsView
 
+import java.time.LocalDate
+
 class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
   val view: CheckYourFileDetailsView                                    = app.injector.instanceOf[CheckYourFileDetailsView]
@@ -89,7 +91,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     "should render page components with a summary list with report election as false" in {
       val expectedFiName = "fi-name"
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName)))
+        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName, reportingPeriod = LocalDate.of(2025, 1, 1))))
         .withPage(ReportElectionsPage, false)
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary

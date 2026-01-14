@@ -19,6 +19,7 @@ package controllers
 import controllers.actions.*
 import models.SendYourFileAdditionalText
 import navigation.Navigator
+import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -38,13 +39,19 @@ class SendYourFileController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(SendYourFileAdditionalText.NONE))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          Ok(view(SendYourFileAdditionalText.NONE))
+        case _ =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+      }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
       Future.successful(Redirect(routes.IndexController.onPageLoad()))
   }
+
 }
