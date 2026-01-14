@@ -33,13 +33,9 @@ import scala.util.control.NonFatal
 class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
   def submitGinAndElections(request: GiinAndElectionSubmissionRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[ElectionsGiinSubmissionResults] = {
-    
-    val giinFuture: Future[Boolean] = request.giinUpdateRequest.fold(Future.successful(true))(updateGiin)
-    val electionsFuture: Future[Boolean] = request.electionsSubmissionRequest.fold(Future.successful(true))(submitElections)
-
     for {
-      giinUpdated       <- giinFuture
-      electionsSubmitted <- electionsFuture
+      giinUpdated        <- request.giinUpdateRequest.fold(Future.successful(true))(updateGiin)
+      electionsSubmitted <- request.electionsSubmissionRequest.fold(Future.successful(true))(submitElections)
     } yield ElectionsGiinSubmissionResults(
       giinUpdated = Some(giinUpdated),
       electionsSubmitted = Some(electionsSubmitted)
