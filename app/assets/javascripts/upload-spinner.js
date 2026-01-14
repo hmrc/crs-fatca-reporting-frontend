@@ -43,7 +43,7 @@ $("#uploadForm").submit(function (e) {
 
 function isFileNameInvalidLength() {
     var fileName = $("#file-upload")[0].files[0].name;
-    var trimmedFileName = fileName.replace(".xml", "");
+    var trimmedFileName = fileName.replace(/\.xml$/i, "");
     if (trimmedFileName.length > 100) {
         return true;
     }
@@ -52,7 +52,7 @@ function isFileNameInvalidLength() {
 
 function isFileNameContainsDisallowedCharacters() {
     var fileName = $("#file-upload")[0].files[0].name;
-    var trimmedFileName = fileName.replace(".xml", "");
+    var trimmedFileName = fileName.replace(/\.xml$/i, "");
     return /[<>:"'&\/\\|?*]/.test(trimmedFileName);
 }
 

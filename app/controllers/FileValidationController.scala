@@ -75,7 +75,7 @@ class FileValidationController @Inject() (
                 Future.successful(InternalServerError(errorView()))
               } {
                 downloadDetails =>
-                  val trimmedFileName = downloadDetails.name.stripSuffix(".xml")
+                  val trimmedFileName = downloadDetails.name.toLowerCase.stripSuffix(".xml")
 
                   (isFileNameLengthInvalid(trimmedFileName), isDisallowedCharactersPresent(trimmedFileName)) match {
                     case (true, _) => navigateToErrorPage(uploadId, "invalidfilenamelength")
