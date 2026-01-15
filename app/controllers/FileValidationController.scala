@@ -63,6 +63,7 @@ class FileValidationController @Inject() (
 
   private val maxFileNameLength         = 100
   private val disallowedCharactersRegex = "[<>:\"'&/\\\\|?*]".r
+  private val disallowedEncodedCharacters = "%22"
 
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
@@ -203,7 +204,7 @@ class FileValidationController @Inject() (
     fileName.length > maxFileNameLength
 
   private def isDisallowedCharactersPresent(fileName: String): Boolean =
-    disallowedCharactersRegex.findFirstIn(fileName).isDefined
+    disallowedCharactersRegex.findFirstIn(fileName).isDefined  || fileName.contains(disallowedEncodedCharacters)
 
   private def navigateToErrorPage(uploadId: UploadId, errorMessage: String): Future[Result] =
     Future.successful(
