@@ -113,6 +113,19 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
       redirectLocation(result).value mustEqual routes.IndexController.showError("invalidargument", "invalidfilenamelength", uploadId.value).url
     }
 
+    "must redirect to error page when file name contains " in {
+      val longFileName              = """test"file.xml"""
+      val uploadDetailsWithLongName = uploadDetails.copy(status = UploadedSuccessfully(longFileName, downloadURL, FileSize, checksum))
+
+      fakeUpscanConnector.setDetails(uploadDetailsWithLongName)
+
+      val request = FakeRequest(GET, routes.FileValidationController.onPageLoad().url)
+      val result  = route(application, request).value
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.IndexController.showError("invalidargument", "disallowedcharacters", uploadId.value).url
+    }
+
     "must redirect to invalid reporting period page if an invalid reporting period error is returned" in {
       fakeUpscanConnector.setDetails(uploadDetails)
 
