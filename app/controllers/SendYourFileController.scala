@@ -82,9 +82,4 @@ class SendYourFileController @Inject() (
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
   }
-
 }
-
-// happy path goes to send your file
-// giin fail goes giinNotsent and we save the results in mongo
-// elections fail goes to elections-not-sent
