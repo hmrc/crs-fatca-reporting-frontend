@@ -16,6 +16,7 @@
 
 package services
 
+import cats.data.EitherT
 import connectors.SubmissionConnector
 import models.UserAnswers
 import models.UserAnswers.extractMessageSpecData
@@ -36,25 +37,26 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
     request: DataRequest[_],
     hc: HeaderCarrier,
     ec: ExecutionContext
-  ): Future[ElectionsGiinSubmissionResults] = {
+  ): Future[GiinAndElectionStatus] = {
 
     val giinUpdateRequest: Option[GiinUpdateRequest]                   = getGiinRequest(userAnswers)
     val electionsSubmissionRequest: Option[ElectionsSubmissionDetails] = getElectionsRequest(userAnswers)
 
-    val giinFuture: Future[Option[Boolean]] = giinUpdateRequest.fold(Future.successful(None: Option[Boolean])) {
-      request =>
-        connector.updateGiin(request).map(Some(_))
-    }
-
-    val electionsFuture: Future[Option[Boolean]] = electionsSubmissionRequest.fold(Future.successful(None: Option[Boolean])) {
-      request =>
-        connector.submitElections(request).map(Some(_))
-    }
-    for {
-      giinResult      <- giinFuture
-      electionsResult <- electionsFuture
-    } yield ElectionsGiinSubmissionResults(giinResult, electionsResult)
+    (for {
+      giinResult      <- EitherT.right(giinUpdateRequest.fold(Future.successful(true))(connector.updateGiin))
+      electionsResult <- EitherT.right(electionsSubmissionRequest.fold(Future.successful(true))(connector.submitElections))
+      _               <- checkElectionsGiinSubmissionIsSuccessful(giinResult, electionsResult)
+    } yield GiinAndElectionSubmittedSuccessful).merge
   }
+
+  private def checkElectionsGiinSubmissionIsSuccessful(giinStatus: Boolean, electionStatus: Boolean): EitherT[Future, GiinAndElectionStatus, Unit] =
+    EitherT {
+      (giinStatus, electionStatus) match {
+        case (true, true)  => Future.successful(Right(()))
+        case (false, _)    => Future.successful(Left(GiinUpdateFailed(giinStatus, electionStatus)))
+        case (true, false) => Future.successful(Left(ElectionsSubmitFailed(giinStatus, electionStatus)))
+      }
+    }
 
   private def getGiinRequest(userAnswers: UserAnswers)(using request: DataRequest[_]): Option[GiinUpdateRequest] =
     userAnswers.get(RequiredGiinPage).fold(None: Option[GiinUpdateRequest]) {

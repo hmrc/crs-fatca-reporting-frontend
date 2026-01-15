@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.SubmissionConnector
 import models.requests.DataRequest
-import models.submission.{ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.submission.*
 import models.{CRS, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
@@ -51,23 +51,23 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   "submitElectionsAndGiin" - {
 
-    "returns (None, None) when there are no giin or elections to submit" in {
+    "returns GiinAndElectionSubmittedSuccessful when there are no giin or elections to submit" in {
       val result = service.submitElectionsAndGiin(baseUa).futureValue
 
-      result mustBe ElectionsGiinSubmissionResults(None, None)
+      result mustBe GiinAndElectionSubmittedSuccessful
       verifyGiinUpdateNeverCalled()
       verifyElectionsSubmitNeverCalled()
     }
 
-    "returns (None, None) when there are no giin and user chose not to submit elections" in {
+    "returns GiinAndElectionSubmittedSuccessful when there are no giin and user chose not to submit elections" in {
       val result = service.submitElectionsAndGiin(uaWithElectionsNotGiven).futureValue
 
-      result mustBe ElectionsGiinSubmissionResults(None, None)
+      result mustBe GiinAndElectionSubmittedSuccessful
       verifyGiinUpdateNeverCalled()
       verifyElectionsSubmitNeverCalled()
     }
 
-    "returns (Some(true), Some(true)) when both submissions are successful" in {
+    "returns GiinAndElectionSubmittedSuccessful when both submissions are successful" in {
       when(mockConnector.updateGiin(any[GiinUpdateRequest])(using any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(true))
       when(mockConnector.submitElections(any[ElectionsSubmissionDetails])(using any[HeaderCarrier], any[ExecutionContext]))
@@ -75,31 +75,44 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
       val result = service.submitElectionsAndGiin(uaWithBoth).futureValue
 
-      result mustBe ElectionsGiinSubmissionResults(Some(true), Some(true))
+      result mustBe GiinAndElectionSubmittedSuccessful
       verifyGiinUpdateCalledOnce()
       verifyElectionsSubmitCalledOnce()
     }
 
-    "returns (None, Some(true)) when GIIN is not needed and submitElections succeeds" in {
+    "returns GiinAndElectionSubmittedSuccessful when GIIN is not needed and submitElections succeeds" in {
       when(mockConnector.submitElections(any[ElectionsSubmissionDetails])(using any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(true))
 
       val result = service.submitElectionsAndGiin(uaWithElections).futureValue
 
-      result mustBe ElectionsGiinSubmissionResults(None, Some(true))
+      result mustBe GiinAndElectionSubmittedSuccessful
       verifyGiinUpdateNeverCalled()
       verifyElectionsSubmitCalledOnce()
     }
 
-    "returns (Some(false), None) when GIIN fails and submitElections is not needed" in {
+    "returns GiinUpdateFail when GIIN fails and submitElections is not needed" in {
       when(mockConnector.updateGiin(any[GiinUpdateRequest])(using any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(false))
 
       val result = service.submitElectionsAndGiin(uaWithGiin).futureValue
 
-      result mustBe ElectionsGiinSubmissionResults(Some(false), None)
+      result mustBe GiinUpdateFailed(false, true)
       verifyGiinUpdateCalledOnce()
       verifyElectionsSubmitNeverCalled()
+    }
+
+    "returns ElectionsSubmitFail when GIIN succeeds and submitElections fails" in {
+      when(mockConnector.updateGiin(any[GiinUpdateRequest])(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(true))
+      when(mockConnector.submitElections(any[ElectionsSubmissionDetails])(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(false))
+
+      val result = service.submitElectionsAndGiin(uaWithBoth).futureValue
+
+      result mustBe ElectionsSubmitFailed(true, false)
+      verifyGiinUpdateCalledOnce()
+      verifyElectionsSubmitCalledOnce()
     }
 
     "should propagate the exception if one of the connectors fail unexpectedly" in {

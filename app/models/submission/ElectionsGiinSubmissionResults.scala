@@ -16,4 +16,17 @@
 
 package models.submission
 
+import play.api.libs.json.{Json, OFormat}
+
 case class ElectionsGiinSubmissionResults(giinUpdated: Option[Boolean], electionsSubmitted: Option[Boolean])
+
+sealed trait GiinAndElectionStatus
+case object GiinAndElectionSubmittedSuccessful extends GiinAndElectionStatus
+case class GiinUpdateFailed(giinStatus: Boolean, electionStatus: Boolean) extends GiinAndElectionStatus
+case class ElectionsSubmitFailed(giinStatus: Boolean, electionStatus: Boolean) extends GiinAndElectionStatus
+
+case class GiinAndElectionDBStatus(giinStatus: Boolean, electionStatus: Boolean)
+
+object GiinAndElectionDBStatus {
+  given OFormat[GiinAndElectionDBStatus] = Json.format[GiinAndElectionDBStatus]
+}

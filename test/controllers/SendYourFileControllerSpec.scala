@@ -17,18 +17,30 @@
 package controllers
 
 import base.SpecBase
+import models.requests.DataRequest
+import models.submission.{ElectionsSubmitFailed, GiinAndElectionSubmittedSuccessful, GiinUpdateFailed}
 import models.{FATCA, SendYourFileAdditionalText, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatest.BeforeAndAfterEach
 import pages.ValidXMLPage
+import play.api.inject
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.SubmissionService
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.SendYourFileView
 
-class SendYourFileControllerSpec extends SpecBase {
+import scala.concurrent.{ExecutionContext, Future}
 
-  lazy val pageUnavailableUrl: String = controllers.routes.PageUnavailableController.onPageLoad().url
-  lazy val sendYourFileUrl: String    = routes.SendYourFileController.onPageLoad().url
-  val hardcodedFiName                 = "testFiName"
-  val exampleGiin                     = "8Q298C.00000.LE.340"
+class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
+
+  val mockSubmissionService: SubmissionService = mock[SubmissionService]
+  lazy val pageUnavailableUrl: String          = controllers.routes.PageUnavailableController.onPageLoad().url
+  lazy val sendYourFileUrl: String             = routes.SendYourFileController.onPageLoad().url
+  val hardcodedFiName                          = "testFiName"
+  val exampleGiin                              = "8Q298C.00000.LE.340"
   val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName)))
 
   "SendYourFile Controller" - {
@@ -59,6 +71,79 @@ class SendYourFileControllerSpec extends SpecBase {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual pageUnavailableUrl
+      }
+    }
+
+    "must redirect to PageUnavailableController when validXmlPage is missing" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+      }
+    }
+
+    "must redirect to giin not sent when the giin update fails" in {
+      val application = applicationBuilder(userAnswers = Some(ua))
+        .overrides(
+          bind[SubmissionService].toInstance(mockSubmissionService)
+        )
+        .build()
+
+      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(GiinUpdateFailed(false, true)))
+
+      running(application) {
+        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.GiinNotSentController.onPageLoad().url
+      }
+    }
+
+    "must redirect to election  not sent when the election submission fails" in {
+      val application = applicationBuilder(userAnswers = Some(ua))
+        .overrides(
+          bind[SubmissionService].toInstance(mockSubmissionService)
+        )
+        .build()
+
+      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(ElectionsSubmitFailed(true, false)))
+
+      running(application) {
+        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.ElectionsNotSentController.onPageLoad().url
+      }
+    }
+
+    "must redirect to StillCheckingYourFileController for a successful submission" in {
+      val application = applicationBuilder(userAnswers = Some(ua))
+        .overrides(
+          bind[SubmissionService].toInstance(mockSubmissionService)
+        )
+        .build()
+
+      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+      running(application) {
+        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.StillCheckingYourFileController.onPageLoad().url
       }
     }
   }

@@ -18,15 +18,18 @@ package controllers
 
 import controllers.actions.*
 import models.SendYourFileAdditionalText
+import models.submission.{ElectionsSubmitFailed, GiinAndElectionDBStatus, GiinAndElectionSubmittedSuccessful, GiinUpdateFailed}
 import navigation.Navigator
-import pages.ValidXMLPage
+import pages.{GiinAndElectionStatusPage, ValidXMLPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
+import services.SubmissionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendYourFileView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SendYourFileController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,8 +38,11 @@ class SendYourFileController @Inject() (
   requireData: DataRequiredAction,
   navigator: Navigator,
   val controllerComponents: MessagesControllerComponents,
-  view: SendYourFileView
-) extends FrontendBaseController
+  view: SendYourFileView,
+  submissionService: SubmissionService,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
@@ -49,9 +55,36 @@ class SendYourFileController @Inject() (
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Redirect(routes.IndexController.onPageLoad()))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validatedFileData) =>
+          submissionService.submitElectionsAndGiin(request.userAnswers).flatMap {
+            giinAndElectionStatus =>
+              giinAndElectionStatus match {
+                case giinUpdateFailed: GiinUpdateFailed =>
+                  val giinAndElectionStatus = GiinAndElectionDBStatus(giinUpdateFailed.giinStatus, giinUpdateFailed.electionStatus)
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(GiinAndElectionStatusPage, giinAndElectionStatus))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(routes.GiinNotSentController.onPageLoad())
+                case electionFailed: ElectionsSubmitFailed =>
+                  val giinAndElectionStatus = GiinAndElectionDBStatus(electionFailed.giinStatus, electionFailed.electionStatus)
+                  for {
+                    updatedAnswers <- Future.fromTry(request.userAnswers.set(GiinAndElectionStatusPage, giinAndElectionStatus))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(routes.ElectionsNotSentController.onPageLoad())
+                case GiinAndElectionSubmittedSuccessful =>
+                  Future.successful(Redirect(routes.StillCheckingYourFileController.onPageLoad()))
+              }
+          }
+        case _ =>
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+      }
   }
 
 }
+
+// happy path goes to send your file
+// giin fail goes giinNotsent and we save the results in mongo
+// elections fail goes to elections-not-sent
