@@ -33,11 +33,9 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
   lazy val connector: SubmissionConnector = app.injector.instanceOf[SubmissionConnector]
 
   "SubmissionConnector" - {
-    val updateGiinUrl           = "/crs-fatca-reporting/update/giin"
-    val submitElectionsUrl      = "/crs-fatca-reporting/elections/submit"
-
     "updateGiin" - {
 
+      val updateGiinUrl     = "/crs-fatca-reporting/update/giin"
       val giinUpdateRequest = GiinUpdateRequest("testSubId", "testFiid", "testGiin")
 
       "should return true on successful GIIN update (NO_CONTENT)" in {
@@ -85,7 +83,7 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
 
     }
     "submitElections" - {
-
+      val submitElectionsUrl                      = "/crs-fatca-reporting/elections/submit"
       val crsDetails: Option[CrsElectionsDetails] = Some(CrsElectionsDetails(Some(true), Some(true), Some(true), Some(true)))
       val electionsSubmissionRequest =
         ElectionsSubmissionDetails(getMessageSpecData(CRS).sendingCompanyIN,
