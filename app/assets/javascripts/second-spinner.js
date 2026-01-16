@@ -28,7 +28,7 @@ e.preventDefault();
                 window.location =  $("#technicalDifficultiesRedirectUrl").val()
             }).done(function(){
                  checkProgress = true
-                 //refreshToCheckStatusPage();
+                 refreshToCheckStatusPage();
             });
         }
     };
@@ -36,3 +36,31 @@ e.preventDefault();
 }
 
 });
+
+// =====================================================
+//  Refresh status page
+// =====================================================
+function refreshToCheckStatusPage(){
+    var refreshUrl = $("#fileStatusRefreshUrl").val();
+    var count = 0;
+    if (refreshUrl) {
+        window.refreshIntervalId = setInterval(function () {
+            if (count < $("#spinner-counter").val()) {
+                $.getJSON(refreshUrl)
+                .done(function (data, textStatus, jqXhr) {
+                    if (jqXhr.status === 200) {
+                          window.location = data.url;
+                    } else {
+                       count += 1
+                       return false
+                    }
+                }).fail(function( jqxhr, textStatus, error ) {
+                    window.location =  $("#technicalDifficultiesRedirectUrl").val()
+                });
+            } else {
+                window.location =  $("#slowJourneyUrl").val()
+            }
+        }, 3000);
+    }
+
+}

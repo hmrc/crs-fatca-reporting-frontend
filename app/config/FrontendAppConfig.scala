@@ -69,4 +69,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val upscanMaxFileSize: Int            = configuration.get[Int]("microservice.services.upscan.max-file-size-in-mb")
   val upscanMaxFileNameLength: Int      = configuration.get[Int]("microservice.services.upscan.max-file-name-length")
   val crsFatcaBackendUrl: String        = servicesConfig.baseUrl("crs-fatca-reporting")
+
+  val spinnerCounter: Int = configuration.get[Int]("spinner.counter")
 }

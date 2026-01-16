@@ -78,7 +78,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
       case true =>
         extractMessageSpecData(userAnswers) {
           messageSpecData =>
-            val fiId            = request.fatcaId
+            val fiId            = messageSpecData.sendingCompanyIN
             val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
 
             val crsHasCARF            = userAnswers.get(ElectCrsCarfGrossProceedsPage).fold(None)(Some(_))

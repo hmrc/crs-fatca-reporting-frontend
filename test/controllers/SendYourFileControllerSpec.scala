@@ -18,13 +18,12 @@ package controllers
 
 import base.SpecBase
 import models.requests.DataRequest
-import models.submission.{ElectionsSubmitFailed, GiinAndElectionSubmittedSuccessful, GiinUpdateFailed}
+import models.submission.*
 import models.{FATCA, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import pages.ValidXMLPage
-import play.api.inject
+import pages.{ConversationIdPage, GiinAndElectionStatusPage, ValidXMLPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -41,109 +40,184 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
   lazy val sendYourFileUrl: String             = routes.SendYourFileController.onPageLoad().url
   val hardcodedFiName                          = "testFiName"
   val exampleGiin                              = "8Q298C.00000.LE.340"
+  val conversationId: ConversationId           = ConversationId("conversationId")
   val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName)))
 
   "SendYourFile Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "onPageLoad" - {
+      "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(ua)).build()
+        val application = applicationBuilder(userAnswers = Some(ua)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.SendYourFileController.onPageLoad().url)
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.onPageLoad().url)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[SendYourFileView]
+          val view = application.injector.instanceOf[SendYourFileView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE)(request, messages(application)).toString
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE)(request, messages(application)).toString
+        }
+      }
+
+      "must redirect to page unavailable when xml valid page is not present in user answers for a GET" in {
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, sendYourFileUrl)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual pageUnavailableUrl
+        }
       }
     }
 
-    "must redirect to page unavailable when xml valid page is not present in user answers for a GET" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    "onSubmit" - {
+      "must redirect to PageUnavailableController when validXmlPage is missing" in {
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, sendYourFileUrl)
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual pageUnavailableUrl
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+        }
+      }
+
+      "must redirect to giin not sent when the giin update fails" in {
+        val application = applicationBuilder(userAnswers = Some(ua))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinUpdateFailed(false, true)))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.GiinNotSentController.onPageLoad().url
+        }
+      }
+
+      "must redirect to election  not sent when the election submission fails" in {
+        val application = applicationBuilder(userAnswers = Some(ua))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(ElectionsSubmitFailed(true, false)))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.ElectionsNotSentController.onPageLoad().url
+        }
+      }
+
+      // This test will be changed during the implementation of DAC6-3829
+      "must redirect to StillCheckingYourFileController for a successful submission" in {
+        val application = applicationBuilder(userAnswers = Some(ua))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.StillCheckingYourFileController.onPageLoad().url
+        }
       }
     }
 
-    "must redirect to PageUnavailableController when validXmlPage is missing" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    "getStatus" - {
+      // This test title and content will be changed during the implementation of DAC6-3829
+      "must return OK and load the page Still checking page" in {
 
-      running(application) {
-        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
 
-        val result = route(application, request).value
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/still-checking-your-file\"}"
+        }
       }
-    }
 
-    "must redirect to giin not sent when the giin update fails" in {
-      val application = applicationBuilder(userAnswers = Some(ua))
-        .overrides(
-          bind[SubmissionService].toInstance(mockSubmissionService)
-        )
-        .build()
+      "must return json pointing to giin not sent to url when missing a conversation Id and contains GiinAndElectionStatusPage with value has giinstatus false" in {
+        val giinAndElectionStatus = GiinAndElectionDBStatus(false, true)
 
-      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
-        .thenReturn(Future.successful(GiinUpdateFailed(false, true)))
+        val userAnswers = UserAnswers("Id")
+          .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
 
-      running(application) {
-        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-        val result = route(application, request).value
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.GiinNotSentController.onPageLoad().url
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/giin-not-sent\"}"
+        }
       }
-    }
 
-    "must redirect to election  not sent when the election submission fails" in {
-      val application = applicationBuilder(userAnswers = Some(ua))
-        .overrides(
-          bind[SubmissionService].toInstance(mockSubmissionService)
-        )
-        .build()
+      "must return json pointing to election not sent to url when missing a conversation Id and contains GiinAndElectionStatusPage with value has giinstatus true " +
+        "and election status false" in {
+          val giinAndElectionStatus = GiinAndElectionDBStatus(true, false)
 
-      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
-        .thenReturn(Future.successful(ElectionsSubmitFailed(true, false)))
+          val userAnswers = UserAnswers("Id")
+            .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
 
-      running(application) {
-        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-        val result = route(application, request).value
+          running(application) {
+            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.ElectionsNotSentController.onPageLoad().url
-      }
-    }
+            val result = route(application, request).value
 
-    "must redirect to StillCheckingYourFileController for a successful submission" in {
-      val application = applicationBuilder(userAnswers = Some(ua))
-        .overrides(
-          bind[SubmissionService].toInstance(mockSubmissionService)
-        )
-        .build()
+            status(result) mustEqual OK
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/elections-not-sent\"}"
+          }
+        }
 
-      when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
-        .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+      "must return internal server error when conversation Id is missing" in {
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.StillCheckingYourFileController.onPageLoad().url
+          status(result) mustEqual INTERNAL_SERVER_ERROR
+        }
       }
     }
   }
