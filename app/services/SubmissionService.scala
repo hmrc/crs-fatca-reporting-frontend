@@ -41,10 +41,12 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
 
     val giinUpdateRequest: Option[GiinUpdateRequest]                   = getGiinRequest(userAnswers)
     val electionsSubmissionRequest: Option[ElectionsSubmissionDetails] = getElectionsRequest(userAnswers)
+    val giinFuture                                                     = giinUpdateRequest.fold(Future.successful(true))(connector.updateGiin)
+    val electionsFuture                                                = electionsSubmissionRequest.fold(Future.successful(true))(connector.submitElections)
 
     (for {
-      giinResult      <- EitherT.right(giinUpdateRequest.fold(Future.successful(true))(connector.updateGiin))
-      electionsResult <- EitherT.right(electionsSubmissionRequest.fold(Future.successful(true))(connector.submitElections))
+      giinResult      <- EitherT.right(giinFuture)
+      electionsResult <- EitherT.right(electionsFuture)
       _               <- checkElectionsGiinSubmissionIsSuccessful(giinResult, electionsResult)
     } yield GiinAndElectionSubmittedSuccessful).merge
   }

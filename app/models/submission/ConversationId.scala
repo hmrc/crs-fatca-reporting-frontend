@@ -19,20 +19,19 @@ package models.submission
 import play.api.libs.json.{__, JsString, Reads, Writes}
 import play.api.mvc.PathBindable
 
-case class ConversationId(value: String)
+opaque type ConversationId = String
 
 object ConversationId {
 
-  implicit val writes: Writes[ConversationId] = conversationId => JsString(conversationId.value)
+  def apply(value: String): ConversationId = value
 
-  implicit val reads: Reads[ConversationId] = __
-    .read[String]
-    .map(
-      id => ConversationId(id)
-    )
+  extension (id: ConversationId) def value: String = id
 
-  implicit lazy val pathBindable: PathBindable[ConversationId] = new PathBindable[ConversationId] {
+  given Writes[ConversationId] = conversationId => JsString(conversationId.value)
 
+  given Reads[ConversationId] = Reads.StringReads.map(ConversationId.apply)
+
+  given pathBindable: PathBindable[ConversationId] = new PathBindable[ConversationId] {
     override def bind(key: String, value: String): Either[String, ConversationId] =
       implicitly[PathBindable[String]].bind(key, value).map(ConversationId(_))
 
