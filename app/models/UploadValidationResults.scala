@@ -50,6 +50,7 @@ object MessageType {
 }
 
 case class MessageSpecData(messageType: MessageType,
+                           reportType: ReportType,
                            sendingCompanyIN: String,
                            messageRefId: String,
                            reportingFIName: String,
@@ -66,7 +67,53 @@ object MessageSpecData {
     Writes.temporalWrites[LocalDate, DateTimeFormatter](DateTimeFormatter.ISO_LOCAL_DATE)
   )
 
-  implicit val format: OFormat[MessageSpecData] = Json.format[MessageSpecData]
+  given Format[MessageSpecData] = new Format[MessageSpecData] {
+
+    override def reads(json: JsValue): JsResult[MessageSpecData] =
+      for {
+        messageType       <- (json \ "messageType").validate[MessageType]
+        reportType        <- (json \ "reportType").validate[String]
+        sendingCompanyIN  <- (json \ "sendingCompanyIN").validate[String]
+        messageRefId      <- (json \ "messageRefId").validate[String]
+        reportingFIName   <- (json \ "reportingFIName").validate[String]
+        reportingPeriod   <- (json \ "reportingPeriod").validate[LocalDate]
+        giin              <- (json \ "giin").validateOpt[String]
+        fiNameFromFim     <- (json \ "fiNameFromFim").validate[String]
+        electionsRequired <- (json \ "electionsRequired").validate[Boolean]
+        reportTypeValue <- messageType match {
+          case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
+          case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
+        }
+      } yield MessageSpecData(messageType,
+                              reportTypeValue,
+                              sendingCompanyIN,
+                              messageRefId,
+                              reportingFIName,
+                              reportingPeriod,
+                              giin,
+                              fiNameFromFim,
+                              electionsRequired
+      )
+
+    override def writes(messageSpecData: MessageSpecData): JsValue = {
+      val reportType: JsValue = messageSpecData.reportType match {
+        case v: CRSReportType   => summon[Writes[CRSReportType]].writes(v)
+        case v: FATCAReportType => summon[Writes[FATCAReportType]].writes(v)
+      }
+
+      Json.obj(
+        "messageType"       -> messageSpecData.messageType,
+        "reportType"        -> reportType,
+        "sendingCompanyIN"  -> messageSpecData.sendingCompanyIN,
+        "messageRefId"      -> messageSpecData.messageRefId,
+        "reportingFIName"   -> messageSpecData.reportingFIName,
+        "reportingPeriod"   -> messageSpecData.reportingPeriod,
+        "giin"              -> messageSpecData.giin,
+        "fiNameFromFim"     -> messageSpecData.fiNameFromFim,
+        "electionsRequired" -> messageSpecData.electionsRequired
+      )
+    }
+  }
 
   extension (messageType: MessageType) def name: String = messageType.toString
 }

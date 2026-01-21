@@ -18,7 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.DormantAccountsFormProvider
-import models.{CRS, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -48,7 +48,7 @@ class DormantAccountsControllerSpec extends SpecBase with MockitoSugar {
   lazy val dormantAccountsRoute: String = controllers.elections.crs.routes.DormantAccountsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl           = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val crsMessageSpec = getMessageSpecData(CRS)
+  val crsMessageSpec = getMessageSpecData(CRS, CRSReportType.TestData)
 
   val crsValidatedFileData        = getValidatedFileData(crsMessageSpec)
   val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value

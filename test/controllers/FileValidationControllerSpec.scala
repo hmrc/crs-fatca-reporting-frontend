@@ -20,7 +20,17 @@ import base.SpecBase
 import connectors.{UpscanConnector, ValidationConnector}
 import helpers.FakeUpscanConnector
 import models.upscan.{Reference, UploadId, UploadSessionDetails, UploadedSuccessfully}
-import models.{FATCA, FIIDNotMatchingError, IncorrectMessageTypeError, InvalidXmlFileError, NormalMode, ReportingPeriodError, UserAnswers, ValidatedFileData}
+import models.{
+  FATCA,
+  FATCAReportType,
+  FIIDNotMatchingError,
+  IncorrectMessageTypeError,
+  InvalidXmlFileError,
+  NormalMode,
+  ReportingPeriodError,
+  UserAnswers,
+  ValidatedFileData
+}
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -70,7 +80,7 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
     "must successfully redirect and save data for a valid file" in {
       val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
 
-      val messageSpecData = getMessageSpecData(FATCA, giin = Some("giin"))
+      val messageSpecData = getMessageSpecData(FATCA, FATCAReportType.TestData, giin = Some("giin"))
 
       val validatedFileData = getValidatedFileData(messageSpecData)
 

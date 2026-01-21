@@ -18,7 +18,7 @@ package base
 
 import controllers.actions.*
 import generators.Generators
-import models.{FATCA, MessageSpecData, MessageType, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -55,10 +55,11 @@ trait SpecBase
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   def getValidatedFileData(
-    msd: MessageSpecData = getMessageSpecData(FATCA)
+    msd: MessageSpecData = getMessageSpecData(FATCA, FATCAReportType.TestData)
   ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
 
   def getMessageSpecData(messageType: MessageType,
+                         reportType: ReportType,
                          sendingCompanyIN: String = "testFI",
                          messageRefId: String = "testRefId",
                          reportingFIName: String = "testReportingName",
@@ -67,7 +68,7 @@ trait SpecBase
                          fiNameFromFim: String = "fi-name",
                          electionsRequired: Boolean = true
   ): MessageSpecData =
-    MessageSpecData(messageType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
+    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

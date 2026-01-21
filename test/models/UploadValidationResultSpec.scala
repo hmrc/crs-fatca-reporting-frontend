@@ -31,6 +31,7 @@ class UploadValidationResultSpec extends SpecBase {
           |  "type": "Success",
           |  "messageSpecData": {
           |    "messageType": "CRS",
+          |    "reportType": "TEST_DATA",
           |    "sendingCompanyIN": "COMP123",
           |    "messageRefId": "MSGREF001",
           |    "reportingFIName": "Test FI",
@@ -47,6 +48,7 @@ class UploadValidationResultSpec extends SpecBase {
       result.get mustEqual SubmissionValidationSuccess(
         MessageSpecData(
           messageType = CRS,
+          reportType = CRSReportType.TestData,
           sendingCompanyIN = "COMP123",
           messageRefId = "MSGREF001",
           reportingFIName = "Test FI",

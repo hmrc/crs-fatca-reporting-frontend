@@ -27,7 +27,7 @@ class UserAnswersSpec extends SpecBase with MockitoSugar {
 
   "getMessageSpecData" - {
     "return MessageSpecData when ValidXMLPage exists" in {
-      val testMsd = getMessageSpecData(FATCA)
+      val testMsd = getMessageSpecData(FATCA, FATCAReportType.TestData)
       val ua      = emptyUserAnswers.set(ValidXMLPage, getValidatedFileData()).get
 
       val result = extractMessageSpecData(ua) {
