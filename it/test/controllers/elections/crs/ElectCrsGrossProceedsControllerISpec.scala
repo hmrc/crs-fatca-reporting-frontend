@@ -16,14 +16,14 @@
 
 package controllers.elections.crs
 
-import models.{CRS, UserAnswers}
+import models.{CRS, CRSReportType, UserAnswers}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
 class ElectCrsGrossProceedsControllerISpec extends ISpecBehaviours {
 
   private val path                     = "/report/elections/crs/gross-proceeds"
-  private val messageSpecData          = getMessageSpecData(CRS)
+  private val messageSpecData          = getMessageSpecData(CRS, CRSReportType.TestData)
   private val userAnswers: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET ElectCrsGrossProceedsController.onPageLoad" must {

@@ -16,7 +16,7 @@
 
 package controllers.elections.crs
 
-import models.CRS
+import models.{CRS, CRSReportType}
 import pages.ValidXMLPage
 import pages.elections.crs.ElectCrsCarfGrossProceedsPage
 import utils.ISpecBehaviours
@@ -29,7 +29,7 @@ class ElectCrsCarfGrossProceedsControllerISpec extends ISpecBehaviours {
 
   private val reportingYear: String = "2000"
 
-  private val messageSpecData = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingYear.toInt, 1, 1))
+  private val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingYear.toInt, 1, 1))
   private val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET ElectCrsCarfGrossProceedsController.onPageLoad" must {

@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.http.Fault
-import models.CRS
+import models.{CRS, CRSReportType}
 import models.submission.{CrsElectionsDetails, ElectionsSubmissionDetails, GiinUpdateRequest}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
@@ -86,8 +86,8 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
       val submitElectionsUrl                      = "/crs-fatca-reporting/elections/submit"
       val crsDetails: Option[CrsElectionsDetails] = Some(CrsElectionsDetails(Some(true), Some(true), Some(true), Some(true)))
       val electionsSubmissionRequest =
-        ElectionsSubmissionDetails(getMessageSpecData(CRS).sendingCompanyIN,
-                                   getMessageSpecData(CRS).reportingPeriod.getYear.toString,
+        ElectionsSubmissionDetails(getMessageSpecData(CRS,CRSReportType.TestData).sendingCompanyIN,
+                                   getMessageSpecData(CRS,CRSReportType.TestData).reportingPeriod.getYear.toString,
                                    crsDetails,
                                    fatcaDetails = None
         )
