@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.elections.crs.routes.*
 import controllers.routes
 import forms.elections.crs.ThresholdsFormProvider
-import models.{CRS, MessageSpecData, Mode, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, MessageSpecData, Mode, NormalMode, UserAnswers, ValidatedFileData}
 import navigation.Navigator
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -42,7 +42,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
   val formProvider  = new ThresholdsFormProvider()
   val form          = formProvider()
 
-  private val messageSpecData2025: MessageSpecData = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2025, 12, 31))
+  private val messageSpecData2025: MessageSpecData = getMessageSpecData(messageType = CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(2025, 12, 31))
   val validatedFileData2025                        = getValidatedFileData(messageSpecData2025)
 
   val userAnswers2025: UserAnswers = emptyUserAnswers
@@ -50,7 +50,7 @@ class ThresholdsControllerSpec extends SpecBase with MockitoSugar {
     .success
     .value
 
-  private val messageSpecData2026: MessageSpecData = getMessageSpecData(messageType = CRS, reportingPeriod = LocalDate.of(2026, 1, 1))
+  private val messageSpecData2026: MessageSpecData = getMessageSpecData(messageType = CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(2026, 1, 1))
   private val validatedFileData2026                = getValidatedFileData(messageSpecData2026)
 
   val userAnswers2026: UserAnswers = emptyUserAnswers

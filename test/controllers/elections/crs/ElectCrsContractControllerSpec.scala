@@ -18,7 +18,7 @@ package controllers.elections.crs
 
 import base.SpecBase
 import forms.ElectCrsContractFormProvider
-import models.{CRS, NormalMode}
+import models.{CRS, CRSReportType, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -42,7 +42,7 @@ class ElectCrsContractControllerSpec extends SpecBase with MockitoSugar {
   val form         = formProvider()
   val fiNameFM     = "testFIFromFM"
 
-  val messageSpecData = getMessageSpecData(CRS, fiNameFromFim = fiNameFM)
+  val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData, fiNameFromFim = fiNameFM)
 
   lazy val electCrsContractRoute = controllers.elections.crs.routes.ElectCrsContractController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl    = controllers.routes.PageUnavailableController.onPageLoad().url

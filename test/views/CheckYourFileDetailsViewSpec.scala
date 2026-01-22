@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.{CRS, FATCA, ValidatedFileData}
+import models.{CRS, CRSReportType, FATCA, FATCAReportType, ValidatedFileData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -44,8 +44,9 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     val summaryValueLocator = ".govuk-summary-list__value"
 
     "should render page components with a summary list without election" in {
-      val expectedFiName  = "fi-name"
-      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName)))
+      val expectedFiName = "fi-name"
+      val userAnswers =
+        emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, fiNameFromFim = expectedFiName)))
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary
       val fiDetails       = viewModelHelper.financialInstitutionDetailsSummary
@@ -66,7 +67,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     "should render page components with a summary list without election & required GIIN for FATCA" in {
       val expectedFiName = "fi-name"
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = expectedFiName)))
+        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, FATCAReportType.TestData, fiNameFromFim = expectedFiName)))
         .withPage(RequiredGiinPage, "testGIINValue")
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary
@@ -89,7 +90,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
     "should render page components with a summary list with report election as false" in {
       val expectedFiName = "fi-name"
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = expectedFiName)))
+        .withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, fiNameFromFim = expectedFiName)))
         .withPage(ReportElectionsPage, false)
       val viewModelHelper = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
       val fileDetails     = viewModelHelper.fileDetailsSummary

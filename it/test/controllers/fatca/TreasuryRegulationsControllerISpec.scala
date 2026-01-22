@@ -16,14 +16,14 @@
 
 package controllers.fatca
 
-import models.FATCA
+import models.{FATCA, FATCAReportType}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
 class TreasuryRegulationsControllerISpec extends ISpecBehaviours {
 
   private val path            = "/report/elections/fatca/us-treasury-regulations"
-  private val messageSpecData = getMessageSpecData(FATCA)
+  private val messageSpecData = getMessageSpecData(FATCA, FATCAReportType.TestData)
   private val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET TreasuryRegulationsController.onPageLoad" must {

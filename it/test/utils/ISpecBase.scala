@@ -17,7 +17,7 @@
 package utils
 
 import generators.Generators
-import models.{CRS, MessageSpecData, MessageType, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -69,10 +69,11 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   }
 
   def getValidatedFileData(
-                            msd: MessageSpecData = getMessageSpecData(CRS)
+                            msd: MessageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
                           ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
 
   def getMessageSpecData(messageType: MessageType,
+                         reportType: ReportType,
                          sendingCompanyIN: String = "testFI",
                          messageRefId: String = "testRefId",
                          reportingFIName: String = "testReportingName",
@@ -81,6 +82,6 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
                          fiNameFromFim: String = "testFiName",
                          electionsRequired: Boolean = true
                         ): MessageSpecData =
-    MessageSpecData(messageType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
+    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
 
 }

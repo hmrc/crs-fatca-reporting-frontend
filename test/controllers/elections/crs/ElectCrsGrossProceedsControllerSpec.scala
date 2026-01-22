@@ -19,7 +19,7 @@ package controllers.elections.crs
 import base.SpecBase
 import controllers.routes
 import forms.ElectCrsGrossProceedsFormProvider
-import models.{CRS, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -47,7 +47,7 @@ class ElectCrsGrossProceedsControllerSpec extends SpecBase with MockitoSugar {
   lazy val electCrsGrossProceedsRoute = controllers.elections.crs.routes.ElectCrsGrossProceedsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val crsMessageSpec = getMessageSpecData(CRS, fiNameFromFim = fiName)
+  val crsMessageSpec = getMessageSpecData(CRS, CRSReportType.TestData, fiNameFromFim = fiName)
 
   val fatcaValidatedFileData      = ValidatedFileData(fileName, crsMessageSpec, FileSize, FileChecksum)
   val crsUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
