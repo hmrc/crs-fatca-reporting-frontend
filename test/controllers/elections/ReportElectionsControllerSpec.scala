@@ -19,7 +19,7 @@ package controllers.elections
 import base.SpecBase
 import controllers.routes
 import forms.elections.ReportElectionsFormProvider
-import models.{CRS, CheckMode, FATCA, NormalMode, UserAnswers, ValidatedFileData}
+import models.{CRS, CRSReportType, CheckMode, FATCA, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -42,7 +42,7 @@ class ReportElectionsControllerSpec extends SpecBase with MockitoSugar {
   val FileChecksum        = "checksum"
   val expectedFiName      = "fi-name"
 
-  val crsMessageSpec = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))
+  val crsMessageSpec = getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))
 
   val crsValidatedFileData = getValidatedFileData(crsMessageSpec)
   val crsUserAnswers       = UserAnswers(userAnswersId).set(ValidXMLPage, crsValidatedFileData).success.value

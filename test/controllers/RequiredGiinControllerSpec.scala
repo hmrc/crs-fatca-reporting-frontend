@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.RequiredGiinFormProvider
-import models.{FATCA, NormalMode, UserAnswers, ValidatedFileData}
+import models.{FATCA, FATCAReportType, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -42,7 +42,9 @@ class RequiredGiinControllerSpec extends SpecBase with MockitoSugar {
 
   val hardcodedFiName = "testFiName"
   val exampleGiin     = "8Q298C.00000.LE.340"
-  val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName)))
+
+  val ua: UserAnswers =
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, FATCAReportType.TestData, fiNameFromFim = hardcodedFiName)))
 
   "RequiredGiin Controller" - {
 

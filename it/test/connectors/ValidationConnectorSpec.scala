@@ -17,7 +17,7 @@
 package connectors
 
 import models.upscan.FileValidateRequest
-import models.{CRS, Errors, FIIDNotMatchingError, GenericError, IncorrectMessageTypeError, InvalidXmlFileError, Message, MessageSpecData, NonFatalErrors, ReportingPeriodError, SchemaValidationErrors, ValidationErrors}
+import models.{CRS, CRSReportType, Errors, FIIDNotMatchingError, GenericError, IncorrectMessageTypeError, InvalidXmlFileError, Message, MessageSpecData, NonFatalErrors, ReportingPeriodError, SchemaValidationErrors, ValidationErrors}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
 import org.scalatest.time.SpanSugar.convertIntToGrainOfTime
@@ -46,6 +46,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
       result.isRight mustBe true
       result.getOrElse(fail("Expected Right but got Left")) mustBe MessageSpecData(
         messageType = CRS,
+        reportType = CRSReportType.TestData,
         sendingCompanyIN = "COMP123",
         messageRefId = "MSGREF001",
         reportingFIName = "Test FI",
@@ -153,6 +154,7 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         |  "type": "Success",
         |  "messageSpecData": {
         |    "messageType": "CRS",
+        |    "reportType": "TEST_DATA",
         |    "sendingCompanyIN": "COMP123",
         |    "messageRefId": "MSGREF001",
         |    "reportingFIName": "Test FI",

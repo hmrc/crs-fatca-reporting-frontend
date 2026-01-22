@@ -19,7 +19,7 @@ package controllers.elections.fatca
 import base.SpecBase
 import controllers.routes
 import forms.elections.fatca.ElectFatcaThresholdsFormProvider
-import models.{FATCA, NormalMode, UserAnswers, ValidatedFileData}
+import models.{FATCA, FATCAReportType, NormalMode, UserAnswers, ValidatedFileData}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -49,7 +49,7 @@ class ElectFatcaThresholdsControllerSpec extends SpecBase with MockitoSugar {
   lazy val electFatcaThresholdsRoute: String = controllers.elections.fatca.routes.ElectFatcaThresholdsController.onPageLoad(NormalMode).url
   lazy val pageUnavailableUrl: String        = controllers.routes.PageUnavailableController.onPageLoad().url
 
-  val fatcaValidatedFileData        = getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = fiName))
+  val fatcaValidatedFileData        = getValidatedFileData(getMessageSpecData(FATCA, FATCAReportType.TestData, fiNameFromFim = fiName))
   val fatcaUserAnswers: UserAnswers = UserAnswers(userAnswersId).set(ValidXMLPage, fatcaValidatedFileData).success.value
 
   "ElectFatcaThresholds Controller" - {

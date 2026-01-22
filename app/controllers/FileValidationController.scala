@@ -61,6 +61,10 @@ class FileValidationController @Inject() (
     with I18nSupport
     with Logging {
 
+  private val maxFileNameLength           = 100
+  private val disallowedCharactersRegex   = "[<>:\"'&/\\\\|?*]".r
+  private val disallowedEncodedCharacters = "%22"
+
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       extractIds(request.userAnswers) match {
@@ -72,7 +76,13 @@ class FileValidationController @Inject() (
                 Future.successful(InternalServerError(errorView()))
               } {
                 downloadDetails =>
-                  handleFileValidation(downloadDetails, uploadId, fileReference, downloadDetails.downloadUrl)
+                  val trimmedFileName = downloadDetails.name.toLowerCase.stripSuffix(".xml")
+
+                  (isFileNameLengthInvalid(trimmedFileName), isDisallowedCharactersPresent(trimmedFileName)) match {
+                    case (true, _) => navigateToErrorPage(uploadId, "invalidfilenamelength")
+                    case (_, true) => navigateToErrorPage(uploadId, "disallowedcharacters")
+                    case _         => handleFileValidation(downloadDetails, uploadId, fileReference, downloadDetails.downloadUrl)
+                  }
               }
           }
 
@@ -189,4 +199,19 @@ class FileValidationController @Inject() (
           case _ => None
         }
     }
+
+  private def isFileNameLengthInvalid(fileName: String): Boolean =
+    fileName.length > maxFileNameLength
+
+  private def isDisallowedCharactersPresent(fileName: String): Boolean =
+    disallowedCharactersRegex.findFirstIn(fileName).isDefined || fileName.contains(disallowedEncodedCharacters)
+
+  private def navigateToErrorPage(uploadId: UploadId, errorMessage: String): Future[Result] =
+    Future.successful(
+      Redirect(
+        routes.IndexController
+          .showError("invalidargument", errorMessage, uploadId.value)
+          .url
+      )
+    )
 }

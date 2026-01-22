@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{CRS, ValidatedFileData}
+import models.{CRS, CRSReportType, ValidatedFileData}
 import org.scalatest.matchers.must.Matchers
 import pages.ValidXMLPage
 import play.api.test.FakeRequest
@@ -35,7 +35,10 @@ class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
 
       val reportingPeriodYear = 2025
       val answers =
-        emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1))))
+        emptyUserAnswers.withPage(
+          ValidXMLPage,
+          getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1)))
+        )
 
       val application         = applicationBuilder(userAnswers = Some(answers)).build()
       val messagesApi         = messages(application)
@@ -50,7 +53,7 @@ class CheckYourFileDetailsControllerSpec extends SpecBase with Matchers {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(expectedFileDetails, expectedFIDetails, getMessageSpecData(CRS).fiNameFromFim)(request, messagesApi).toString
+          view(expectedFileDetails, expectedFIDetails, getMessageSpecData(CRS, CRSReportType.TestData).fiNameFromFim)(request, messagesApi).toString
       }
     }
   }

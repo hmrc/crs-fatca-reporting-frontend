@@ -16,7 +16,7 @@
 
 package controllers
 
-import models.FATCA
+import models.{FATCA, FATCAReportType}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
@@ -24,7 +24,7 @@ class RequiredGiinControllerISpec extends ISpecBehaviours {
 
   private val path            = "/report/required-giin"
   private val exampleGiin     = "8Q298C.00000.LE.340"
-  private val messageSpecData = getMessageSpecData(FATCA, electionsRequired = false)
+  private val messageSpecData = getMessageSpecData(FATCA,FATCAReportType.TestData, electionsRequired = false)
   private val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "GET RequiredGiinController.onPageLoad" must {

@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, CheckMode, FATCA, ValidatedFileData}
+import models.{CRS, CRSReportType, CheckMode, FATCA, FATCAReportType, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
@@ -31,10 +31,10 @@ import java.time.LocalDate
 
 class CheckYourFileDetailsViewModelSpec extends SpecBase {
 
-  def crsValidatedFileData(year: Int) = getValidatedFileData(getMessageSpecData(CRS, reportingPeriod = LocalDate.of(year, 1, 1)))
+  def crsValidatedFileData(year: Int) = getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(year, 1, 1)))
 
   def fatcaValidatedFileData(year: Int) =
-    getValidatedFileData(getMessageSpecData(FATCA, reportingPeriod = LocalDate.of(year, 1, 1)))
+    getValidatedFileData(getMessageSpecData(FATCA, FATCAReportType.TestData, reportingPeriod = LocalDate.of(year, 1, 1)))
 
   "CheckYourFileDetailsViewModel" - {
 

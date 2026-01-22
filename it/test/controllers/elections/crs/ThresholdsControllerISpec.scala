@@ -16,7 +16,7 @@
 
 package controllers.elections.crs
 
-import models.{CRS, ValidatedFileData}
+import models.{CRS, CRSReportType, ValidatedFileData}
 import pages.ValidXMLPage
 import utils.ISpecBehaviours
 
@@ -28,7 +28,7 @@ class ThresholdsControllerISpec extends ISpecBehaviours {
   private val requestBody: Map[String, Seq[String]] = Map("value" -> Seq("true"))
 
   private def userAnswersWithReportingPeriod(year: Int) = {
-    val messageSpec = getMessageSpecData(CRS, reportingPeriod = LocalDate.of(year, 12, 31))
+    val messageSpec = getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(year, 12, 31))
 
     emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpec))
   }
