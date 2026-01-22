@@ -17,9 +17,10 @@
 package controllers
 
 import base.SpecBase
+import models.CRSReportType.NewInformation
 import models.requests.DataRequest
 import models.submission.*
-import models.{FATCA, SendYourFileAdditionalText, UserAnswers}
+import models.{CRS, FATCA, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
@@ -41,7 +42,9 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
   val hardcodedFiName                          = "testFiName"
   val exampleGiin                              = "8Q298C.00000.LE.340"
   val conversationId: ConversationId           = ConversationId("conversationId")
-  val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName)))
+
+  val ua: UserAnswers =
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))
 
   "SendYourFile Controller" - {
 

@@ -19,7 +19,14 @@ package services
 import base.SpecBase
 import connectors.SubmissionConnector
 import models.requests.DataRequest
-import models.submission.{ElectionsGiinSubmissionResults, ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.submission.{
+  ElectionsGiinSubmissionResults,
+  ElectionsSubmissionDetails,
+  ElectionsSubmitFailed,
+  GiinAndElectionSubmittedSuccessful,
+  GiinUpdateFailed,
+  GiinUpdateRequest
+}
 import models.{CRS, CRSReportType, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
