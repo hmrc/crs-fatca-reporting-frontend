@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.actions.*
-import models.ElectionState.*
-import models.{CRS, ElectionState, FATCA, SendYourFileAdditionalText}
+import models.ReportElectionState.*
+import models.{CRS, FATCA, ReportElectionState, SendYourFileAdditionalText}
 import models.submission.*
 import models.upscan.URL
 import pages.{ConversationIdPage, GiinAndElectionStatusPage, ReportElectionsPage, ValidXMLPage}
@@ -54,18 +54,18 @@ class SendYourFileController @Inject() (
         case Some(validatedFileData) =>
           val reportElections = request.userAnswers
             .get(ReportElectionsPage)
-            .map(if (_) ElectionRequired else ElectionNotRequired)
-            .getOrElse(ElectionNotRequired)
+            .map(if (_) ElectionsReported else ElectionsNotReported)
+            .getOrElse(ElectionsNotReported)
 
           val messageSpecData = validatedFileData.messageSpecData
           (messageSpecData.messageType, messageSpecData.giin, reportElections) match {
-            case (CRS, _, ElectionNotRequired) | (FATCA, Some(_), ElectionNotRequired) =>
+            case (CRS, _, ElectionsNotReported) | (FATCA, Some(_), ElectionsNotReported) =>
               Ok(view(SendYourFileAdditionalText.NONE))
-            case (CRS, _, ElectionRequired) | (FATCA, Some(_), ElectionRequired) =>
+            case (CRS, _, ElectionsReported) | (FATCA, Some(_), ElectionsReported) =>
               Ok(view(SendYourFileAdditionalText.ELECTIONS))
-            case (FATCA, None, ElectionRequired) =>
+            case (FATCA, None, ElectionsReported) =>
               Ok(view(SendYourFileAdditionalText.BOTH))
-            case (FATCA, None, ElectionNotRequired) =>
+            case (FATCA, None, ElectionsNotReported) =>
               Ok(view(SendYourFileAdditionalText.GIIN))
           }
         case _ =>
