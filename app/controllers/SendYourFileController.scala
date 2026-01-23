@@ -17,10 +17,10 @@
 package controllers
 
 import controllers.actions.*
-import models.SendYourFileAdditionalText
+import models.{CRS, FATCA, SendYourFileAdditionalText}
 import models.submission.*
 import models.upscan.URL
-import pages.{ConversationIdPage, GiinAndElectionStatusPage, ValidXMLPage}
+import pages.{ConversationIdPage, GiinAndElectionStatusPage, ReportElectionsPage, ValidXMLPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
@@ -51,7 +51,19 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
-          Ok(view(SendYourFileAdditionalText.NONE))
+          val reportElections = request.userAnswers.get(ReportElectionsPage).getOrElse(false)
+
+          val messageSpecData = validatedFileData.messageSpecData
+          (messageSpecData.messageType, messageSpecData.giin, reportElections) match {
+            case (CRS, _, false) | (FATCA, Some(_), false) =>
+              Ok(view(SendYourFileAdditionalText.NONE))
+            case (CRS, _, true) | (FATCA, Some(_), true) =>
+              Ok(view(SendYourFileAdditionalText.ELECTIONS))
+            case (FATCA, None, true) =>
+              Ok(view(SendYourFileAdditionalText.BOTH))
+            case (FATCA, None, false) =>
+              Ok(view(SendYourFileAdditionalText.GIIN))
+          }
         case _ =>
           Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
