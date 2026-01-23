@@ -64,11 +64,21 @@ object CRSReportType:
 
 enum FATCAReportType extends ReportType:
   case TestData
+  case VoidReport
+  case NilReport
+  case NewInformation
+  case CorrectedInformationForExistingReport
+  case AmendedInformationForExistingReport
 
 object FATCAReportType:
 
   private val fromJson: Map[String, FATCAReportType] = Map(
-    "TEST_DATA" -> TestData
+    "TEST_DATA"                                 -> TestData,
+    "VOID_REPORT"                               -> VoidReport,
+    "NIL_REPORT"                                -> NilReport,
+    "NEW_INFORMATION"                           -> NewInformation,
+    "CORRECTED_INFORMATION_FOR_EXISTING_REPORT" -> CorrectedInformationForExistingReport,
+    "AMENDED_INFORMATION_FOR_EXISTING_REPORT"   -> AmendedInformationForExistingReport
   )
 
   private val toJson: Map[FATCAReportType, String] = fromJson.map(_.swap)
@@ -86,6 +96,5 @@ object FATCAReportType:
           JsError("FATCAReportType must be a string")
       }
 
-    override def writes(value: FATCAReportType): JsValue =
-      JsString(toJson(value))
+    override def writes(value: FATCAReportType): JsValue = JsString(toJson(value))
   }
