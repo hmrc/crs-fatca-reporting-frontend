@@ -17,8 +17,9 @@
 package controllers
 
 import controllers.actions.*
+import models.GiinUpdateState.{GinUpDateRequired, GinUpdateNotRequired}
 import models.ReportElectionState.*
-import models.{CRS, FATCA, ReportElectionState, SendYourFileAdditionalText}
+import models.{CRS, FATCA, GiinUpdateState, ReportElectionState, SendYourFileAdditionalText}
 import models.submission.*
 import models.upscan.URL
 import pages.{ConversationIdPage, GiinAndElectionStatusPage, ReportElectionsPage, ValidXMLPage}
@@ -52,20 +53,26 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
+          val messageSpecData = validatedFileData.messageSpecData
           val reportElections = request.userAnswers
             .get(ReportElectionsPage)
             .map(if (_) ElectionsReported else ElectionsNotReported)
             .getOrElse(ElectionsNotReported)
 
-          val messageSpecData = validatedFileData.messageSpecData
-          (messageSpecData.messageType, messageSpecData.giin, reportElections) match {
-            case (CRS, _, ElectionsNotReported) | (FATCA, Some(_), ElectionsNotReported) =>
+          val giinUpdatedRequired: GiinUpdateState = messageSpecData.giin
+            .map(
+              _ => GiinUpdateState.GinUpdateNotRequired
+            )
+            .getOrElse(GinUpDateRequired)
+
+          (messageSpecData.messageType, giinUpdatedRequired, reportElections) match {
+            case (CRS, _, ElectionsNotReported) | (FATCA, GinUpdateNotRequired, ElectionsNotReported) =>
               Ok(view(SendYourFileAdditionalText.NONE))
-            case (CRS, _, ElectionsReported) | (FATCA, Some(_), ElectionsReported) =>
+            case (CRS, _, ElectionsReported) | (FATCA, GinUpdateNotRequired, ElectionsReported) =>
               Ok(view(SendYourFileAdditionalText.ELECTIONS))
-            case (FATCA, None, ElectionsReported) =>
+            case (FATCA, GinUpDateRequired, ElectionsReported) =>
               Ok(view(SendYourFileAdditionalText.BOTH))
-            case (FATCA, None, ElectionsNotReported) =>
+            case (FATCA, GinUpDateRequired, ElectionsNotReported) =>
               Ok(view(SendYourFileAdditionalText.GIIN))
           }
         case _ =>
