@@ -17,7 +17,8 @@
 package controllers
 
 import controllers.actions.*
-import models.{CRS, FATCA, SendYourFileAdditionalText}
+import models.ElectionState.*
+import models.{CRS, ElectionState, FATCA, SendYourFileAdditionalText}
 import models.submission.*
 import models.upscan.URL
 import pages.{ConversationIdPage, GiinAndElectionStatusPage, ReportElectionsPage, ValidXMLPage}
@@ -51,17 +52,20 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
-          val reportElections = request.userAnswers.get(ReportElectionsPage).getOrElse(false)
+          val reportElections = request.userAnswers
+            .get(ReportElectionsPage)
+            .map(if (_) ElectionRequired else ElectionNotRequired)
+            .getOrElse(ElectionNotRequired)
 
           val messageSpecData = validatedFileData.messageSpecData
           (messageSpecData.messageType, messageSpecData.giin, reportElections) match {
-            case (CRS, _, false) | (FATCA, Some(_), false) =>
+            case (CRS, _, ElectionNotRequired) | (FATCA, Some(_), ElectionNotRequired) =>
               Ok(view(SendYourFileAdditionalText.NONE))
-            case (CRS, _, true) | (FATCA, Some(_), true) =>
+            case (CRS, _, ElectionRequired) | (FATCA, Some(_), ElectionRequired) =>
               Ok(view(SendYourFileAdditionalText.ELECTIONS))
-            case (FATCA, None, true) =>
+            case (FATCA, None, ElectionRequired) =>
               Ok(view(SendYourFileAdditionalText.BOTH))
-            case (FATCA, None, false) =>
+            case (FATCA, None, ElectionNotRequired) =>
               Ok(view(SendYourFileAdditionalText.GIIN))
           }
         case _ =>
