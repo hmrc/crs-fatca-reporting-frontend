@@ -31,6 +31,8 @@ import utils.ViewHelper
 import viewmodels.CheckYourFileDetailsViewModel
 import views.html.CheckYourFileDetailsView
 
+import java.time.LocalDate
+
 class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting with ViewHelper {
 
   val view: CheckYourFileDetailsView                                    = app.injector.instanceOf[CheckYourFileDetailsView]

@@ -77,6 +77,7 @@ POST       /change/report/elections/report-elections                  controller
 
 GET        /report/send-your-file                       controllers.SendYourFileController.onPageLoad()
 POST       /report/send-your-file                       controllers.SendYourFileController.onSubmit()
+GET         /check-status                               controllers.SendYourFileController.getStatus()
 
 GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
 
