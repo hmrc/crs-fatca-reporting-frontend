@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.submission.{ElectionsSubmissionDetails, GiinUpdateRequest}
+import models.submission.{ConversationId, ElectionsSubmissionDetails, GiinUpdateRequest, SubmissionDetails}
 import play.api.Logging
 import play.api.http.Status.*
 import play.api.libs.json.Json
@@ -31,6 +31,11 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
 
 class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
+
+  def submitDocument(submissionDetails: SubmissionDetails)(implicit
+                                                           hc: HeaderCarrier,
+                                                           ec: ExecutionContext
+  ): Future[Option[ConversationId]] = ???
 
   def updateGiin(request: GiinUpdateRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/update/giin"
