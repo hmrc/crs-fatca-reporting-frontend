@@ -45,15 +45,13 @@ class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
       .map {
         response =>
           response.status match {
-            case ACCEPTED =>
-              val conversationId = (Json.parse(response.body) \ "uploadId").as[String]
+            case OK =>
+              val conversationId = (Json.parse(response.body) \ "conversationId").as[String]
               Some(ConversationId(conversationId))
-            case INTERNAL_SERVER_ERROR =>
-              logger.error(s"Submission failed due to internal server error: ${response.body}")
-              None
             case _ =>
-              logger.error(s"Submission received unexpected status ${response.status}: ${response.body}")
+              logger.error(s"Submission failed for file with uploadId: ${submissionDetails.uploadId} | ${response.status}: ${response.body}")
               None
+
           }
       }
   }
