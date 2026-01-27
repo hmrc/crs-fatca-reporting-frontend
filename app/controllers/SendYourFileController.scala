@@ -16,11 +16,13 @@
 
 package controllers
 
+import connectors.FileDetailsConnector
 import controllers.actions.*
-import models.{SendYourFileAdditionalText, ValidatedFileData}
 import models.submission.*
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending}
 import models.upscan.URL
-import pages.{ConversationIdPage, FileReferencePage, GiinAndElectionStatusPage, URLPage, UploadIDPage, ValidXMLPage}
+import models.{SendYourFileAdditionalText, ValidatedFileData}
+import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
@@ -41,7 +43,8 @@ class SendYourFileController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: SendYourFileView,
   submissionService: SubmissionService,
-  sessionRepository: SessionRepository
+  sessionRepository: SessionRepository,
+  fileDetailsConnector: FileDetailsConnector
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -95,7 +98,6 @@ class SendYourFileController @Inject() (
                         case _ =>
                           Future.successful(InternalServerError)
                       }
-
                     case _ =>
                       Future.successful(InternalServerError)
                   }
@@ -111,7 +113,19 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ConversationIdPage) match {
         case Some(conversationId) =>
-          Future.successful(Ok(Json.toJson(URL(routes.StillCheckingYourFileController.onPageLoad().url))))
+          fileDetailsConnector.getStatus(conversationId) flatMap {
+            case Some(FileStatusAccepted) =>
+              Future.successful(Ok(Json.toJson(URL(routes.FilePassedChecksController.onPageLoad().url))))
+            case Some(Pending) =>
+              Future.successful(NoContent)
+            case None =>
+              logger.warn("getStatus: no status returned")
+              Future.successful(InternalServerError)
+            case _ =>
+              // Other statuses will be handled by subsequent Jira tickets
+              logger.warn("getStatus: unexpected status returned")
+              Future.successful(InternalServerError)
+          }
         case None =>
           request.userAnswers.get(GiinAndElectionStatusPage) match {
             case Some(giinAndElectionStatus) =>

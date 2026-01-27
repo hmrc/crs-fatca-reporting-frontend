@@ -17,31 +17,64 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.FileDetailsConnector
 import controllers.actions.*
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending}
+import pages.{ConversationIdPage, ValidXMLPage}
+import play.api.i18n.Lang.logger
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.StillCheckingYourFileView
+import views.html.{StillCheckingYourFileView, ThereIsAProblemView}
 import viewmodels.FileCheckViewModel.createFileSummary
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class StillCheckingYourFileController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: StillCheckingYourFileView,
-  frontendAppConfig: FrontendAppConfig
-) extends FrontendBaseController
+  errorView: ThereIsAProblemView,
+  frontendAppConfig: FrontendAppConfig,
+  fileDetailsConnector: FileDetailsConnector
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val placeHolderMessageRefID = "MyFATCAReportMessageRefId1234567890"
-      val placeHolderFileStatus   = "Pending"
-      val placeHolderFIName       = "EFG Bank plc"
-      val placeHolderIsFIUser     = true
-      Ok(view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), frontendAppConfig.signOutUrl, placeHolderIsFIUser, placeHolderFIName))
+      (request.userAnswers.get(ValidXMLPage), request.userAnswers.get(ConversationIdPage)) match {
+        case (Some(xmlDetails), Some(conversationId)) =>
+          fileDetailsConnector.getStatus(conversationId) flatMap {
+            case Some(FileStatusAccepted) =>
+              Future.successful(Redirect(routes.FilePassedChecksController.onPageLoad()))
+            case Some(Pending) =>
+              val placeHolderMessageRefID = "MyFATCAReportMessageRefId1234567890"
+              val placeHolderFileStatus   = "Pending"
+              val placeHolderFIName       = "EFG Bank plc"
+              val placeHolderIsFIUser     = true
+              Future.successful(
+                Ok(
+                  view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), frontendAppConfig.signOutUrl, placeHolderIsFIUser, placeHolderFIName)
+                )
+              )
+            case None =>
+              logger.warn("Unable to get Status")
+              Future.successful(InternalServerError(errorView()))
+            case _ =>
+              // The other statuses are handled by subsequent Jira tickets
+              logger.warn("Unexpected file status received")
+              Future.successful(InternalServerError(errorView()))
+          }
+        case _ =>
+          logger.warn("Unable to retrieve fileName & conversationId")
+          Future.successful(InternalServerError(errorView()))
+      }
+
   }
 }

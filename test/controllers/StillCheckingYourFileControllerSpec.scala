@@ -18,20 +18,74 @@ package controllers
 
 import base.SpecBase
 import config.FrontendAppConfig
+import connectors.FileDetailsConnector
+import models.CRSReportType.NewInformation
+import models.{CRS, UserAnswers}
+import models.submission.ConversationId
+import models.submission.fileDetails.{Accepted, Pending}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalactic.Prettifier.default
+import pages.{ConversationIdPage, ValidXMLPage}
+import play.api.inject
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.FileCheckViewModel
 import views.html.StillCheckingYourFileView
 
+import scala.concurrent.{ExecutionContext, Future}
+
 class StillCheckingYourFileControllerSpec extends SpecBase {
+
+  val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
+  lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
+  // lazy val sendYourFileUrl: String = routes.StillCheckingYourFileController.onPageLoad().url
+  val hardcodedFiName                = "testFiName"
+  val exampleGiin                    = "8Q298C.00000.LE.340"
+  val conversationId: ConversationId = ConversationId("conversationId")
+
+  val ua: UserAnswers =
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))
 
   "StillCheckingYourFIle Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must redirect to file passed check controller when file status is accepted" in {
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      val appConfig   = application.injector.instanceOf[FrontendAppConfig]
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(Accepted)))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.FilePassedChecksController.onPageLoad().url
+
+      }
+    }
+
+    "must return OK and the still checking file view when file status is pending" in {
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      val appConfig = application.injector.instanceOf[FrontendAppConfig]
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(Pending)))
 
       running(application) {
         val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
@@ -45,6 +99,43 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(expectedSummaryList, appConfig.signOutUrl, true, "EFG Bank plc")(request, messages(application)).toString
+      }
+    }
+
+    "must return internal server error when file status returned is None" in {
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(None))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "must return Internal Server Error when conversationId is missing from user answers" in {
+      val application = applicationBuilder(userAnswers = Some(ua))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
       }
     }
   }
