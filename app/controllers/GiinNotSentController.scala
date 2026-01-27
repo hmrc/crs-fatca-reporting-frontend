@@ -17,12 +17,15 @@
 package controllers
 
 import controllers.actions.*
+import models.submission.{GiinAndElectionDBStatus, GiinUpdateFailed}
+import pages.{GiinAndElectionStatusPage, ReportElectionsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.GiinNotSentView
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class GiinNotSentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,9 +37,19 @@ class GiinNotSentController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val electionsSent: Option[Boolean] = None // placeholder
-      Ok(view(electionsSent))
+
+      def handleNoElection                                       = Future.successful(Ok(view(None)))
+      def handleWithStatus(statusValue: GiinAndElectionDBStatus) = Future.successful(Ok(view(Some(statusValue.electionStatus))))
+      def handleNoData                                           = Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
+      val userAnswers = request.userAnswers
+      (userAnswers.get(ReportElectionsPage), userAnswers.get(GiinAndElectionStatusPage)) match {
+        case (None, _)                       => handleNoElection
+        case (Some(false), _)                => handleNoElection
+        case (Some(true), Some(statusValue)) => handleWithStatus(statusValue)
+        case (_, None)                       => handleNoData
+      }
   }
 }
