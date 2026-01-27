@@ -32,10 +32,32 @@ import scala.util.control.NonFatal
 
 class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
-  def submitDocument(submissionDetails: SubmissionDetails)(implicit
+  def submitDocument(submissionDetails: SubmissionDetails)(using
                                                            hc: HeaderCarrier,
                                                            ec: ExecutionContext
-  ): Future[Option[ConversationId]] = ???
+  ): Future[Option[ConversationId]] = {
+    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/submit"
+
+    http
+      .post(url)
+      .withBody(Json.toJson(submissionDetails))
+      .execute[HttpResponse]
+      .map {
+        response =>
+          response.status match {
+            case ACCEPTED =>
+              val conversationId = (Json.parse(response.body) \ "uploadId").as[String]
+              Some(ConversationId(conversationId))
+            case INTERNAL_SERVER_ERROR =>
+              logger.error(s"Submission failed due to internal server error: ${response.body}")
+              None
+            case _ =>
+              logger.error(s"Submission received unexpected status ${response.status}: ${response.body}")
+              None
+          }
+      }
+  }
+
 
   def updateGiin(request: GiinUpdateRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/update/giin"
