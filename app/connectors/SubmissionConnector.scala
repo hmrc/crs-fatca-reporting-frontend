@@ -33,8 +33,8 @@ import scala.util.control.NonFatal
 class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConfig) extends Logging {
 
   def submitDocument(submissionDetails: SubmissionDetails)(using
-                                                           hc: HeaderCarrier,
-                                                           ec: ExecutionContext
+    hc: HeaderCarrier,
+    ec: ExecutionContext
   ): Future[Option[ConversationId]] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/submit"
 
@@ -57,7 +57,6 @@ class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
           }
       }
   }
-
 
   def updateGiin(request: GiinUpdateRequest)(using hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/update/giin"

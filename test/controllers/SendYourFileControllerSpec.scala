@@ -20,11 +20,12 @@ import base.SpecBase
 import models.CRSReportType.NewInformation
 import models.requests.DataRequest
 import models.submission.*
+import models.upscan.{Reference, UploadId}
 import models.{CRS, FATCA, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import pages.{ConversationIdPage, GiinAndElectionStatusPage, ValidXMLPage}
+import pages.{ConversationIdPage, FileReferencePage, GiinAndElectionStatusPage, URLPage, UploadIDPage, ValidXMLPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -133,13 +134,71 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      // This test will be changed during the implementation of DAC6-3829
-      "must redirect to StillCheckingYourFileController for a successful submission" in {
-        val application = applicationBuilder(userAnswers = Some(ua))
+      "must return an internal server error when required data is missing for a successful submission" in {
+        val incompleteUA = emptyUserAnswers.withPage(
+          ValidXMLPage,
+          getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)).copy(fileName = "")
+        )
+
+        val application = applicationBuilder(userAnswers = Some(incompleteUA))
           .overrides(
             bind[SubmissionService].toInstance(mockSubmissionService)
           )
           .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "must return internal server error when submission service returns None conversation Id" in {
+        val validUserAnswers = ua
+          .withPage(URLPage, "http://test-url.com")
+          .withPage(FileReferencePage, Reference("fileRef123"))
+          .withPage(UploadIDPage, UploadId("uploadId123"))
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitDocument(any[SubmissionDetails]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(None))
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "must redirect to StillCheckingYourFileController for a successful submission" in {
+        val validUserAnswers = ua
+          .withPage(URLPage, "http://test-url.com")
+          .withPage(FileReferencePage, Reference("fileRef123"))
+          .withPage(UploadIDPage, UploadId("uploadId123"))
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitDocument(any[SubmissionDetails]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(conversationId)))
 
         when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
           .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))

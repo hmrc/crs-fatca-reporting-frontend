@@ -33,6 +33,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionService @Inject() (val connector: SubmissionConnector) extends Logging {
 
+  def submitDocument(submissionDetails: SubmissionDetails)(using
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[Option[ConversationId]] =
+    connector.submitDocument(submissionDetails)
+
   def submitElectionsAndGiin(userAnswers: UserAnswers)(using
     request: DataRequest[_],
     hc: HeaderCarrier,
