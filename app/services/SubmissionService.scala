@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionService @Inject() (val connector: SubmissionConnector) extends Logging {
 
+  // todo: Is service needed; could we extract logic from controller to here?
   def submitDocument(submissionDetails: SubmissionDetails)(using
     hc: HeaderCarrier,
     ec: ExecutionContext
@@ -80,7 +81,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
 
     }
 
-  private def getElectionsRequest(userAnswers: UserAnswers)(using request: DataRequest[_]): Option[ElectionsSubmissionDetails] =
+  private def getElectionsRequest(userAnswers: UserAnswers): Option[ElectionsSubmissionDetails] =
     userAnswers.get(RequiresElectionsPage).fold(None: Option[ElectionsSubmissionDetails]) {
       case false => None
       case true =>

@@ -23,54 +23,54 @@ import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.http.Status.{NOT_FOUND, OK, REQUEST_TIMEOUT}
 import utils.ISpecBase
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.Await
 
 class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
   lazy val connector: FileDetailsConnector = app.injector.instanceOf[FileDetailsConnector]
 
   "FileDetailsConnector" - {
     "getStatus" - {
-        "should return FileStatus when backend returns OK with valid body" in {
-            val conversationId = ConversationId("test-conversation-id")
-            val url            = s"/crs-fatca-reporting/files/$conversationId/status"
+      "should return FileStatus when backend returns OK with valid body" in {
+        val conversationId = ConversationId("test-conversation-id")
+        val url            = s"/crs-fatca-reporting/files/$conversationId/status"
 
-            val responseBody =
-            """
+        val responseBody =
+          """
                 |{
                 |  "RejectedSDES": "{}}"
                 |}
                 |""".stripMargin
 
-            stubGetResponse(url, OK, responseBody)
+        stubGetResponse(url, OK, responseBody)
 
-          val result = Await.result(connector.getStatus(conversationId), 2.seconds)
+        val result = Await.result(connector.getStatus(conversationId), 2.seconds)
 
-          result.get mustBe RejectedSDES
-        }
+        result.get mustBe RejectedSDES
+      }
 
-        "should return None when backend returns NOT_FOUND" in {
-          val conversationId = ConversationId("test-conversation-id")
-          val url            = s"/crs-fatca-reporting/files/$conversationId/status"
+      "should return None when backend returns NOT_FOUND" in {
+        val conversationId = ConversationId("test-conversation-id")
+        val url            = s"/crs-fatca-reporting/files/$conversationId/status"
 
-          stubGetResponse(url, NOT_FOUND, "")
+        stubGetResponse(url, NOT_FOUND, "")
 
-          val result = Await.result(connector.getStatus(conversationId), 2.seconds)
+        val result = Await.result(connector.getStatus(conversationId), 2.seconds)
 
-          assert(result.isEmpty)
-        }
+        assert(result.isEmpty)
+      }
 
-        "must return None when getStatus fails with Request Timeout" in {
-          val conversationId = ConversationId("test-conversation-id")
-          val url = s"/crs-fatca-reporting/files/$conversationId/status"
-          stubPostResponse(url, REQUEST_TIMEOUT)
+      "must return None when getStatus fails with Request Timeout" in {
+        val conversationId = ConversationId("test-conversation-id")
+        val url            = s"/crs-fatca-reporting/files/$conversationId/status"
+        stubPostResponse(url, REQUEST_TIMEOUT)
 
-          val result = connector.getStatus(conversationId)
+        val result = connector.getStatus(conversationId)
 
-          result.futureValue mustBe None
+        result.futureValue mustBe None
 
-        }
+      }
 
     }
   }

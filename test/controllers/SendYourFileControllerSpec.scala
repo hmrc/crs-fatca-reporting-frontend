@@ -21,11 +21,11 @@ import models.CRSReportType.NewInformation
 import models.requests.DataRequest
 import models.submission.*
 import models.upscan.{Reference, UploadId}
-import models.{CRS, FATCA, SendYourFileAdditionalText, UserAnswers}
+import models.{CRS, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import pages.{ConversationIdPage, FileReferencePage, GiinAndElectionStatusPage, URLPage, UploadIDPage, ValidXMLPage}
+import pages.*
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
