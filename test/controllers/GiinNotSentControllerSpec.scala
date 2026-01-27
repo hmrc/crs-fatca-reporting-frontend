@@ -17,17 +17,21 @@
 package controllers
 
 import base.SpecBase
+import models.submission.GiinAndElectionDBStatus
+import pages.{GiinAndElectionStatusPage, ReportElectionsPage}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.GiinNotSentView
 
 class GiinNotSentControllerSpec extends SpecBase {
 
   "GiinNotSent Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    val answers = emptyUserAnswers.withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(true, true))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    "must return OK and the correct view for a GET When there is no report election" in {
+
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.GiinNotSentController.onPageLoad().url)
@@ -38,6 +42,73 @@ class GiinNotSentControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(None)(request, messages(application)).toString
+      }
+    }
+    "must return OK and the correct view for a GET When report election is false" in {
+
+      val application = applicationBuilder(userAnswers = Some(answers.withPage(ReportElectionsPage, false))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GiinNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GiinNotSentView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(None)(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET When report election is true and election sent" in {
+
+      val application = applicationBuilder(userAnswers = Some(answers.withPage(ReportElectionsPage, true))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GiinNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GiinNotSentView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(Some(true))(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET When report election is true and election sending failed" in {
+
+      val answers = emptyUserAnswers.withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(true, false))
+
+      val application = applicationBuilder(userAnswers = Some(answers.withPage(ReportElectionsPage, true))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GiinNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GiinNotSentView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(Some(false))(request, messages(application)).toString
+      }
+    }
+
+    "must return REDIRECT and the correct view for a GET When no required data" in {
+
+      val answers = emptyUserAnswers
+
+      val application = applicationBuilder(userAnswers = Some(answers.withPage(ReportElectionsPage, true))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.GiinNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[GiinNotSentView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }
