@@ -41,10 +41,9 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
 
   val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
   lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
-  // lazy val sendYourFileUrl: String = routes.StillCheckingYourFileController.onPageLoad().url
-  val hardcodedFiName                = "testFiName"
-  val exampleGiin                    = "8Q298C.00000.LE.340"
-  val conversationId: ConversationId = ConversationId("conversationId")
+  val hardcodedFiName                                = "testFiName"
+  val exampleGiin                                    = "8Q298C.00000.LE.340"
+  val conversationId: ConversationId                 = ConversationId("conversationId")
 
   val ua: UserAnswers =
     emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))

@@ -33,7 +33,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionService @Inject() (val connector: SubmissionConnector) extends Logging {
 
-  // todo: Is service needed; could we extract logic from controller to here?
   def submitDocument(submissionDetails: SubmissionDetails)(using
     hc: HeaderCarrier,
     ec: ExecutionContext
