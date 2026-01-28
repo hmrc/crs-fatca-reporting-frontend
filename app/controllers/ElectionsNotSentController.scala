@@ -17,12 +17,14 @@
 package controllers
 
 import controllers.actions.*
+import pages.{GiinAndElectionStatusPage, RequiredGiinPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ElectionsNotSentView
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class ElectionsNotSentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,9 +36,18 @@ class ElectionsNotSentController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      val giinWasSentAndSaved = true
-      Ok(view(giinWasSentAndSaved))
+
+      def handleGIINSent    = Future.successful(Ok(view(true)))
+      def handleGIINNotSent = Future.successful(Ok(view(false)))
+      def handleNoData      = Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+
+      val answers = request.userAnswers
+      (answers.get(RequiredGiinPage), answers.get(GiinAndElectionStatusPage)) match {
+        case (None, _)          => handleGIINNotSent
+        case (Some(_), Some(_)) => handleGIINSent
+        case (Some(_), None)    => handleNoData
+      }
   }
 }
