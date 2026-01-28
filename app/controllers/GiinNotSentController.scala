@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import models.submission.{GiinAndElectionDBStatus, GiinUpdateFailed}
+import models.submission.GiinAndElectionDBStatus
 import pages.{GiinAndElectionStatusPage, ReportElectionsPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

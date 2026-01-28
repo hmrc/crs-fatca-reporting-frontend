@@ -17,6 +17,8 @@
 package controllers
 
 import base.SpecBase
+import models.submission.GiinAndElectionDBStatus
+import pages.{GiinAndElectionStatusPage, RequiredGiinPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.ElectionsNotSentView
@@ -24,10 +26,11 @@ import views.html.ElectionsNotSentView
 class ElectionsNotSentControllerSpec extends SpecBase {
 
   "ElectionsNotSent Controller" - {
-    val giinWasSentAndSaved = true
-    "must return OK and the correct view for a GET" in {
+    val answers = emptyUserAnswers.withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(true, true))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    "must return OK and the correct view for a GET when No GIIN sent" in {
+
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.ElectionsNotSentController.onPageLoad().url)
@@ -37,7 +40,38 @@ class ElectionsNotSentControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[ElectionsNotSentView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(giinWasSentAndSaved)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(false)(request, messages(application)).toString
+      }
+    }
+    "must return OK and the correct view for a GET when GIIN sent" in {
+
+      val application = applicationBuilder(userAnswers = Some(answers.withPage(RequiredGiinPage, "98096B.00000.LE.350"))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.ElectionsNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ElectionsNotSentView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(true)(request, messages(application)).toString
+      }
+    }
+
+    "must return REDIRECT and the correct view for a GET When no required data" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.withPage(RequiredGiinPage, "98096B.00000.LE.350"))).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.ElectionsNotSentController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[ElectionsNotSentView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
       }
     }
   }
