@@ -23,6 +23,7 @@ import models.{CRS, CRSReportType}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.http.Status.*
+import play.api.libs.json.Json
 import utils.ISpecBase
 
 import scala.concurrent.Await
@@ -51,8 +52,7 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
 
       "should return the Conversation Id on successful submission (OK)" in {
         val conversationId = "someConversationId"
-        val responseBody   = s"""{"conversationId": "$conversationId"}"""
-
+        val responseBody = Json.toJson(ConversationId(conversationId)).toString()
         stubPostResponse(submitDocumentUrl, OK, responseBody)
 
         val result = Await.result(connector.submitDocument(testSubmissionDetails), 2.seconds)
