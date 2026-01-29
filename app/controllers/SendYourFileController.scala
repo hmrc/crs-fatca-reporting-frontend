@@ -17,10 +17,12 @@
 package controllers
 
 import controllers.actions.*
-import models.SendYourFileAdditionalText
+import models.GiinUpdateState.{GinUpDateRequired, GinUpdateNotRequired}
+import models.ReportElectionState.*
+import models.{CRS, FATCA, GiinUpdateState, ReportElectionState, SendYourFileAdditionalText}
 import models.submission.*
 import models.upscan.URL
-import pages.{ConversationIdPage, GiinAndElectionStatusPage, ValidXMLPage}
+import pages.{ConversationIdPage, GiinAndElectionStatusPage, ReportElectionsPage, ValidXMLPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
@@ -51,7 +53,28 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
-          Ok(view(SendYourFileAdditionalText.NONE))
+          val messageSpecData = validatedFileData.messageSpecData
+          val reportElections = request.userAnswers
+            .get(ReportElectionsPage)
+            .map(if (_) ElectionsReported else ElectionsNotReported)
+            .getOrElse(ElectionsNotReported)
+
+          val giinUpdatedRequired: GiinUpdateState = messageSpecData.giin
+            .map(
+              _ => GiinUpdateState.GinUpdateNotRequired
+            )
+            .getOrElse(GinUpDateRequired)
+
+          (messageSpecData.messageType, giinUpdatedRequired, reportElections) match {
+            case (CRS, _, ElectionsNotReported) | (FATCA, GinUpdateNotRequired, ElectionsNotReported) =>
+              Ok(view(SendYourFileAdditionalText.NONE))
+            case (CRS, _, ElectionsReported) | (FATCA, GinUpdateNotRequired, ElectionsReported) =>
+              Ok(view(SendYourFileAdditionalText.ELECTIONS))
+            case (FATCA, GinUpDateRequired, ElectionsReported) =>
+              Ok(view(SendYourFileAdditionalText.BOTH))
+            case (FATCA, GinUpDateRequired, ElectionsNotReported) =>
+              Ok(view(SendYourFileAdditionalText.GIIN))
+          }
         case _ =>
           Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }
