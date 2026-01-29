@@ -50,4 +50,9 @@ class ElectionsNotSentController @Inject() (
         case (Some(_), None)    => handleNoData
       }
   }
+
+  def finishSendingFile: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+  }
 }
