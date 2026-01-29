@@ -46,8 +46,8 @@ class SubmissionConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
         response =>
           response.status match {
             case OK =>
-              val conversationId = (Json.parse(response.body) \ "conversationId").as[String]
-              Some(ConversationId(conversationId))
+              val conversationId = (Json.parse(response.body) \ "conversationId").as[ConversationId]
+              Some(conversationId)
             case _ =>
               logger.error(s"Submission failed for file with uploadId: ${submissionDetails.uploadId} | ${response.status}: ${response.body}")
               None
