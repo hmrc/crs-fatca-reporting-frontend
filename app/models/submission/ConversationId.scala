@@ -16,7 +16,7 @@
 
 package models.submission
 
-import play.api.libs.json.{__, JsString, Reads, Writes}
+import play.api.libs.json.{JsString, Reads, Writes}
 import play.api.mvc.PathBindable
 
 opaque type ConversationId = String
