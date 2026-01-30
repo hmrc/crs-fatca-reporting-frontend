@@ -80,8 +80,9 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
                          reportingPeriod: LocalDate = LocalDate.now(),
                          giin: Option[String] = None,
                          fiNameFromFim: String = "testFiName",
-                         electionsRequired: Boolean = true
+                         electionsRequired: Boolean = true,
+                         isFiUser: Boolean = true
                         ): MessageSpecData =
-    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
+    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser)
 
 }

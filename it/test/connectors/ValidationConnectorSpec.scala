@@ -53,7 +53,8 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         reportingPeriod = LocalDate.parse("2024-01-01"),
         giin = Some("GIIN123"),
         fiNameFromFim = "fi-name",
-        electionsRequired = true
+        electionsRequired = true,
+        isFiUser = true
       )
     }
 
@@ -161,7 +162,8 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         |    "reportingPeriod": "2024-01-01",
         |    "giin": "GIIN123",
         |    "fiNameFromFim": "fi-name",
-        |    "electionsRequired": true
+        |    "electionsRequired": true,
+        |    "isFiUser": true
         |  }
         |}
             """.stripMargin

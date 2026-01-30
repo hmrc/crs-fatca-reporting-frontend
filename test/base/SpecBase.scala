@@ -66,9 +66,10 @@ trait SpecBase
                          reportingPeriod: LocalDate = LocalDate.now(), // LocalDate.of(2000, 1, 1)
                          giin: Option[String] = None,
                          fiNameFromFim: String = "fi-name",
-                         electionsRequired: Boolean = true
+                         electionsRequired: Boolean = true,
+                         isFiUser: Boolean = true
   ): MessageSpecData =
-    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired)
+    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 

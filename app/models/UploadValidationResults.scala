@@ -57,7 +57,8 @@ case class MessageSpecData(messageType: MessageType,
                            reportingPeriod: LocalDate,
                            giin: Option[String] = None,
                            fiNameFromFim: String,
-                           electionsRequired: Boolean
+                           electionsRequired: Boolean,
+                           isFiUser: Boolean
 )
 
 object MessageSpecData {
@@ -80,6 +81,7 @@ object MessageSpecData {
         giin              <- (json \ "giin").validateOpt[String]
         fiNameFromFim     <- (json \ "fiNameFromFim").validate[String]
         electionsRequired <- (json \ "electionsRequired").validate[Boolean]
+        isFiUser          <- (json \ "isFiUser").validate[Boolean]
         reportTypeValue <- messageType match {
           case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
           case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -92,7 +94,8 @@ object MessageSpecData {
                               reportingPeriod,
                               giin,
                               fiNameFromFim,
-                              electionsRequired
+                              electionsRequired,
+                              isFiUser
       )
 
     override def writes(messageSpecData: MessageSpecData): JsValue = {
@@ -110,7 +113,8 @@ object MessageSpecData {
         "reportingPeriod"   -> messageSpecData.reportingPeriod,
         "giin"              -> messageSpecData.giin,
         "fiNameFromFim"     -> messageSpecData.fiNameFromFim,
-        "electionsRequired" -> messageSpecData.electionsRequired
+        "electionsRequired" -> messageSpecData.electionsRequired,
+        "isFiUser"          -> messageSpecData.isFiUser
       )
     }
   }
