@@ -28,8 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ElectionsNotSentView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ElectionsNotSentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,7 +39,8 @@ class ElectionsNotSentController @Inject() (
   view: ElectionsNotSentView,
   submissionService: SubmissionService,
   sessionRepository: SessionRepository
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
