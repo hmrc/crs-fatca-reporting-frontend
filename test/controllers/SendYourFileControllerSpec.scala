@@ -17,14 +17,17 @@
 package controllers
 
 import base.SpecBase
+import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
 import models.requests.DataRequest
 import models.submission.*
-import models.{CRS, FATCA, SendYourFileAdditionalText, UserAnswers}
+import models.submission.fileDetails.{Accepted, Pending}
+import models.upscan.{Reference, UploadId}
+import models.{CRS, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
-import pages.{ConversationIdPage, GiinAndElectionStatusPage, ValidXMLPage}
+import pages.*
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -36,12 +39,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  val mockSubmissionService: SubmissionService = mock[SubmissionService]
-  lazy val pageUnavailableUrl: String          = controllers.routes.PageUnavailableController.onPageLoad().url
-  lazy val sendYourFileUrl: String             = routes.SendYourFileController.onPageLoad().url
-  val hardcodedFiName                          = "testFiName"
-  val exampleGiin                              = "8Q298C.00000.LE.340"
-  val conversationId: ConversationId           = ConversationId("conversationId")
+  val mockSubmissionService: SubmissionService       = mock[SubmissionService]
+  val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
+  lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
+  lazy val sendYourFileUrl: String                   = routes.SendYourFileController.onPageLoad().url
+  val hardcodedFiName                                = "testFiName"
+  val exampleGiin                                    = "8Q298C.00000.LE.340"
+  val conversationId: ConversationId                 = ConversationId("conversationId")
 
   val ua: UserAnswers =
     emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))
@@ -133,13 +137,71 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      // This test will be changed during the implementation of DAC6-3829
-      "must redirect to StillCheckingYourFileController for a successful submission" in {
-        val application = applicationBuilder(userAnswers = Some(ua))
+      "must return an internal server error when required data is missing for a successful submission" in {
+        val incompleteUA = emptyUserAnswers.withPage(
+          ValidXMLPage,
+          getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)).copy(fileName = "")
+        )
+
+        val application = applicationBuilder(userAnswers = Some(incompleteUA))
           .overrides(
             bind[SubmissionService].toInstance(mockSubmissionService)
           )
           .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "must return internal server error when submission service returns None conversation Id" in {
+        val validUserAnswers = ua
+          .withPage(URLPage, "http://test-url.com")
+          .withPage(FileReferencePage, Reference("fileRef123"))
+          .withPage(UploadIDPage, UploadId("uploadId123"))
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitDocument(any[SubmissionDetails]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(None))
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "must redirect to StillCheckingYourFileController for a successful submission" in {
+        val validUserAnswers = ua
+          .withPage(URLPage, "http://test-url.com")
+          .withPage(FileReferencePage, Reference("fileRef123"))
+          .withPage(UploadIDPage, UploadId("uploadId123"))
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService)
+          )
+          .build()
+
+        when(mockSubmissionService.submitDocument(any[SubmissionDetails]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(conversationId)))
 
         when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
           .thenReturn(Future.successful(GiinAndElectionSubmittedSuccessful))
@@ -156,13 +218,19 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
     }
 
     "getStatus" - {
-      // This test title and content will be changed during the implementation of DAC6-3829
-      "must return OK and load the page Still checking page" in {
+      "must return OK and return file passed checks url when file status is accepted" in {
 
         val userAnswers = UserAnswers("Id")
           .withPage(ConversationIdPage, conversationId)
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Accepted)))
 
         running(application) {
           val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
@@ -170,7 +238,53 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/still-checking-your-file\"}"
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/file-passed-checks\"}"
+        }
+      }
+
+      "must return OK and return no content when status is Pending" in {
+
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Pending)))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual NO_CONTENT
+        }
+      }
+
+      "must return internal server error when status is None" in {
+
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(None))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual INTERNAL_SERVER_ERROR
         }
       }
 

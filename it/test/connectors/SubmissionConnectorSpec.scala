@@ -17,11 +17,13 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.http.Fault
+import models.submission.*
+import models.upscan.{Reference, UploadId}
 import models.{CRS, CRSReportType}
-import models.submission.{CrsElectionsDetails, ElectionsSubmissionDetails, GiinUpdateRequest}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.http.Status.*
+import play.api.libs.json.Json
 import utils.ISpecBase
 
 import scala.concurrent.Await
@@ -33,6 +35,40 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
   lazy val connector: SubmissionConnector = app.injector.instanceOf[SubmissionConnector]
 
   "SubmissionConnector" - {
+
+    "submitDocument" - {
+      val submitDocumentUrl = "/crs-fatca-reporting/submit"
+
+      val testSubmissionDetails = SubmissionDetails(
+        fileName = "fileName",
+        uploadId = UploadId("uploadId"),
+        enrolmentId = "enrolmentId",
+        fileSize = 1234L,
+        documentUrl = "documentUrl",
+        checksum = "checksum",
+        messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData),
+        fileReference = Reference("fileRef")
+      )
+
+      "should return the Conversation Id on successful submission (OK)" in {
+        val conversationId = "someConversationId"
+        val responseBody = Json.toJson(ConversationId(conversationId)).toString()
+        stubPostResponse(submitDocumentUrl, OK, responseBody)
+
+        val result = Await.result(connector.submitDocument(testSubmissionDetails), 2.seconds)
+
+        result mustBe Some(ConversationId(conversationId))
+      }
+
+      "should return None on INTERNAL_SERVER_ERROR" in {
+        stubPostResponse(submitDocumentUrl, INTERNAL_SERVER_ERROR)
+
+        val result = Await.result(connector.submitDocument(testSubmissionDetails), 2.seconds)
+
+        result mustBe None
+      }
+    }
+
     "updateGiin" - {
 
       val updateGiinUrl     = "/crs-fatca-reporting/update/giin"
@@ -86,10 +122,11 @@ class SubmissionConnectorSpec extends AnyFreeSpec with ISpecBase {
       val submitElectionsUrl                      = "/crs-fatca-reporting/elections/submit"
       val crsDetails: Option[CrsElectionsDetails] = Some(CrsElectionsDetails(Some(true), Some(true), Some(true), Some(true)))
       val electionsSubmissionRequest =
-        ElectionsSubmissionDetails(getMessageSpecData(CRS,CRSReportType.TestData).sendingCompanyIN,
-                                   getMessageSpecData(CRS,CRSReportType.TestData).reportingPeriod.getYear.toString,
-                                   crsDetails,
-                                   fatcaDetails = None
+        ElectionsSubmissionDetails(
+          getMessageSpecData(CRS, CRSReportType.TestData).sendingCompanyIN,
+          getMessageSpecData(CRS, CRSReportType.TestData).reportingPeriod.getYear.toString,
+          crsDetails,
+          fatcaDetails = None
         )
       "should return true on successful submission (NO_CONTENT)" in {
         stubPostResponse(submitElectionsUrl, NO_CONTENT)
