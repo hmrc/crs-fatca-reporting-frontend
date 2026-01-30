@@ -17,24 +17,29 @@
 @this(
         layout: templates.Layout,
         govukButton: GovukButton,
-        warning: components.Warning
+        warning: components.Warning,
+        formHelper: FormWithCSRF
 )
 
 @(giinWasSentAndSaved: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("report.elections.not.sent.title")), showBackLink = false) {
+    @formHelper(  action = controllers.routes.ElectionsNotSentController.finishSendingFile()) {
 
-    <h1 class="govuk-heading-l">@messages("report.elections.not.sent.heading")</h1>
+        <h1 class="govuk-heading-l">@messages("report.elections.not.sent.heading")</h1>
 
-    @if(giinWasSentAndSaved) {
-        <p class="govuk-body">@messages("report.elections.not.sent.p1")</p>
-    }
+        @if(giinWasSentAndSaved) {
+            <p class="govuk-body">@messages("report.elections.not.sent.p1")</p>
+        }
 
-    <p class="govuk-body">@messages("report.elections.not.sent.p2")</p>
+        <p class="govuk-body">@messages("report.elections.not.sent.p2")</p>
 
-    @warning(messages("report.elections.not.sent.warning.text"))
+        @warning(messages("report.elections.not.sent.warning.text"))
 
-    @govukButton(
-        ButtonViewModel(messages("report.elections.not.sent.submit")).withAttribute("id" -> "submit").asLink("#")
-    )
+        @govukButton(
+            ButtonViewModel(messages("report.elections.not.sent.submit"))
+            .withAttribute("id" -> "submit")
+            .preventingDoubleClick()
+        )
+}
 }
