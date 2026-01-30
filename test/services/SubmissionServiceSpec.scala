@@ -26,6 +26,7 @@ import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import play.api.test.FakeRequest
+import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
