@@ -18,15 +18,17 @@ package controllers
 
 import connectors.FileDetailsConnector
 import controllers.actions.*
+import models.requests.DataRequest
 import models.submission.*
 import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending}
 import models.upscan.URL
-import models.{SendYourFileAdditionalText, ValidatedFileData}
+import models.{SendYourFileAdditionalText, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import services.SubmissionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -63,51 +65,53 @@ class SendYourFileController @Inject() (
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
-        case Some(validatedFileData) =>
+        case Some(_) =>
           submissionService.submitElectionsAndGiin(request.userAnswers).flatMap {
-            giinAndElectionStatus =>
-              giinAndElectionStatus match {
-                case giinUpdateFailed: GiinUpdateFailed =>
-                  val giinAndElectionStatus = GiinAndElectionDBStatus(giinUpdateFailed.giinStatus, giinUpdateFailed.electionStatus)
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(GiinAndElectionStatusPage, giinAndElectionStatus))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(routes.GiinNotSentController.onPageLoad())
-                case electionFailed: ElectionsSubmitFailed =>
-                  val giinAndElectionStatus = GiinAndElectionDBStatus(electionFailed.giinStatus, electionFailed.electionStatus)
-                  for {
-                    updatedAnswers <- Future.fromTry(request.userAnswers.set(GiinAndElectionStatusPage, giinAndElectionStatus))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(routes.ElectionsNotSentController.onPageLoad())
-                case GiinAndElectionSubmittedSuccessful =>
-                  (request.userAnswers.get(ValidXMLPage),
-                   request.userAnswers.get(URLPage),
-                   request.userAnswers.get(UploadIDPage),
-                   request.userAnswers.get(FileReferencePage)
-                  ) match {
-                    case (Some(ValidatedFileData(fileName, messageSpecData, fileSize, checksum)), Some(fileUrl), Some(uploadId), Some(fileReference)) =>
-                      val submissionDetails =
-                        SubmissionDetails(fileName, uploadId, request.fatcaId, fileSize, fileUrl, checksum, messageSpecData, fileReference)
-
-                      submissionService.submitDocument(submissionDetails) flatMap {
-                        case Some(conversationId: ConversationId) =>
-                          for {
-                            userAnswers <- Future.fromTry(request.userAnswers.set(ConversationIdPage, conversationId))
-                            _           <- sessionRepository.set(userAnswers)
-                          } yield Redirect(routes.StillCheckingYourFileController.onPageLoad())
-                        case _ =>
-                          Future.successful(InternalServerError)
-                      }
-                    case _ =>
-                      Future.successful(InternalServerError)
-                  }
-
-              }
+            status =>
+              navigateBasedOnStatus(status, request.userAnswers)
           }
         case _ =>
-          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
+          Future.successful(Redirect(routes.PageUnavailableController.onPageLoad()))
       }
   }
+
+  private def navigateBasedOnStatus(status: GiinAndElectionStatus, ua: UserAnswers)(implicit request: DataRequest[_]): Future[Result] =
+    status match {
+      case giinUpdateFailed: GiinUpdateFailed =>
+        val dbStatus = GiinAndElectionDBStatus(giinUpdateFailed.giinStatus, giinUpdateFailed.electionStatus)
+        for {
+          updatedAnswers <- Future.fromTry(ua.set(GiinAndElectionStatusPage, dbStatus))
+          _              <- sessionRepository.set(updatedAnswers)
+        } yield Redirect(routes.GiinNotSentController.onPageLoad())
+
+      case electionFailed: ElectionsSubmitFailed =>
+        val dbStatus = GiinAndElectionDBStatus(electionFailed.giinStatus, electionFailed.electionStatus)
+        for {
+          updatedAnswers <- Future.fromTry(ua.set(GiinAndElectionStatusPage, dbStatus))
+          _              <- sessionRepository.set(updatedAnswers)
+        } yield Redirect(routes.ElectionsNotSentController.onPageLoad())
+
+      case GiinAndElectionSubmittedSuccessful =>
+        handleBothSubmitted(ua)
+    }
+
+  private def handleBothSubmitted(answers: UserAnswers)(implicit request: DataRequest[_]): Future[Result] =
+    (answers.get(ValidXMLPage), answers.get(URLPage), answers.get(UploadIDPage), answers.get(FileReferencePage)) match {
+      case (Some(ValidatedFileData(fileName, messageSpecData, fileSize, checksum)), Some(fileUrl), Some(uploadId), Some(fileReference)) =>
+        val submissionDetails = SubmissionDetails(fileName, uploadId, request.fatcaId, fileSize, fileUrl, checksum, messageSpecData, fileReference)
+
+        submissionService.submitDocument(submissionDetails) flatMap {
+          case Some(conversationId: ConversationId) =>
+            for {
+              userAnswers <- Future.fromTry(request.userAnswers.set(ConversationIdPage, conversationId))
+              _           <- sessionRepository.set(userAnswers)
+            } yield Redirect(controllers.routes.StillCheckingYourFileController.onPageLoad())
+          case _ =>
+            Future.successful(InternalServerError)
+        }
+      case _ =>
+        Future.successful(InternalServerError)
+    }
 
   def getStatus: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>

@@ -17,14 +17,18 @@
 package controllers
 
 import controllers.actions.*
-import pages.{GiinAndElectionStatusPage, RequiredGiinPage}
+import models.submission.{ConversationId, SubmissionDetails}
+import models.{UserAnswers, ValidatedFileData}
+import pages.*
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
+import services.SubmissionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ElectionsNotSentView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ElectionsNotSentController @Inject() (
   override val messagesApi: MessagesApi,
@@ -32,8 +36,11 @@ class ElectionsNotSentController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: ElectionsNotSentView
-) extends FrontendBaseController
+  view: ElectionsNotSentView,
+  submissionService: SubmissionService,
+  sessionRepository: SessionRepository
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -44,10 +51,33 @@ class ElectionsNotSentController @Inject() (
       def handleNoData      = Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
 
       val answers = request.userAnswers
+
       (answers.get(RequiredGiinPage), answers.get(GiinAndElectionStatusPage)) match {
         case (None, _)          => handleGIINNotSent
         case (Some(_), Some(_)) => handleGIINSent
         case (Some(_), None)    => handleNoData
+      }
+  }
+
+  def finishSendingFile: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      val answers: UserAnswers = request.userAnswers
+
+      (answers.get(ValidXMLPage), answers.get(URLPage), answers.get(UploadIDPage), answers.get(FileReferencePage)) match {
+        case (Some(ValidatedFileData(fileName, messageSpecData, fileSize, checksum)), Some(fileUrl), Some(uploadId), Some(fileReference)) =>
+          val submissionDetails = SubmissionDetails(fileName, uploadId, request.fatcaId, fileSize, fileUrl, checksum, messageSpecData, fileReference)
+
+          submissionService.submitDocument(submissionDetails) flatMap {
+            case Some(conversationId: ConversationId) =>
+              for {
+                userAnswers <- Future.fromTry(request.userAnswers.set(ConversationIdPage, conversationId))
+                _           <- sessionRepository.set(userAnswers)
+              } yield Redirect(controllers.routes.StillCheckingYourFileController.onPageLoad())
+            case _ =>
+              Future.successful(InternalServerError)
+          }
+        case _ =>
+          Future.successful(InternalServerError)
       }
   }
 }
