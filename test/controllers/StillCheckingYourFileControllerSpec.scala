@@ -20,7 +20,7 @@ import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.{CRS, UserAnswers}
+import models.{CRS, MessageSpecData, UserAnswers}
 import models.submission.ConversationId
 import models.submission.fileDetails.{Accepted, Pending}
 import org.mockito.ArgumentMatchers.any
@@ -44,9 +44,10 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
   val hardcodedFiName                                = "testFiName"
   val exampleGiin                                    = "8Q298C.00000.LE.340"
   val conversationId: ConversationId                 = ConversationId("conversationId")
+  val messageSpecData: MessageSpecData               = getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
 
   val ua: UserAnswers =
-    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "StillCheckingYourFIle Controller" - {
 
@@ -94,10 +95,13 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[StillCheckingYourFileView]
 
         val messagesApi         = messages(application)
-        val expectedSummaryList = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Pending")(messagesApi)
+        val expectedSummaryList = FileCheckViewModel.createFileSummary(messageSpecData.messageRefId, "Pending")(messagesApi)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(expectedSummaryList, appConfig.signOutUrl, true, "EFG Bank plc")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(expectedSummaryList, appConfig.signOutUrl, messageSpecData.isFiUser, messageSpecData.fiNameFromFim)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
