@@ -20,11 +20,11 @@ import base.SpecBase
 import connectors.SubmissionConnector
 import models.requests.DataRequest
 import models.submission.*
-import models.{CRS, CRSReportType, UserAnswers}
+import models.{CRS, CRSReportType, FATCA, FATCAReportType, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import pages.{RequiredGiinPage, RequiresElectionsPage, ValidXMLPage}
+import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -45,9 +45,9 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
 
   lazy val baseUa: UserAnswers                  = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData)))
   lazy val uaWithGiin: UserAnswers              = baseUa.withPage(RequiredGiinPage, "testGiin")
-  lazy val uaWithElections: UserAnswers         = baseUa.withPage(RequiresElectionsPage, true)
-  lazy val uaWithElectionsNotGiven: UserAnswers = baseUa.withPage(RequiresElectionsPage, false)
-  lazy val uaWithBoth: UserAnswers              = uaWithGiin.withPage(RequiresElectionsPage, true)
+  lazy val uaWithElections: UserAnswers         = baseUa.withPage(ReportElectionsPage, true)
+  lazy val uaWithElectionsNotGiven: UserAnswers = baseUa.withPage(ReportElectionsPage, false)
+  lazy val uaWithBoth: UserAnswers              = uaWithGiin.withPage(ReportElectionsPage, true)
 
   "submitElectionsAndGiin" - {
 

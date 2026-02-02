@@ -18,13 +18,13 @@ package services
 
 import cats.data.EitherT
 import connectors.SubmissionConnector
-import models.UserAnswers
+import models.{CRS, FATCA, UserAnswers}
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
 import models.submission.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
-import pages.{RequiredGiinPage, RequiresElectionsPage}
+import pages.{ReportElectionsPage, RequiredGiinPage, RequiresElectionsPage}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -81,11 +81,12 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
     }
 
   private def getElectionsRequest(userAnswers: UserAnswers): Option[ElectionsSubmissionDetails] =
-    userAnswers.get(RequiresElectionsPage).fold(None: Option[ElectionsSubmissionDetails]) {
+    userAnswers.get(ReportElectionsPage).fold(None: Option[ElectionsSubmissionDetails]) {
       case false => None
       case true =>
         extractMessageSpecData(userAnswers) {
           messageSpecData =>
+            val messageType     = messageSpecData.messageType
             val fiId            = messageSpecData.sendingCompanyIN
             val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
 
