@@ -78,7 +78,7 @@ class ValidationConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
       .recover {
         case NonFatal(e) =>
           if (e.getMessage contains "InvalidXml") {
-            logger.error(s"XML parsing failed. The XML parser in country-by-country-reporting backend has thrown the exception: $e")
+            logger.error(s"XML parsing failed. The XML parser in crs-fatca-reporting backend has thrown the exception: $e")
             Left(InvalidXmlFileError)
           } else {
             logger.error(s"Remote service timed out. The XML parser in crs-fatca-reporting backend has thrown the exception", e)

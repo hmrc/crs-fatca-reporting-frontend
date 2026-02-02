@@ -54,13 +54,14 @@ class StillCheckingYourFileController @Inject() (
             case Some(FileStatusAccepted) =>
               Future.successful(Redirect(routes.FilePassedChecksController.onPageLoad()))
             case Some(Pending) =>
-              val placeHolderMessageRefID = "MyFATCAReportMessageRefId1234567890"
-              val placeHolderFileStatus   = "Pending"
-              val placeHolderFIName       = "EFG Bank plc"
-              val placeHolderIsFIUser     = true
+              val messageSpecData = xmlDetails.messageSpecData
               Future.successful(
                 Ok(
-                  view(createFileSummary(placeHolderMessageRefID, placeHolderFileStatus), frontendAppConfig.signOutUrl, placeHolderIsFIUser, placeHolderFIName)
+                  view(createFileSummary(messageSpecData.messageRefId, "Pending"),
+                       frontendAppConfig.signOutUrl,
+                       messageSpecData.isFiUser,
+                       messageSpecData.fiNameFromFim
+                  )
                 )
               )
             case None =>
