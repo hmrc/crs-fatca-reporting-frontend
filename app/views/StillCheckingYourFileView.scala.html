@@ -34,9 +34,9 @@
     @paragraph(Html(messages("stillCheckingYourFile.p1")))
 
     @if(isFiUser == true) {
-        @paragraph(Html(messages("stillCheckingYourFile.p2", link(signOutLink, "stillCheckingYourFile.signOut"), fiName)))
+       @paragraph(Html(messages("stillCheckingYourFile.p3", link(signOutLink, "stillCheckingYourFile.signOut"))))
     } else {
-        @paragraph(Html(messages("stillCheckingYourFile.p3", link(signOutLink, "stillCheckingYourFile.signOut"))))
+       @paragraph(Html(messages("stillCheckingYourFile.p2", link(signOutLink, "stillCheckingYourFile.signOut"), fiName)))
     }
     <div class="govuk-form-group">
         @govukSummaryList(fileCheckTable)
