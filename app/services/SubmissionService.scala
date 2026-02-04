@@ -98,8 +98,10 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
             val fatHasThresholds          = userAnswers.get(ElectFatcaThresholdsPage).fold(None)(Some(_))
             val fatHasTreasuryRegulations = userAnswers.get(TreasuryRegulationsPage).fold(None)(Some(_))
 
-            val crsDetails   = Some(CrsElectionsDetails(crsHasCARF, crsHasContracts, crsHasDormantAccounts, crsHasThresholds))
-            val fatcaDetails = Some(FatcaElectionsDetails(hasThresholds = fatHasThresholds, hasTreasuryRegulations = fatHasTreasuryRegulations))
+            val crsDetails = if (messageType == CRS) Some(CrsElectionsDetails(crsHasCARF, crsHasContracts, crsHasDormantAccounts, crsHasThresholds)) else None
+            val fatcaDetails =
+              if (messageType == FATCA) Some(FatcaElectionsDetails(hasThresholds = fatHasThresholds, hasTreasuryRegulations = fatHasTreasuryRegulations))
+              else None
 
             Some(
               ElectionsSubmissionDetails(
