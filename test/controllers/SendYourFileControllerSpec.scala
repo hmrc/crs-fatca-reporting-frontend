@@ -19,9 +19,10 @@ package controllers
 import base.SpecBase
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
+import models.fileDetails.FileValidationErrors
 import models.requests.DataRequest
 import models.submission.*
-import models.submission.fileDetails.{Accepted, Pending}
+import models.submission.fileDetails.{Accepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import models.upscan.{Reference, UploadId}
 import models.{CRS, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
@@ -262,6 +263,78 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val result = route(application, request).value
 
           status(result) mustEqual NO_CONTENT
+        }
+      }
+
+      "must return OK and return virus found when status is RejectedSDESVirus" in {
+
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(RejectedSDESVirus)))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/virus-found\"}"
+        }
+      }
+
+      "must return OK and return journey recovery url when status is RejectedSDES" in {
+
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(RejectedSDES)))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/there-is-a-problem\"}"
+        }
+      }
+
+      "must return OK and return file failed checks url when status is Rejected" in {
+        val validationErrors = FileValidationErrors(None, None)
+        val userAnswers = UserAnswers("Id")
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/file-failed-checks\"}"
         }
       }
 

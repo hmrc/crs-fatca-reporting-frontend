@@ -20,9 +20,10 @@ import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
+import models.fileDetails.FileValidationErrors
 import models.{CRS, MessageSpecData, UserAnswers}
 import models.submission.ConversationId
-import models.submission.fileDetails.{Accepted, Pending}
+import models.submission.fileDetails.{Accepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalactic.Prettifier.default
@@ -102,6 +103,70 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           request,
           messages(application)
         ).toString
+      }
+    }
+
+    "must redirect to Journey Recovery  when file status is RejectedSDES" in {
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(RejectedSDES)))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must redirect to virus found when file status is RejectedSDESVirus" in {
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(RejectedSDESVirus)))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.VirusFoundController.onPageLoad().url
+      }
+    }
+
+    "must redirect to file checks failed when file status is Rejected" in {
+      val validationErrors = FileValidationErrors(None, None)
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.FileFailedChecksController.onPageLoad().url
       }
     }
 
