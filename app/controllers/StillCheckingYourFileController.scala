@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import controllers.actions.*
-import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending}
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
 
@@ -64,12 +64,14 @@ class StillCheckingYourFileController @Inject() (
                   )
                 )
               )
+            case Some(RejectedSDES) =>
+              Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
+            case Some(RejectedSDESVirus) =>
+              Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
+            case Some(Rejected(error)) =>
+              Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
             case None =>
               logger.warn("Unable to get Status")
-              Future.successful(InternalServerError(errorView()))
-            case _ =>
-              // The other statuses are handled by subsequent Jira tickets
-              logger.warn("Unexpected file status received")
               Future.successful(InternalServerError(errorView()))
           }
         case _ =>

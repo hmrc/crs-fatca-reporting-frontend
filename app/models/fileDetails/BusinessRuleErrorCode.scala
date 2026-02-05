@@ -37,5 +37,6 @@ object BusinessRuleErrorCode {
     case "50008" => InvalidMessageRefIDFormat
     case "80001" => DocRefIDFormat
     case "80002" => CorrDocRefIdUnknown
+    case _       => CorrDocRefIdUnknown
   }
 }

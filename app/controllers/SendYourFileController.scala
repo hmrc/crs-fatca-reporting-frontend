@@ -20,7 +20,7 @@ import connectors.FileDetailsConnector
 import controllers.actions.*
 import models.requests.DataRequest
 import models.submission.*
-import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending}
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import models.upscan.URL
 import models.{SendYourFileAdditionalText, UserAnswers, ValidatedFileData}
 import pages.*
@@ -122,12 +122,14 @@ class SendYourFileController @Inject() (
               Future.successful(Ok(Json.toJson(URL(routes.FilePassedChecksController.onPageLoad().url))))
             case Some(Pending) =>
               Future.successful(NoContent)
+            case Some(Rejected(error)) =>
+              Future.successful(Ok(Json.toJson(URL(routes.FileFailedChecksController.onPageLoad().url))))
+            case Some(RejectedSDESVirus) =>
+              Future.successful(Ok(Json.toJson(URL(routes.VirusFoundController.onPageLoad().url))))
+            case Some(RejectedSDES) =>
+              Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
             case None =>
               logger.warn("getStatus: no status returned")
-              Future.successful(InternalServerError)
-            case _ =>
-              // Other statuses will be handled by subsequent Jira tickets
-              logger.warn("getStatus: unexpected status returned")
               Future.successful(InternalServerError)
           }
         case None =>

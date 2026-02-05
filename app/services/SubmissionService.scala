@@ -18,13 +18,13 @@ package services
 
 import cats.data.EitherT
 import connectors.SubmissionConnector
-import models.{CRS, FATCA, UserAnswers}
+import models.UserAnswers
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
 import models.submission.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
-import pages.{ReportElectionsPage, RequiredGiinPage, RequiresElectionsPage}
+import pages.{ReportElectionsPage, RequiredGiinPage}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
