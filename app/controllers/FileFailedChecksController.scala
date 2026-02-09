@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.*
+import pages.ValidXMLPage
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,11 +36,16 @@ class FileFailedChecksController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val fileMessageRef = "MyFATCAReportMessageRefId1234567890"
-      val summary        = FileCheckViewModel.createFileSummary(fileMessageRef, "Rejected")
-      Ok(view(summary))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validateFileData) =>
+          val fileMessageRef = validateFileData.messageSpecData.messageRefId
+          val summary        = FileCheckViewModel.createFileSummary(fileMessageRef, "Rejected")
+          Ok(view(summary))
+        case None =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+      }
 
   }
 }
