@@ -18,7 +18,7 @@ package services
 
 import cats.data.EitherT
 import connectors.SubmissionConnector
-import models.UserAnswers
+import models.{CRS, FATCA, UserAnswers}
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
 import models.submission.*
