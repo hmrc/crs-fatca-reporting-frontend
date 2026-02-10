@@ -24,7 +24,7 @@ import models.requests.DataRequest
 import models.submission.*
 import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
-import pages.{ReportElectionsPage, RequiredGiinPage, RequiresElectionsPage}
+import pages.{ReportElectionsPage, RequiredGiinPage}
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
 
