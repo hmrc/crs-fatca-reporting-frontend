@@ -18,15 +18,21 @@
         layout: templates.Layout,
         govukButton: GovukButton,
         warning: components.Warning,
-        formHelper: FormWithCSRF
+        formHelper: FormWithCSRF,
+        appConfig: config.FrontendAppConfig
 )
 
 @(giinWasSentAndSaved: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("report.elections.not.sent.title")), showBackLink = false) {
-    @formHelper(  action = controllers.routes.ElectionsNotSentController.finishSendingFile()) {
+    @formHelper(  action = controllers.routes.ElectionsNotSentController.finishSendingFile(), args= Symbol("id") -> "sendYourFileForm") {
+    <input type="hidden" id="fileStatusRefreshUrl" value="@routes.SendYourFileController.getStatus().url" />
+    <input type="hidden" id="spinner-counter" value="@appConfig.spinnerCounter" />
+    <input type="hidden" id="slowJourneyUrl" value="@routes.StillCheckingYourFileController.onPageLoad().url" />
+    <input type="hidden" id="processingMessage" value="@messages("sendYourFile.status.p1")" />
 
-        <h1 class="govuk-heading-l">@messages("report.elections.not.sent.heading")</h1>
+
+<h1 class="govuk-heading-l">@messages("report.elections.not.sent.heading")</h1>
 
         @if(giinWasSentAndSaved) {
             <p class="govuk-body">@messages("report.elections.not.sent.p1")</p>
@@ -35,6 +41,8 @@
         <p class="govuk-body">@messages("report.elections.not.sent.p2")</p>
 
         @warning(messages("report.elections.not.sent.warning.text"))
+        <div id="processing" aria-live="polite" role="status" class="govuk-!-margin-bottom-5 govuk-!-margin-top-5">
+        </div>
 
         @govukButton(
             ButtonViewModel(messages("report.elections.not.sent.submit"))
