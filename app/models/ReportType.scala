@@ -98,3 +98,16 @@ object FATCAReportType:
 
     override def writes(value: FATCAReportType): JsValue = JsString(toJson(value))
   }
+
+def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = true): String =
+  reportType match
+    case CRSReportType.TestData     if includeTestData                 => "reportType.testData"
+    case CRSReportType.NilReport                                       => "reportType.nilReport"
+    case CRSReportType.NewInformation                                  => "reportType.newInformation"
+    case CRSReportType.CorrectedInformationForExistingReport           => "reportType.correctedAndDeletedInformationForExistingReport"
+    case CRSReportType.CorrectedAndDeletedInformationForExistingReport => "reportType.correctedAndDeletedInformationForExistingReport"
+    case CRSReportType.DeletedInformationForExistingReport             => "reportType.deletedInformationForExistingReport"
+    case CRSReportType.AdditionalInformationForExistingReport          => "reportType.additionalInformationForExistingReport"
+    case CRSReportType.DeletionOfExistingReport                        => "reportType.deletionOfExistingReport"
+
+    case _ => "reportType.fatca"
