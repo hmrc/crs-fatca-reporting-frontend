@@ -19,7 +19,7 @@ package viewmodels
 import controllers.routes
 import models.MessageSpecData.name
 import models.UserAnswers.extractMessageSpecData
-import models.{CRS, CheckMode, FATCA, MessageType, UserAnswers}
+import models.{CRS, CheckMode, FATCA, MessageType, UserAnswers, messageKeyForReportType}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}
@@ -47,7 +47,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
             ),
             summaryListRowHelper(
               messages("checkYourFileDetails.fileInformation.key"),
-              messages("checkYourFileDetails.fileInformation.value"),
+              messages(messageKeyForReportType(messageSpecData.reportType)),
               actionItem = Some(
                 ActionItem(
                   href = routes.IndexController.onPageLoad().url,

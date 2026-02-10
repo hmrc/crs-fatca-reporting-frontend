@@ -315,3 +315,14 @@ change.crs.reporting.gross.proceeds.cryptoasset.hidden.text= Change if they are 
 change.crs.reporting.gross.proceeds.for.carf.hidden.text = Change if they are also reporting these gross proceeds for the Cryptoasset Reporting Framework (CARF) under CRS
 change.fatca.treasuryRegulation.hidden.text = Change if they are using due diligence procedures from US Treasury Regulations for FATCA
 change.fatca.threshold.hidden.text = Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA
+
+reportType.testData = Test data
+reportType.nilReport = Nil report
+reportType.newInformation = New information
+reportType.additionalInformationForExistingReport = Additional information for an existing report
+reportType.correctedAndDeletedInformationForExistingReport = Corrected and deleted information for an existing report
+reportType.deletedInformationForExistingReport = Deleted information for an existing report
+reportType.deletionOfExistingReport= Deletion of an existing report
+reportType.additionalInformationForExistingReport = Additional information for an existing report
+
+reportType.fatca = New information
