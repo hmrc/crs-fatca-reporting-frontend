@@ -119,7 +119,7 @@ class SendYourFileController @Inject() (
         case Some(conversationId) =>
           fileDetailsConnector.getStatus(conversationId) flatMap {
             case Some(FileStatusAccepted) =>
-              Future.successful(Ok(Json.toJson(URL(routes.FilePassedChecksController.onPageLoad().url))))
+              Future.successful(Ok(Json.toJson(URL(routes.FileConfirmationController.onPageLoad().url))))
             case Some(Pending) =>
               Future.successful(NoContent)
             case Some(Rejected(error)) =>
