@@ -16,15 +16,17 @@
 
 @import config.FrontendAppConfig
 @import models.SendYourFileAdditionalText
+@import models.ReportType
 
 @this(
         layout: templates.Layout,
         formHelper: FormWithCSRF,
         govukButton: GovukButton,
+        warning: components.Warning,
         appConfig: config.FrontendAppConfig
 )
 
-@(extraParaCondition : SendYourFileAdditionalText.Value)(implicit request: Request[_], messages: Messages)
+@(extraParaCondition : SendYourFileAdditionalText.Value, reportType: ReportType)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("sendYourFile.title"))) {
 
@@ -42,6 +44,9 @@
             case _ => { <p class="govuk-body">@messages("sendYourFile.p1")</p> }
         }
         <p class="govuk-body">@messages("sendYourFile.p2")</p>
+        @if(requiresWarningMessage(reportType)) {
+            @warning(messages(messageKeyForReportTypeWithWarning(reportType)))
+        }
         <div id="processing" aria-live="polite" role="status" class="govuk-!-margin-bottom-5 govuk-!-margin-top-5">
         </div>
         <p class="govuk-body">

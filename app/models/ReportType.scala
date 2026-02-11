@@ -101,7 +101,7 @@ object FATCAReportType:
 
 def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = true): String =
   reportType match
-    case CRSReportType.TestData     if includeTestData                 => "reportType.testData"
+    case CRSReportType.TestData                                        => if (includeTestData) "reportType.testData" else "reportType.empty"
     case CRSReportType.NilReport                                       => "reportType.nilReport"
     case CRSReportType.NewInformation                                  => "reportType.newInformation"
     case CRSReportType.CorrectedInformationForExistingReport           => "reportType.correctedAndDeletedInformationForExistingReport"
@@ -111,3 +111,21 @@ def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = t
     case CRSReportType.DeletionOfExistingReport                        => "reportType.deletionOfExistingReport"
 
     case _ => "reportType.fatca"
+
+def requiresWarningMessage(reportType: ReportType): Boolean =
+  Seq(
+    CRSReportType.TestData,
+    CRSReportType.DeletedInformationForExistingReport,
+    CRSReportType.DeletionOfExistingReport,
+    CRSReportType.CorrectedInformationForExistingReport,
+    CRSReportType.CorrectedAndDeletedInformationForExistingReport
+  ).contains(reportType)
+
+def messageKeyForReportTypeWithWarning(reportType: ReportType): String =
+  Map[ReportType, String](
+    CRSReportType.TestData                                        -> "reportType.testData.warning",
+    CRSReportType.DeletedInformationForExistingReport             -> "reportType.deletedInformationForExistingReport.warning",
+    CRSReportType.CorrectedInformationForExistingReport           -> "reportType.correctedInformationForExistingReport.warning",
+    CRSReportType.CorrectedAndDeletedInformationForExistingReport -> "reportType.correctedAndDeletedInformationForExistingReport.warning",
+    CRSReportType.DeletionOfExistingReport                        -> "reportType.deletionOfExistingReport.warning"
+  ).getOrElse(reportType, "reportType.empty.warning")

@@ -316,6 +316,7 @@ change.crs.reporting.gross.proceeds.for.carf.hidden.text = Change if they are al
 change.fatca.treasuryRegulation.hidden.text = Change if they are using due diligence procedures from US Treasury Regulations for FATCA
 change.fatca.threshold.hidden.text = Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA
 
+reportType.empty =
 reportType.testData = Test data
 reportType.nilReport = Nil report
 reportType.newInformation = New information
@@ -326,3 +327,10 @@ reportType.deletionOfExistingReport= Deletion of an existing report
 reportType.additionalInformationForExistingReport = Additional information for an existing report
 
 reportType.fatca = New information
+
+reportType.empty.warning=
+reportType.testData.warning = We cannot complete all checks on test data or accept the file.
+reportType.deletionOfExistingReport.warning = This will permanently delete an existing report.
+reportType.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
+reportType.deletedInformationForExistingReport.warning = This will permanently delete reported information marked for deletion.
+reportType.correctedAndDeletedInformationForExistingReport.warning = This will permanently change reported information marked as a correction. It will also permanently delete reported information marked for deletion.
