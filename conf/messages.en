@@ -325,6 +325,7 @@ reportType.correctedAndDeletedInformationForExistingReport = Corrected and delet
 reportType.deletedInformationForExistingReport = Deleted information for an existing report
 reportType.deletionOfExistingReport= Deletion of an existing report
 reportType.additionalInformationForExistingReport = Additional information for an existing report
+reportType.correctedInformationForExistingReport = Corrected information for an existing report
 
 reportType.fatca = New information
 
