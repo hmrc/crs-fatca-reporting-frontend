@@ -25,6 +25,7 @@ class ReportTypeSpec extends SpecBase {
       "must return the correct message key for each CRSReportType value" in {
         messageKeyForReportType(CRSReportType.TestData) mustBe "reportType.testData"
         messageKeyForReportType(CRSReportType.TestData, false) mustBe "reportType.empty"
+        messageKeyForReportType(CRSReportType.CorrectedInformationForExistingReport) mustBe "reportType.correctedInformationForExistingReport"
         messageKeyForReportType(CRSReportType.NilReport) mustBe "reportType.nilReport"
         messageKeyForReportType(CRSReportType.NewInformation) mustBe "reportType.newInformation"
         messageKeyForReportType(
