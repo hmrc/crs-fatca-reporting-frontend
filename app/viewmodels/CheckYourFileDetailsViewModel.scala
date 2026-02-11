@@ -19,7 +19,7 @@ package viewmodels
 import controllers.routes
 import models.MessageSpecData.name
 import models.UserAnswers.extractMessageSpecData
-import models.{CRS, CheckMode, FATCA, MessageType, UserAnswers, messageKeyForReportType}
+import models.{messageKeyForReportType, CRS, CheckMode, FATCA, MessageType, UserAnswers}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{QuestionPage, ReportElectionsPage, RequiredGiinPage}

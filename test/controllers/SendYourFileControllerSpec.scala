@@ -47,9 +47,10 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
   val hardcodedFiName                                = "testFiName"
   val exampleGiin                                    = "8Q298C.00000.LE.340"
   val conversationId: ConversationId                 = ConversationId("conversationId")
+  val messageSpecData                                = getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
 
   val ua: UserAnswers =
-    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)))
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "SendYourFile Controller" - {
 
@@ -66,7 +67,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
