@@ -18,17 +18,19 @@ package controllers
 
 import connectors.FileDetailsConnector
 import controllers.actions.*
+import models.GiinUpdateState.GinUpDateRequired
+import models.ReportElectionState.*
 import models.requests.DataRequest
 import models.submission.*
 import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import models.upscan.URL
-import models.{SendYourFileAdditionalText, UserAnswers, ValidatedFileData}
+import models.{FATCA, GiinUpdateState, ReportElectionState, SendYourFileAdditionalText, UserAnswers, ValidatedFileData}
 import pages.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
+import play.api.mvc.*
 import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import services.SubmissionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -54,12 +56,24 @@ class SendYourFileController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(validatedFileData) =>
-          Ok(view(SendYourFileAdditionalText.NONE))
-        case _ =>
+      request.userAnswers
+        .get(ValidXMLPage)
+        .fold(
           Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
-      }
+        ) {
+          validatedFileData =>
+            val reportElections = ReportElectionState.from(request.userAnswers.get(ReportElectionsPage))
+            val giinUpdate      = GiinUpdateState.from(validatedFileData.messageSpecData.giin)
+
+            val viewContent = (validatedFileData.messageSpecData.messageType, giinUpdate, reportElections) match {
+              case (FATCA, GinUpDateRequired, ElectionsReported)    => SendYourFileAdditionalText.BOTH
+              case (FATCA, GinUpDateRequired, ElectionsNotReported) => SendYourFileAdditionalText.GIIN
+              case (_, _, ElectionsReported)                        => SendYourFileAdditionalText.ELECTIONS
+              case _                                                => SendYourFileAdditionalText.NONE
+            }
+
+            Ok(view(viewContent))
+        }
   }
 
   def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {

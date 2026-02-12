@@ -54,13 +54,13 @@ class ReportElectionsController @Inject() (
 
           val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
           val regime          = messageSpecData.messageType.toString
-          val name            = messageSpecData.fiNameFromFim
+          val fiName            = messageSpecData.fiNameFromFim
 
           val preparedForm = request.userAnswers.get(ReportElectionsPage) match {
             case None        => form(regime)
             case Some(value) => form(regime).fill(value)
           }
-          Ok(view(reportingPeriod, regime, name, preparedForm, mode))
+          Ok(view(reportingPeriod, regime, fiName, preparedForm, mode))
       }
   }
 
