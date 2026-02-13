@@ -17,14 +17,38 @@
 package controllers
 
 import base.SpecBase
+import models.{CRS, CRSReportType}
+import pages.ValidXMLPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+
+import java.time.LocalDate
 
 class FilePassedChecksControllerSpec extends SpecBase {
 
   "FilePassedChecks Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val reportingPeriodYear = 2025
+      val answers =
+        emptyUserAnswers.withPage(
+          ValidXMLPage,
+          getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1)))
+        )
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.FilePassedChecksController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+        contentAsString(result) must include("testRefId")
+        contentAsString(result) must include("Passed")
+      }
+    }
+
+    "must redirect to page unavailable when validxml page is not present" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -33,9 +57,8 @@ class FilePassedChecksControllerSpec extends SpecBase {
 
         val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) must include("MyFATCAReportMessageRefId1234567890")
-        contentAsString(result) must include("Passed")
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
     }
   }
