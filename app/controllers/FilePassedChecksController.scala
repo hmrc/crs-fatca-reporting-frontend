@@ -37,7 +37,7 @@ class FilePassedChecksController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val action  = "#"
+      val action  = controllers.routes.FileConfirmationController.onPageLoad().url
       val summary = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Accepted")
       Ok(view(summary, action))
   }
