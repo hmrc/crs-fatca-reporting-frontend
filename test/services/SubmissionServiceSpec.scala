@@ -29,7 +29,6 @@ import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, 
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import play.api.test.FakeRequest
-import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global

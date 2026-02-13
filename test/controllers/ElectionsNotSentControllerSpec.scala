@@ -72,7 +72,7 @@ class ElectionsNotSentControllerSpec extends SpecBase {
           contentAsString(result) mustEqual view(true)(request, messages(application)).toString
         }
       }
-      "must return REDIRECT and the correct view for a GET When no required data" in {
+      "must return REDIRECT for a GET When no required data" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.withPage(RequiredGiinPage, "98096B.00000.LE.350"))).build()
 
@@ -80,8 +80,6 @@ class ElectionsNotSentControllerSpec extends SpecBase {
           val request = FakeRequest(GET, routes.ElectionsNotSentController.onPageLoad().url)
 
           val result = route(application, request).value
-
-          val view = application.injector.instanceOf[ElectionsNotSentView]
 
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.routes.JourneyRecoveryController.onPageLoad().url
