@@ -17,6 +17,8 @@
 package views
 
 import base.SpecBase
+import models.{CRS, MessageSpecData}
+import models.CRSReportType.NewInformation
 import models.SendYourFileAdditionalText.{BOTH, ELECTIONS, GIIN, NONE}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -31,9 +33,9 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
 
   val view1: SendYourFileView                                           = app.injector.instanceOf[SendYourFileView]
   val messagesControllerComponentsForView: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-
-  implicit private val request: FakeRequest[AnyContent] = FakeRequest()
-  implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
+  val messageSpecData: MessageSpecData                                  = getMessageSpecData(CRS, fiNameFromFim = "some-fi-name", reportType = NewInformation)
+  implicit private val request: FakeRequest[AnyContent]                 = FakeRequest()
+  implicit private val messages: Messages                               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "SendYourFileView" - {
     val paragraphValues = Seq(
@@ -41,7 +43,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       "By sending this file, you are confirming that the information is correct and complete to the best of your knowledge."
     )
     "should render page components with none" in {
-      val renderedHtml: HtmlFormat.Appendable = view1(NONE)
+      val renderedHtml: HtmlFormat.Appendable = view1(NONE, messageSpecData.reportType)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Send your file")
@@ -55,7 +57,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
     }
 
     "should render page components with both" in {
-      val renderedHtml: HtmlFormat.Appendable = view1(BOTH)
+      val renderedHtml: HtmlFormat.Appendable = view1(BOTH, messageSpecData.reportType)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Send your file")
@@ -69,7 +71,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
     }
 
     "should render page components with only giin" in {
-      val renderedHtml: HtmlFormat.Appendable = view1(GIIN)
+      val renderedHtml: HtmlFormat.Appendable = view1(GIIN, messageSpecData.reportType)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Send your file")
@@ -83,7 +85,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
     }
 
     "should render page components with only elections" in {
-      val renderedHtml: HtmlFormat.Appendable = view1(ELECTIONS)
+      val renderedHtml: HtmlFormat.Appendable = view1(ELECTIONS, messageSpecData.reportType)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("Send your file")

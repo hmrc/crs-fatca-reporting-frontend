@@ -56,7 +56,7 @@ class SendYourFileController @Inject() (
     implicit request =>
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
-          Ok(view(SendYourFileAdditionalText.NONE))
+          Ok(view(SendYourFileAdditionalText.NONE, validatedFileData.messageSpecData.reportType))
         case _ =>
           Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
       }

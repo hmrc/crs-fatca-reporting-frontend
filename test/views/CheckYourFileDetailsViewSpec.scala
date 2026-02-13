@@ -60,7 +60,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       doc.select(".govuk-summary-list").size() mustBe 1
       val elements = doc.select(".govuk-summary-list__row")
       elements.size() mustBe 5
-      verifyFileDetails(elements, "CRS")
+      verifyFileDetails(elements, "CRS", "Test data")
       doc.select("#submit").text() mustBe "Continue"
 
       doc.text() must not include "File details"
@@ -85,7 +85,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       headings.get(1).text() mustBe "Financial institution details"
       val elements = doc.select(".govuk-summary-list__row")
       elements.size() mustBe 6
-      verifyFileDetails(elements, "FATCA")
+      verifyFileDetails(elements, "FATCA", "New information")
       assertRowValue(elements, 5, summaryKeyLocator, "Global Intermediary Identification Number")
       assertRowValue(elements, 5, summaryValueLocator, "testGIINValue")
     }
@@ -110,7 +110,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       val elements = doc.select(".govuk-summary-list__row")
       elements.size() mustBe 6
 
-      verifyFileDetails(elements, "CRS")
+      verifyFileDetails(elements, "CRS", "Test data")
       val text = elements.get(5).select(summaryKeyLocator).text()
       text must include("Do you want to make any elections for the CRS reporting period")
       assertRowValue(elements, 5, summaryValueLocator, "No")
@@ -120,7 +120,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       getWindowTitle(doc) mustEqual s"Check your file details are correct for the financial institution - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual s"Check your file details are correct for $expectedFiName"
 
-    def verifyFileDetails(elements: Elements, messageType: String) =
+    def verifyFileDetails(elements: Elements, messageType: String, reportType: String) =
       assertRowValue(elements, 0, summaryKeyLocator, "File ID (MessageRefId)")
       assertRowValue(elements, 0, summaryValueLocator, "testRefId")
       assertRowValue(elements, 1, summaryKeyLocator, "Reporting regime (MessageType)")
@@ -130,7 +130,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       assertRowValue(elements, 3, summaryKeyLocator, "Financial institution (ReportingFI Name)")
       assertRowValue(elements, 3, summaryValueLocator, "testReportingName")
       assertRowValue(elements, 4, summaryKeyLocator, "File information")
-      assertRowValue(elements, 4, summaryValueLocator, "New information")
+      assertRowValue(elements, 4, summaryValueLocator, reportType)
 
     def assertRowValue(elements: Elements, index: Int, key: String, value: String) = elements.get(index).select(key).text() mustBe value
   }

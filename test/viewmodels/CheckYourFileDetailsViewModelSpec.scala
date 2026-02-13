@@ -48,7 +48,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
-              Value(Text("New information")),
+              Value(Text("Test data")),
               "",
               Some(
                 Actions(
