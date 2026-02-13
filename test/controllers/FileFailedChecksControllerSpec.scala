@@ -59,7 +59,7 @@ class FileFailedChecksControllerSpec extends SpecBase {
         val request = FakeRequest(GET, routes.FileFailedChecksController.onPageLoad().url)
 
         val result = route(application, request).value
-        
+
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
