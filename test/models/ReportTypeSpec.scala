@@ -23,17 +23,17 @@ class ReportTypeSpec extends SpecBase {
   "messageKeyForReportType" - {
     "CRSReportType" - {
       "must return the correct message key for each CRSReportType value" in {
-        messageKeyForReportType(CRSReportType.TestData) mustBe "reportType.testData"
-        messageKeyForReportType(CRSReportType.TestData, false) mustBe "reportType.empty"
-        messageKeyForReportType(CRSReportType.CorrectedInformationForExistingReport) mustBe "reportType.correctedInformationForExistingReport"
-        messageKeyForReportType(CRSReportType.NilReport) mustBe "reportType.nilReport"
-        messageKeyForReportType(CRSReportType.NewInformation) mustBe "reportType.newInformation"
+        messageKeyForReportType(CRSReportType.TestData) mustBe "reportType.crs.testData"
+        messageKeyForReportType(CRSReportType.TestData, false) mustBe "reportType.crs.empty"
+        messageKeyForReportType(CRSReportType.CorrectedInformationForExistingReport) mustBe "reportType.crs.correctedInformationForExistingReport"
+        messageKeyForReportType(CRSReportType.NilReport) mustBe "reportType.crs.nilReport"
+        messageKeyForReportType(CRSReportType.NewInformation) mustBe "reportType.crs.newInformation"
         messageKeyForReportType(
           CRSReportType.CorrectedAndDeletedInformationForExistingReport
-        ) mustBe "reportType.correctedAndDeletedInformationForExistingReport"
-        messageKeyForReportType(CRSReportType.DeletedInformationForExistingReport) mustBe "reportType.deletedInformationForExistingReport"
-        messageKeyForReportType(CRSReportType.DeletionOfExistingReport) mustBe "reportType.deletionOfExistingReport"
-        messageKeyForReportType(CRSReportType.AdditionalInformationForExistingReport) mustBe "reportType.additionalInformationForExistingReport"
+        ) mustBe "reportType.crs.correctedAndDeletedInformationForExistingReport"
+        messageKeyForReportType(CRSReportType.DeletedInformationForExistingReport) mustBe "reportType.crs.deletedInformationForExistingReport"
+        messageKeyForReportType(CRSReportType.DeletionOfExistingReport) mustBe "reportType.crs.deletionOfExistingReport"
+        messageKeyForReportType(CRSReportType.AdditionalInformationForExistingReport) mustBe "reportType.crs.additionalInformationForExistingReport"
       }
     }
 
@@ -60,15 +60,17 @@ class ReportTypeSpec extends SpecBase {
   "messageKeyForReportTypeWithWarning" - {
     "CRSReportType" - {
       "must return the correct message key for each CRSReportType value that requires a warning message" in {
-        messageKeyForReportTypeWithWarning(CRSReportType.TestData) mustBe "reportType.testData.warning"
-        messageKeyForReportTypeWithWarning(CRSReportType.DeletedInformationForExistingReport) mustBe "reportType.deletedInformationForExistingReport.warning"
-        messageKeyForReportTypeWithWarning(CRSReportType.DeletionOfExistingReport) mustBe "reportType.deletionOfExistingReport.warning"
+        messageKeyForReportTypeWithWarning(CRSReportType.TestData) mustBe "reportType.crs.testData.warning"
+        messageKeyForReportTypeWithWarning(
+          CRSReportType.DeletedInformationForExistingReport
+        ) mustBe "reportType.crs.deletedInformationForExistingReport.warning"
+        messageKeyForReportTypeWithWarning(CRSReportType.DeletionOfExistingReport) mustBe "reportType.crs.deletionOfExistingReport.warning"
         messageKeyForReportTypeWithWarning(
           CRSReportType.CorrectedInformationForExistingReport
-        ) mustBe "reportType.correctedInformationForExistingReport.warning"
+        ) mustBe "reportType.crs.correctedInformationForExistingReport.warning"
         messageKeyForReportTypeWithWarning(
           CRSReportType.CorrectedAndDeletedInformationForExistingReport
-        ) mustBe "reportType.correctedAndDeletedInformationForExistingReport.warning"
+        ) mustBe "reportType.crs.correctedAndDeletedInformationForExistingReport.warning"
       }
     }
   }

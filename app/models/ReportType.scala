@@ -101,14 +101,14 @@ object FATCAReportType:
 
 def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = true): String =
   reportType match
-    case CRSReportType.TestData                                        => if (includeTestData) "reportType.testData" else "reportType.empty"
-    case CRSReportType.NilReport                                       => "reportType.nilReport"
-    case CRSReportType.NewInformation                                  => "reportType.newInformation"
-    case CRSReportType.CorrectedInformationForExistingReport           => "reportType.correctedInformationForExistingReport"
-    case CRSReportType.CorrectedAndDeletedInformationForExistingReport => "reportType.correctedAndDeletedInformationForExistingReport"
-    case CRSReportType.DeletedInformationForExistingReport             => "reportType.deletedInformationForExistingReport"
-    case CRSReportType.AdditionalInformationForExistingReport          => "reportType.additionalInformationForExistingReport"
-    case CRSReportType.DeletionOfExistingReport                        => "reportType.deletionOfExistingReport"
+    case CRSReportType.TestData                                        => if (includeTestData) "reportType.crs.testData" else "reportType.crs.empty"
+    case CRSReportType.NilReport                                       => "reportType.crs.nilReport"
+    case CRSReportType.NewInformation                                  => "reportType.crs.newInformation"
+    case CRSReportType.CorrectedInformationForExistingReport           => "reportType.crs.correctedInformationForExistingReport"
+    case CRSReportType.CorrectedAndDeletedInformationForExistingReport => "reportType.crs.correctedAndDeletedInformationForExistingReport"
+    case CRSReportType.DeletedInformationForExistingReport             => "reportType.crs.deletedInformationForExistingReport"
+    case CRSReportType.AdditionalInformationForExistingReport          => "reportType.crs.additionalInformationForExistingReport"
+    case CRSReportType.DeletionOfExistingReport                        => "reportType.crs.deletionOfExistingReport"
 
     case _ => "reportType.fatca"
 
@@ -123,9 +123,9 @@ def requiresWarningMessage(reportType: ReportType): Boolean =
 
 def messageKeyForReportTypeWithWarning(reportType: ReportType): String =
   Map[ReportType, String](
-    CRSReportType.TestData                                        -> "reportType.testData.warning",
-    CRSReportType.DeletedInformationForExistingReport             -> "reportType.deletedInformationForExistingReport.warning",
-    CRSReportType.CorrectedInformationForExistingReport           -> "reportType.correctedInformationForExistingReport.warning",
-    CRSReportType.CorrectedAndDeletedInformationForExistingReport -> "reportType.correctedAndDeletedInformationForExistingReport.warning",
-    CRSReportType.DeletionOfExistingReport                        -> "reportType.deletionOfExistingReport.warning"
-  ).getOrElse(reportType, "reportType.empty.warning")
+    CRSReportType.TestData                                        -> "reportType.crs.testData.warning",
+    CRSReportType.DeletedInformationForExistingReport             -> "reportType.crs.deletedInformationForExistingReport.warning",
+    CRSReportType.CorrectedInformationForExistingReport           -> "reportType.crs.correctedInformationForExistingReport.warning",
+    CRSReportType.CorrectedAndDeletedInformationForExistingReport -> "reportType.crs.correctedAndDeletedInformationForExistingReport.warning",
+    CRSReportType.DeletionOfExistingReport                        -> "reportType.crs.deletionOfExistingReport.warning"
+  ).getOrElse(reportType, "reportType.crs.empty.warning")
