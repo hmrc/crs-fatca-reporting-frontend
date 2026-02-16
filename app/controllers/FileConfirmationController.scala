@@ -20,9 +20,7 @@ import controllers.actions.*
 import models.fileDetails.FileDetails
 import models.messageKeyForReportType
 import pages.ValidXMLPage
-
-import javax.inject.Inject
-import play.api.i18n.{I18nSupport, Lang, Langs, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats
@@ -31,6 +29,7 @@ import viewmodels.FileConfirmationViewModel
 import views.html.FileConfirmationView
 
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 class FileConfirmationController @Inject() (
   override val messagesApi: MessagesApi,
