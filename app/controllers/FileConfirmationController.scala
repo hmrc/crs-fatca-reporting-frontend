@@ -38,26 +38,29 @@ class FileConfirmationController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: FileConfirmationView,
-  langs: Langs
+  view: FileConfirmationView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val lang: Lang = langs.availables.head
       request.userAnswers.get(ValidXMLPage) match {
         case Some(validatedFileData) =>
-          val messageSpecData = validatedFileData.messageSpecData
-          val submittedTime   = LocalDateTime.parse("2025-09-12T12:01:00")
-          val date            = submittedTime.format(dateFormatterForFileConfirmation())
-          val time            = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
+          implicit val messages: Messages = messagesApi.preferred(request)
+          val messageSpecData             = validatedFileData.messageSpecData
+
+          val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
+          val date          = submittedTime.format(dateFormatterForFileConfirmation())
+          val time          = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
+
+          val reportTypeLabel = messages(messageKeyForReportType(messageSpecData.reportType, false))
+
           val fileDetails = FileDetails(
             "name.xml",
             "c-8-new-f-va",
             "CRS",
             "EFG Bank plc",
-            messagesApi(messageKeyForReportType(messageSpecData.reportType, false))(lang),
+            reportTypeLabel,
             submittedTime,
             LocalDateTime.now()
           )
