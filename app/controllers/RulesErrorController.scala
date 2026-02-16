@@ -19,6 +19,7 @@ package controllers
 import controllers.actions.*
 import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
+import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -37,12 +38,16 @@ class RulesErrorController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val fileName     = "filename.xml"
-      val regimentType = "CRS"
-      val errorLength  = 101
-      Ok(view(fileName, regimentType, errorLength, createFileRejectedViewModel()))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validXmlData) =>
+          val fileName    = validXmlData.fileName
+          val regimeType  = validXmlData.messageSpecData.messageType
+          val errorLength = 101
+          Ok(view(fileName, regimeType.toString, errorLength, createFileRejectedViewModel()))
+        case _ => Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+      }
   }
 
   // Todo This will be replaced with real data from the connector when the backend is done
