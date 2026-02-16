@@ -54,16 +54,11 @@ class FileFailedChecksControllerSpec extends SpecBase {
 
     "must redirect to page unavailable when valid xml page is missing" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      val messagesApi = messages(application)
-
-      val summary = FileCheckViewModel.createFileSummary(messageRefId, "Rejected")(messagesApi)
 
       running(application) {
         val request = FakeRequest(GET, routes.FileFailedChecksController.onPageLoad().url)
 
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[FileFailedChecksView]
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
