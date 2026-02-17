@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.*
+import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -35,10 +36,15 @@ class FilePassedChecksController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      val action  = controllers.routes.FileConfirmationController.onPageLoad().url
-      val summary = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Accepted")
-      Ok(view(summary, action))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(validData) =>
+          val action  = "#"
+          val summary = FileCheckViewModel.createFileSummary(validData.messageSpecData.messageRefId, "Accepted")
+          Ok(view(summary, action))
+        case None =>
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+      }
   }
 }
