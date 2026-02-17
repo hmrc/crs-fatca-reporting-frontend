@@ -72,7 +72,7 @@ class SendYourFileController @Inject() (
               case _                                                => SendYourFileAdditionalText.NONE
             }
 
-            Ok(view(viewContent))
+            Ok(view(viewContent, validatedFileData.messageSpecData.reportType))
         }
   }
 

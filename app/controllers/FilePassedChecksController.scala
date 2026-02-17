@@ -46,6 +46,5 @@ class FilePassedChecksController @Inject() (
         case None =>
           Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
-
   }
 }
