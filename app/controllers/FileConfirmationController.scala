@@ -52,7 +52,7 @@ class FileConfirmationController @Inject() (
           val date          = submittedTime.format(dateFormatterForFileConfirmation())
           val time          = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
 
-          val reportTypeLabel = messages(messageKeyForReportType(messageSpecData.reportType, false))
+          val reportTypeLabel = messages(messageKeyForReportType(messageSpecData.reportType))
 
           val fileDetails = FileDetails(
             "name.xml",

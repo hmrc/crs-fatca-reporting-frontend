@@ -24,7 +24,6 @@ class ReportTypeSpec extends SpecBase {
     "CRSReportType" - {
       "must return the correct message key for each CRSReportType value" in {
         messageKeyForReportType(CRSReportType.TestData) mustBe "reportType.crs.testData"
-        messageKeyForReportType(CRSReportType.TestData, false) mustBe "reportType.crs.empty"
         messageKeyForReportType(CRSReportType.CorrectedInformationForExistingReport) mustBe "reportType.crs.correctedInformationForExistingReport"
         messageKeyForReportType(CRSReportType.NilReport) mustBe "reportType.crs.nilReport"
         messageKeyForReportType(CRSReportType.NewInformation) mustBe "reportType.crs.newInformation"
@@ -34,6 +33,15 @@ class ReportTypeSpec extends SpecBase {
         messageKeyForReportType(CRSReportType.DeletedInformationForExistingReport) mustBe "reportType.crs.deletedInformationForExistingReport"
         messageKeyForReportType(CRSReportType.DeletionOfExistingReport) mustBe "reportType.crs.deletionOfExistingReport"
         messageKeyForReportType(CRSReportType.AdditionalInformationForExistingReport) mustBe "reportType.crs.additionalInformationForExistingReport"
+      }
+    }
+    "FATCAReportType" - {
+      "must return the correct message key for each FATCAReportType value" in {
+        messageKeyForReportType(FATCAReportType.TestData) mustBe "reportType.fatca.testData"
+        messageKeyForReportType(FATCAReportType.NilReport) mustBe "reportType.fatca.nilReport"
+        messageKeyForReportType(FATCAReportType.NewInformation) mustBe "reportType.fatca.newInformation"
+        messageKeyForReportType(FATCAReportType.CorrectedInformationForExistingReport) mustBe "reportType.fatca.correctedInformationForExistingReport"
+        messageKeyForReportType(FATCAReportType.AmendedInformationForExistingReport) mustBe "reportType.fatca.amendedInformationForExistingReport"
       }
     }
 
@@ -55,6 +63,19 @@ class ReportTypeSpec extends SpecBase {
         requiresWarningMessage(CRSReportType.AdditionalInformationForExistingReport) mustBe false
       }
     }
+    "FATCAReportType" - {
+      "must return true for FATCAReportType values that require a warning message" in {
+        requiresWarningMessage(FATCAReportType.TestData) mustBe true
+        requiresWarningMessage(FATCAReportType.CorrectedInformationForExistingReport) mustBe true
+        requiresWarningMessage(FATCAReportType.AmendedInformationForExistingReport) mustBe true
+      }
+
+      "must return false for FATCAReportType values that do not require a warning message" in {
+        requiresWarningMessage(FATCAReportType.NilReport) mustBe false
+        requiresWarningMessage(FATCAReportType.NewInformation) mustBe false
+        requiresWarningMessage(FATCAReportType.VoidReport) mustBe false
+      }
+    }
   }
 
   "messageKeyForReportTypeWithWarning" - {
@@ -71,6 +92,18 @@ class ReportTypeSpec extends SpecBase {
         messageKeyForReportTypeWithWarning(
           CRSReportType.CorrectedAndDeletedInformationForExistingReport
         ) mustBe "reportType.crs.correctedAndDeletedInformationForExistingReport.warning"
+      }
+    }
+
+    "FATCAReportType" - {
+      "must return the correct message key for each FATCAReportType value that requires a warning message" in {
+        messageKeyForReportTypeWithWarning(FATCAReportType.TestData) mustBe "reportType.fatca.testData.warning"
+        messageKeyForReportTypeWithWarning(
+          FATCAReportType.CorrectedInformationForExistingReport
+        ) mustBe "reportType.fatca.correctedInformationForExistingReport.warning"
+        messageKeyForReportTypeWithWarning(
+          FATCAReportType.AmendedInformationForExistingReport
+        ) mustBe "reportType.fatca.amendedInformationForExistingReport.warning"
       }
     }
   }
