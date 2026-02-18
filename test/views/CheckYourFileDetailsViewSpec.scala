@@ -85,7 +85,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       headings.get(1).text() mustBe "Financial institution details"
       val elements = doc.select(".govuk-summary-list__row")
       elements.size() mustBe 6
-      verifyFileDetails(elements, "FATCA", "New information")
+      verifyFileDetails(elements, "FATCA", "Test data")
       assertRowValue(elements, 5, summaryKeyLocator, "Global Intermediary Identification Number")
       assertRowValue(elements, 5, summaryValueLocator, "testGIINValue")
     }

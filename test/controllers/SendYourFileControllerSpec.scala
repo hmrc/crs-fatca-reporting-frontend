@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.FATCAReportType.TestData
 import models.fileDetails.FileValidationErrors
 import models.requests.DataRequest
 import models.submission.*
