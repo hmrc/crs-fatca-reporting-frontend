@@ -20,10 +20,11 @@ import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.fileDetails.FileValidationErrors
-import models.{CRS, MessageSpecData, UserAnswers}
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.{FileErrors, FileValidationErrors}
 import models.submission.ConversationId
-import models.submission.fileDetails.{Accepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import models.submission.fileDetails.*
+import models.{CRS, MessageSpecData, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalactic.Prettifier.default
@@ -148,28 +149,6 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to file checks failed when file status is Rejected" in {
-      val validationErrors = FileValidationErrors(None, None)
-      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
-
-      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
-        .overrides(
-          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
-        )
-        .build()
-
-      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
-        .thenReturn(Future.successful(Some(Rejected(validationErrors))))
-
-      running(application) {
-        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
-        val result  = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.FileFailedChecksController.onPageLoad().url
-      }
-    }
-
     "must return internal server error when file status returned is None" in {
       val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
 
@@ -204,6 +183,77 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "must redirect to file checks failed when file status is Rejected" in {
+      val validationErrors = FileValidationErrors(None, None)
+      val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+      val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+        .overrides(
+          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        )
+        .build()
+
+      when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+        val result  = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.FileFailedChecksController.onPageLoad().url
+      }
+    }
+
+    "must redirect to file-not-accepted" - {
+      "when file status is Rejected with Temp CRS Error Code 2" in {
+        val errors = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
+        val validationErrors = FileValidationErrors(Some(errors), None)
+
+        val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
+        }
+      }
+      "when file status is Rejected with Temp FATCA Error Code 2" in {
+        val errors = Seq(FileErrors(FailedSchemaValidationFatca, Some("Failed Schema Validation")))
+        val validationErrors = FileValidationErrors(Some(errors), None)
+
+        val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
+        }
       }
     }
   }

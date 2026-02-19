@@ -16,13 +16,16 @@
 
 package models.fileDetails
 
-import play.api.libs.json.{__, JsString, Reads, Writes}
+import play.api.libs.json.*
+
 sealed abstract class BusinessRuleErrorCode(val code: String)
 
 object BusinessRuleErrorCode {
   case object InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
-  case object DocRefIDFormat extends BusinessRuleErrorCode("8001")
+  case object DocRefIDFormat extends BusinessRuleErrorCode("80001")
   case object CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
+  case object FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
+  case object FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
   case class UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -36,6 +39,10 @@ object BusinessRuleErrorCode {
   implicit val reads: Reads[BusinessRuleErrorCode] = __.read[String].map {
     case "50008" => InvalidMessageRefIDFormat
     case "80001" => DocRefIDFormat
-    case _       => CorrDocRefIdUnknown
+    case "80002" => CorrDocRefIdUnknown
+    case "Temp CRS Error Code 2" => FailedSchemaValidationCrs
+    case "Temp FATCA Error Code 2" => FailedSchemaValidationFatca
+    case otherCode => UnknownErrorCode(otherCode)
+
   }
 }
