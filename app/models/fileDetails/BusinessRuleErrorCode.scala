@@ -18,31 +18,40 @@ package models.fileDetails
 
 import play.api.libs.json.*
 
-sealed abstract class BusinessRuleErrorCode(val code: String)
+enum BusinessRuleErrorCode(val code: String):
+  case InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
+  case DocRefIDFormat extends BusinessRuleErrorCode("80001")
+  case CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
+  case FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
+  case FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
-object BusinessRuleErrorCode {
-  case object InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
-  case object DocRefIDFormat extends BusinessRuleErrorCode("80001")
-  case object CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
-  case object FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
-  case object FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
+  case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
-  case class UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
+object BusinessRuleErrorCode:
 
-  val values: Seq[BusinessRuleErrorCode] = Seq(InvalidMessageRefIDFormat, DocRefIDFormat)
+  private val values: Seq[BusinessRuleErrorCode] = Seq(
+    InvalidMessageRefIDFormat,
+    DocRefIDFormat,
+    CorrDocRefIdUnknown,
+    FailedSchemaValidationCrs,
+    FailedSchemaValidationFatca
+  )
 
-  implicit val writes: Writes[BusinessRuleErrorCode] = Writes[BusinessRuleErrorCode] {
-    x =>
+  private val lookup: Map[String, BusinessRuleErrorCode] =
+    values
+      .map(
+        value => value.code -> value
+      )
+      .toMap
+
+  implicit val format: Format[BusinessRuleErrorCode] = new Format[BusinessRuleErrorCode] {
+    def reads(json: JsValue): JsResult[BusinessRuleErrorCode] =
+      json
+        .validate[String]
+        .map(
+          code => lookup.getOrElse(code, UnknownErrorCode(code))
+        )
+
+    def writes(x: BusinessRuleErrorCode): JsValue =
       JsString(x.code)
   }
-
-  implicit val reads: Reads[BusinessRuleErrorCode] = __.read[String].map {
-    case "50008" => InvalidMessageRefIDFormat
-    case "80001" => DocRefIDFormat
-    case "80002" => CorrDocRefIdUnknown
-    case "Temp CRS Error Code 2" => FailedSchemaValidationCrs
-    case "Temp FATCA Error Code 2" => FailedSchemaValidationFatca
-    case otherCode => UnknownErrorCode(otherCode)
-
-  }
-}
