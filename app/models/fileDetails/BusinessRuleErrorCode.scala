@@ -16,26 +16,42 @@
 
 package models.fileDetails
 
-import play.api.libs.json.{__, JsString, Reads, Writes}
-sealed abstract class BusinessRuleErrorCode(val code: String)
+import play.api.libs.json.*
 
-object BusinessRuleErrorCode {
-  case object InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
-  case object DocRefIDFormat extends BusinessRuleErrorCode("8001")
-  case object CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
+enum BusinessRuleErrorCode(val code: String):
+  case InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
+  case DocRefIDFormat extends BusinessRuleErrorCode("80001")
+  case CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
+  case FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
+  case FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
-  case class UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
+  case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
-  val values: Seq[BusinessRuleErrorCode] = Seq(InvalidMessageRefIDFormat, DocRefIDFormat)
+object BusinessRuleErrorCode:
 
-  implicit val writes: Writes[BusinessRuleErrorCode] = Writes[BusinessRuleErrorCode] {
-    x =>
+  private val values: Seq[BusinessRuleErrorCode] = Seq(
+    InvalidMessageRefIDFormat,
+    DocRefIDFormat,
+    CorrDocRefIdUnknown,
+    FailedSchemaValidationCrs,
+    FailedSchemaValidationFatca
+  )
+
+  private val lookup: Map[String, BusinessRuleErrorCode] =
+    values
+      .map(
+        value => value.code -> value
+      )
+      .toMap
+
+  implicit val format: Format[BusinessRuleErrorCode] = new Format[BusinessRuleErrorCode] {
+    def reads(json: JsValue): JsResult[BusinessRuleErrorCode] =
+      json
+        .validate[String]
+        .map(
+          code => lookup.getOrElse(code, UnknownErrorCode(code))
+        )
+
+    def writes(x: BusinessRuleErrorCode): JsValue =
       JsString(x.code)
   }
-
-  implicit val reads: Reads[BusinessRuleErrorCode] = __.read[String].map {
-    case "50008" => InvalidMessageRefIDFormat
-    case "80001" => DocRefIDFormat
-    case _       => CorrDocRefIdUnknown
-  }
-}

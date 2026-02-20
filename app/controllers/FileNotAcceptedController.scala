@@ -16,12 +16,14 @@
 
 package controllers
 
-import controllers.actions._
-import javax.inject.Inject
+import controllers.actions.*
+import models.MessageType
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.FileNotAcceptedView
+
+import javax.inject.Inject
 
 class FileNotAcceptedController @Inject() (
   override val messagesApi: MessagesApi,
@@ -33,9 +35,8 @@ class FileNotAcceptedController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(regimeType: MessageType): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      val placeHolderRegimeType: String = "CRS"
-      Ok(view(placeHolderRegimeType))
+      Ok(view(regimeType.toString))
   }
 }
