@@ -19,9 +19,10 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import controllers.actions.*
+import models.MessageType
 import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
 import models.fileDetails.FileValidationErrors
-import models.submission.fileDetails.{Pending, Rejected, RejectedSDES, RejectedSDESVirus, Accepted as FileStatusAccepted}
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -70,7 +71,7 @@ class StillCheckingYourFileController @Inject() (
             case Some(RejectedSDESVirus) =>
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
             case Some(Rejected(errors)) =>
-              val regime: String = xmlDetails.messageSpecData.messageType.toString
+              val regime = xmlDetails.messageSpecData.messageType
               handleRejectedWithErrors(errors, regime)
             case None =>
               Future.successful(InternalServerError(errorView()))
@@ -82,10 +83,12 @@ class StillCheckingYourFileController @Inject() (
 
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors, regime: String): Future[Result] = {
+  private def handleRejectedWithErrors(errors: FileValidationErrors, regime: MessageType): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val fileErrors = errors.fileError.getOrElse(Nil)
-    val isNotAccepted = fileErrors.isEmpty || fileErrors.exists(e => notAcceptedErrorCodes(e.code))
+    val fileErrors            = errors.fileError.getOrElse(Nil)
+    val isNotAccepted = fileErrors.isEmpty || fileErrors.exists(
+      e => notAcceptedErrorCodes(e.code)
+    )
 
     if (isNotAccepted) {
       Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(regime)))

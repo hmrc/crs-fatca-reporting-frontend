@@ -20,6 +20,7 @@ import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.FileNotAcceptedView
+import models.{CRS, FATCA}
 
 class FileNotAcceptedControllerSpec extends SpecBase {
 
@@ -28,34 +29,32 @@ class FileNotAcceptedControllerSpec extends SpecBase {
     "must return OK and the correct CRS view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      val regime      = "CRS"
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(regime).url)
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(CRS).url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[FileNotAcceptedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(CRS.toString)(request, messages(application)).toString
       }
     }
 
     "must return OK and the correct FATCA view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      val regime      = "FATCA"
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(regime).url)
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(FATCA).url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[FileNotAcceptedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regime)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(FATCA.toString)(request, messages(application)).toString
       }
     }
   }

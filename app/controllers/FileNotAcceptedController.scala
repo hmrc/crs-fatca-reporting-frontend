@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.*
+import models.MessageType
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -34,8 +35,8 @@ class FileNotAcceptedController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(regimeType: String): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(regimeType: MessageType): Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      Ok(view(regimeType))
+      Ok(view(regimeType.toString))
   }
 }
