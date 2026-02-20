@@ -84,14 +84,10 @@ class StillCheckingYourFileController @Inject() (
 
   private def handleRejectedWithErrors(errors: FileValidationErrors, regime: String): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
+    val fileErrors = errors.fileError.getOrElse(Nil)
+    val isNotAccepted = fileErrors.isEmpty || fileErrors.exists(e => notAcceptedErrorCodes(e.code))
 
-    val notAccepted = errors.fileError.exists(
-      _.exists(
-        e => notAcceptedErrorCodes(e.code)
-      )
-    )
-
-    if (notAccepted) {
+    if (isNotAccepted) {
       Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(regime)))
     } else {
       Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))

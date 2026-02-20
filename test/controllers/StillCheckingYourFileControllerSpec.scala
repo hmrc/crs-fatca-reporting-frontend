@@ -20,7 +20,7 @@ import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca, InvalidMessageRefIDFormat}
 import models.fileDetails.{FileErrors, FileValidationErrors}
 import models.submission.ConversationId
 import models.submission.fileDetails.*
@@ -186,8 +186,8 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to file checks failed when file status is Rejected" in {
-      val validationErrors = FileValidationErrors(None, None)
+    "must redirect to file checks failed when file status is Rejected (with errors)" in {
+      val validationErrors = FileValidationErrors(Some(Seq(FileErrors(InvalidMessageRefIDFormat, None))), None)
       val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
 
       val application = applicationBuilder(userAnswers = Some(validUserAnswers))
@@ -209,6 +209,28 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
     }
 
     "must redirect to file-not-accepted" - {
+      "when file status is Rejected but without errorcodes (unexpected response)" in {
+        val validationErrors = FileValidationErrors(None, None)
+
+        val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad("CRS").url
+        }
+      }
       "when file status is Rejected with Temp CRS Error Code 2" in {
         val errors           = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
         val validationErrors = FileValidationErrors(Some(errors), None)
