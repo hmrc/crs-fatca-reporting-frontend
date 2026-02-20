@@ -18,26 +18,44 @@ package controllers
 
 import base.SpecBase
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.FileNotAcceptedView
 
 class FileNotAcceptedControllerSpec extends SpecBase {
 
   "FileNotAccepted Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct CRS view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val regime      = "CRS"
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(regime).url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[FileNotAcceptedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("CRS")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regime)(request, messages(application)).toString
+      }
+    }
+
+    "must return OK and the correct FATCA view for a GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val regime      = "FATCA"
+
+      running(application) {
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(regime).url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[FileNotAcceptedView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(regime)(request, messages(application)).toString
       }
     }
   }
