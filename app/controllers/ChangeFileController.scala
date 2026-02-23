@@ -58,9 +58,9 @@ class ChangeFileController @Inject() (
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, giinOrElectionsProvided(request.userAnswers)))),
           {
             case true =>
-              sessionRepository.set(UserAnswers(request.userId)).map {
+              sessionRepository.clear(request.userId).flatMap {
                 _ =>
-                  Redirect(routes.IndexController.onPageLoad())
+                  Future.successful(Redirect(routes.IndexController.onPageLoad()))
               }
             case _ =>
               Future.successful(Redirect(routes.CheckYourFileDetailsController.onPageLoad()))

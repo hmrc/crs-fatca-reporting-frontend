@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import controllers.actions.*
 import forms.ChangeFileFormProvider
-import models.UserAnswers
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, verifyNoInteractions, when}
@@ -99,7 +98,7 @@ class ChangeFileControllerSpec extends SpecBase with MockitoSugar with PrivateMe
     "onSubmit" - {
       "must redirect to upload-file page when answer is Yes" in {
         val mockSessionRepository = mock[SessionRepository]
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
 
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -120,9 +119,9 @@ class ChangeFileControllerSpec extends SpecBase with MockitoSugar with PrivateMe
         }
 
       }
-      "must also reset UserAnswers when the user submits Yes" in {
+      "must also clear UserAnswers when the user submits Yes" in {
         val mockSessionRepository = mock[SessionRepository]
-        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockSessionRepository.clear(any())) thenReturn Future.successful(true)
 
         val existingAnswers = emptyUserAnswers
           .withPage(RequiredGiinPage, "test-giin")
@@ -139,13 +138,8 @@ class ChangeFileControllerSpec extends SpecBase with MockitoSugar with PrivateMe
           val result = route(application, request).value
           status(result) mustEqual SEE_OTHER
 
-          val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-          verify(mockSessionRepository).set(captor.capture())
-
-          val savedAnswers = captor.getValue
-
-          savedAnswers.get(RequiredGiinPage) must be(empty)
-          savedAnswers.get(ReportElectionsPage) must be(empty)
+          val idCaptor: ArgumentCaptor[String] = ArgumentCaptor.forClass(classOf[String])
+          verify(mockSessionRepository).clear(idCaptor.capture())
         }
       }
       "must redirect to check-your-file-details page when answer is No" in {
