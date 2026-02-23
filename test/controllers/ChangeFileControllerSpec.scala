@@ -17,15 +17,18 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.*
 import forms.ChangeFileFormProvider
 import models.UserAnswers
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, verifyNoInteractions, when}
+import org.scalatest.PrivateMethodTester
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{ReportElectionsPage, RequiredGiinPage}
+import play.api.i18n.MessagesApi
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -33,7 +36,7 @@ import views.html.ChangeFileView
 
 import scala.concurrent.Future
 
-class ChangeFileControllerSpec extends SpecBase with MockitoSugar {
+class ChangeFileControllerSpec extends SpecBase with MockitoSugar with PrivateMethodTester {
 
   private def onwardRoute = Call("GET", "/foo")
 
@@ -44,164 +47,201 @@ class ChangeFileControllerSpec extends SpecBase with MockitoSugar {
   private lazy val changeFileSubmitRoute = routes.ChangeFileController.onSubmit().url
 
   "ChangeFile Controller" - {
+    "onPageLoad" - {
+      "must return OK and the correct view for a GET when giin/elections provided" in {
 
-    "must return OK and the correct view for a GET when giin/elections provided" in {
+        val ua = emptyUserAnswers
+          .withPage(RequiredGiinPage, "test-giin")
+          .withPage(ReportElectionsPage, true)
 
-      val ua = emptyUserAnswers
-        .withPage(RequiredGiinPage, "test-giin")
-        .withPage(ReportElectionsPage, true)
+        val application = applicationBuilder(userAnswers = Some(ua)).build()
 
-      val application = applicationBuilder(userAnswers = Some(ua)).build()
+        running(application) {
+          val request = FakeRequest(GET, changeFileRoute)
 
-      running(application) {
-        val request = FakeRequest(GET, changeFileRoute)
+          val result = route(application, request).value
 
-        val result = route(application, request).value
+          val view = application.injector.instanceOf[ChangeFileView]
 
-        val view = application.injector.instanceOf[ChangeFileView]
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, true)(request, messages(application)).toString
+        }
+      }
+      "must return OK and the correct view for a GET when giin/elections are not provided" in {
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, true)(request, messages(application)).toString
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, changeFileRoute)
+
+          val result = route(application, request).value
+
+          val view = application.injector.instanceOf[ChangeFileView]
+
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, false)(request, messages(application)).toString
+        }
+      }
+      "must redirect to Journey Recovery for a GET if no existing data is found" in {
+
+        val application = applicationBuilder(userAnswers = None).build()
+
+        running(application) {
+          val request = FakeRequest(GET, changeFileRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
-    "must return OK and the correct view for a GET when giin/elections are not provided" in {
+    "onSubmit" - {
+      "must redirect to upload-file page when answer is Yes" in {
+        val mockSessionRepository = mock[SessionRepository]
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
-      running(application) {
-        val request = FakeRequest(GET, changeFileRoute)
+        running(application) {
+          val request =
+            FakeRequest(POST, changeFileSubmitRoute)
+              .withFormUrlEncodedBody(("value", "true"))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ChangeFileView]
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.IndexController.onPageLoad().url
+        }
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, false)(request, messages(application)).toString
       }
-    }
-    "must redirect to upload-file page when answer is Yes" in {
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      "must also reset UserAnswers when the user submits Yes" in {
+        val mockSessionRepository = mock[SessionRepository]
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
+        val existingAnswers = emptyUserAnswers
+          .withPage(RequiredGiinPage, "test-giin")
+          .withPage(ReportElectionsPage, true)
+
+        val application = applicationBuilder(userAnswers = Some(existingAnswers))
+          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
           .build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, changeFileSubmitRoute)
+        running(application) {
+          val request = FakeRequest(POST, routes.ChangeFileController.onSubmit().url)
             .withFormUrlEncodedBody(("value", "true"))
 
-        val result = route(application, request).value
+          val result = route(application, request).value
+          status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.IndexController.onPageLoad().url
+          val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+          verify(mockSessionRepository).set(captor.capture())
+
+          val savedAnswers = captor.getValue
+
+          savedAnswers.get(RequiredGiinPage) must be(empty)
+          savedAnswers.get(ReportElectionsPage) must be(empty)
+        }
       }
+      "must redirect to check-your-file-details page when answer is No" in {
 
-    }
+        val mockSessionRepository = mock[SessionRepository]
 
-    "must reset UserAnswers when the user selects 'Yes'" in {
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val existingAnswers = emptyUserAnswers
-        .withPage(RequiredGiinPage, "test-giin")
-        .withPage(ReportElectionsPage, true)
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+              bind[SessionRepository].toInstance(mockSessionRepository)
+            )
+            .build()
 
-      val application = applicationBuilder(userAnswers = Some(existingAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
+        running(application) {
+          val request =
+            FakeRequest(POST, changeFileSubmitRoute)
+              .withFormUrlEncodedBody(("value", "false"))
 
-      running(application) {
-        val request = FakeRequest(POST, routes.ChangeFileController.onSubmit().url)
-          .withFormUrlEncodedBody(("value", "true"))
+          val result = route(application, request).value
 
-        val result = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-
-        val captor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
-        verify(mockSessionRepository).set(captor.capture())
-
-        val savedAnswers = captor.getValue
-
-        savedAnswers.get(RequiredGiinPage) must be(empty)
-        savedAnswers.get(ReportElectionsPage) must be(empty)
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.CheckYourFileDetailsController.onPageLoad().url
+          verifyNoInteractions(mockSessionRepository)
+        }
       }
-    }
-    "must redirect to check-your-file-details page when answer is No" in {
+      "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val mockSessionRepository = mock[SessionRepository]
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+        running(application) {
+          val request =
+            FakeRequest(POST, changeFileSubmitRoute)
+              .withFormUrlEncodedBody(("value", ""))
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+          val boundForm = form.bind(Map("value" -> ""))
 
-      running(application) {
-        val request =
-          FakeRequest(POST, changeFileSubmitRoute)
-            .withFormUrlEncodedBody(("value", "false"))
+          val view = application.injector.instanceOf[ChangeFileView]
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.CheckYourFileDetailsController.onPageLoad().url
-        verifyNoInteractions(mockSessionRepository)
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, false)(request, messages(application)).toString
+        }
       }
-    }
-    "must return a Bad Request and errors when invalid data is submitted" in {
+      "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = None).build()
 
-      running(application) {
-        val request =
-          FakeRequest(POST, changeFileSubmitRoute)
-            .withFormUrlEncodedBody(("value", ""))
+        running(application) {
+          val request =
+            FakeRequest(POST, changeFileSubmitRoute)
+              .withFormUrlEncodedBody(("value", "true"))
 
-        val boundForm = form.bind(Map("value" -> ""))
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ChangeFileView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, false)(request, messages(application)).toString
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        }
       }
     }
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
+    "giinOrElectionsProvided" - {
+      val controller = new ChangeFileController(
+        mock[MessagesApi],
+        mockSessionRepository,
+        mock[IdentifierAction],
+        mock[DataRetrievalAction],
+        mock[DataRequiredAction],
+        formProvider,
+        mock[MessagesControllerComponents],
+        mock[ChangeFileView]
+      )(scala.concurrent.ExecutionContext.global)
+      val giinOrElectionsProvided = PrivateMethod[Boolean](Symbol("giinOrElectionsProvided"))
 
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, changeFileRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      "must return true if RequiredGiinPage is defined" in {
+        val userAnswers = emptyUserAnswers.withPage(RequiredGiinPage, "test-giin")
+        val result      = controller invokePrivate giinOrElectionsProvided(userAnswers)
+        result mustEqual true
       }
-    }
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, changeFileSubmitRoute)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      "must return true if ReportElectionsPage is true" in {
+        val userAnswers = emptyUserAnswers.withPage(ReportElectionsPage, true)
+        val result      = controller invokePrivate giinOrElectionsProvided(userAnswers)
+        result mustEqual true
       }
+      "must return false if neither RequiredGiinPage nor ReportElectionsPage is defined" in {
+        val userAnswers = emptyUserAnswers
+        val result      = controller invokePrivate giinOrElectionsProvided(userAnswers)
+        result mustEqual false
+      }
+      "must return false if RequiredGiinPage is not defined and ReportElectionsPage is false" in {
+        val userAnswers = emptyUserAnswers.withPage(ReportElectionsPage, false)
+        val result      = controller invokePrivate giinOrElectionsProvided(userAnswers)
+        result mustEqual false
+      }
+
     }
   }
 }
