@@ -100,3 +100,6 @@ GET        /report/status                                  controllers.IndexCont
 GET        /report/error                                   controllers.IndexController.showError(errorCode: String, errorMessage: String, errorRequestId: String)
 
 GET        /file-validation                                controllers.FileValidationController.onPageLoad()
+
+GET        /report/change-file                        controllers.ChangeFileController.onPageLoad()
+POST       /report/change-file                        controllers.ChangeFileController.onSubmit()

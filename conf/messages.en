@@ -335,3 +335,9 @@ reportType.crs.deletionOfExistingReport.warning = This will permanently delete a
 reportType.crs.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
 reportType.crs.deletedInformationForExistingReport.warning = This will permanently delete reported information marked for deletion.
 reportType.crs.correctedAndDeletedInformationForExistingReport.warning = This will permanently change reported information marked as a correction. It will also permanently delete reported information marked for deletion.
+
+changeFile.title = Are you sure you want to change your file?
+changeFile.heading = Are you sure you want to change your file?
+changeFile.hint.1 = We’ll delete your current file and answers.
+changeFile.hint.2 = We’ll delete your current file.
+changeFile.error.required = Select yes if you are sure you want to change your file
