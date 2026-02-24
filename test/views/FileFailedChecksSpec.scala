@@ -50,6 +50,7 @@ class FileFailedChecksSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       validateListValues(getAllElements(doc, ".govuk-summary-list__value"), listOfValues)
       elementText(doc, ".govuk-tag--red") mustEqual "Failed"
       elementText(doc, "#submit") mustEqual "Check errors"
+      getAllElements(doc, "#submit").first().attr("href") mustEqual "/report-for-crs-and-fatca/report/problem/rules-errors"
     }
   }
 }

@@ -50,7 +50,7 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
               messages(messageKeyForReportType(messageSpecData.reportType)),
               actionItem = Some(
                 ActionItem(
-                  href = routes.IndexController.onPageLoad().url,
+                  href = routes.ChangeFileController.onPageLoad().url,
                   content = Text(messages("checkYourFileDetails.fileInformation.change"))
                 )
               )

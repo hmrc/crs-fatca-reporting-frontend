@@ -54,7 +54,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.ChangeFileController.onPageLoad().url,
                       content = Text("Change file")
                     )
                   )
@@ -86,7 +86,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.ChangeFileController.onPageLoad().url,
                       content = Text("Change file")
                     )
                   )

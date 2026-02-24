@@ -342,3 +342,9 @@ reportType.crs.correctedAndDeletedInformationForExistingReport.warning = This wi
 reportType.fatca.testData.warning = We cannot complete all checks on test data or accept the file.
 reportType.fatca.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
 reportType.fatca.amendedInformationForExistingReport.warning = This will permanently change reported information marked as a amendment.
+
+changeFile.title = Are you sure you want to change your file?
+changeFile.heading = Are you sure you want to change your file?
+changeFile.hint.1 = We’ll delete your current file and answers.
+changeFile.hint.2 = We’ll delete your current file.
+changeFile.error.required = Select yes if you are sure you want to change your file
