@@ -48,13 +48,13 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
-              Value(Text("New information")),
+              Value(Text("Test data")),
               "",
               Some(
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.ChangeFileController.onPageLoad().url,
                       content = Text("Change file")
                     )
                   )
@@ -86,7 +86,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
                 Actions(
                   items = Seq(
                     ActionItem(
-                      href = routes.IndexController.onPageLoad().url,
+                      href = routes.ChangeFileController.onPageLoad().url,
                       content = Text("Change file")
                     )
                   )

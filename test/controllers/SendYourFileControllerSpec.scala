@@ -41,15 +41,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
-  private val mockSubmissionService: SubmissionService       = mock[SubmissionService]
-  private val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
-  private lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
-  private lazy val sendYourFileUrl: String                   = routes.SendYourFileController.onPageLoad().url
-  private val hardcodedFiName                                = "testFiName"
-  private val conversationId: ConversationId                 = ConversationId("conversationId")
+  val mockSubmissionService: SubmissionService       = mock[SubmissionService]
+  val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
+  lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
+  lazy val sendYourFileUrl: String                   = routes.SendYourFileController.onPageLoad().url
+  val hardcodedFiName                                = "testFiName"
+  val exampleGiin                                    = "8Q298C.00000.LE.340"
+  val conversationId: ConversationId                 = ConversationId("conversationId")
+  val messageSpecData                                = getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
 
   val ua: UserAnswers =
-    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName, reportType = TestData)))
+    emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
   "SendYourFile Controller" - {
 
@@ -59,7 +61,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           .withPage(
             ValidXMLPage,
             getValidatedFileData(
-              getMessageSpecData(electionsRequired = false, messageType = CRS, fiNameFromFim = hardcodedFiName, reportType = CRSReportType.TestData)
+              messageSpecData.copy(electionsRequired = false)
             )
           )
           .withPage(ReportElectionsPage, false)
@@ -74,7 +76,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
@@ -103,15 +105,13 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
       "must return OK and the correct view for a GET for CRS and election required" in {
         val ua: UserAnswers = emptyUserAnswers
-          .withPage(ValidXMLPage,
-                    getValidatedFileData(getMessageSpecData(messageType = CRS, fiNameFromFim = hardcodedFiName, reportType = CRSReportType.TestData))
-          )
+          .withPage(ValidXMLPage, getValidatedFileData(messageSpecData.copy(electionsRequired = true)))
           .withPage(ReportElectionsPage, true)
 
         val application = applicationBuilder(userAnswers = Some(ua)).build()
@@ -124,7 +124,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
@@ -148,7 +148,8 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS)(request, messages(application)).toString
+
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
@@ -170,7 +171,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.BOTH)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.BOTH, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 
@@ -192,7 +193,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.GIIN)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.GIIN, messageSpecData.reportType)(request, messages(application)).toString
         }
       }
 

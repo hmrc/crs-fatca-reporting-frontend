@@ -17,16 +17,22 @@
 package controllers
 
 import base.SpecBase
+import models.CRSReportType.NewInformation
+import models.{CRS, UserAnswers}
+import pages.ValidXMLPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 
 class FileConfirmationControllerSpec extends SpecBase {
 
+  val messageSpecData = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
+  val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+
   "FileConfirmation Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(ua)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad().url)
@@ -41,6 +47,20 @@ class FileConfirmationControllerSpec extends SpecBase {
         resultHtml must include("New information")
         resultHtml must include("12 September 2025")
         resultHtml must include("12:01pm")
+      }
+    }
+
+    "must redirect to page unavailable when valid xml page is missing" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
     }
   }

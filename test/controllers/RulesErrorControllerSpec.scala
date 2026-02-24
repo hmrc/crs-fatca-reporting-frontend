@@ -17,6 +17,8 @@
 package controllers
 
 import base.SpecBase
+import models.{CRS, CRSReportType}
+import pages.ValidXMLPage
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import utils.RulesErrorHelper
@@ -27,8 +29,24 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
   "RulesError Controller" - {
 
     "must return OK and the correct view for a GET" in {
-      val regimentType = "CRS"
-      val fileName     = "filename.xml"
+      val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
+      val userAnswers     = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RulesErrorController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[RulesErrorView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view("testFile", "CRS", errorLength = 1200, createFileRejectedViewModel())(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to page unavailable when validxml is not present" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
@@ -39,10 +57,8 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
 
         val view = application.injector.instanceOf[RulesErrorView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(fileName, regimentType, errorLength = 1200, createFileRejectedViewModel())(request,
-                                                                                                                          messages(application)
-        ).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
     }
   }

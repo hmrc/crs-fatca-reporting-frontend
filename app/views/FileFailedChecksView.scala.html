@@ -35,6 +35,8 @@
     @warning(messages("fileFailedChecks.warning.message"))
 
     @govukButton(
-        ButtonViewModel(messages("fileFailedChecks.submit")).withAttribute("id" -> "submit").asLink("#")
+        ButtonViewModel(messages("fileFailedChecks.submit"))
+        .withAttribute("id" -> "submit")
+        .asLink(routes.RulesErrorController.onPageLoad().url)
     )
 }
