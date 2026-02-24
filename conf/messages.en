@@ -316,7 +316,7 @@ change.crs.reporting.gross.proceeds.for.carf.hidden.text = Change if they are al
 change.fatca.treasuryRegulation.hidden.text = Change if they are using due diligence procedures from US Treasury Regulations for FATCA
 change.fatca.threshold.hidden.text = Change if they are applying thresholds to any of their accounts in their due diligence process for FATCA
 
-reportType.crs.empty =
+reportType.empty =
 reportType.crs.testData = Test data
 reportType.crs.nilReport = Nil report
 reportType.crs.newInformation = New information
@@ -327,7 +327,11 @@ reportType.crs.deletionOfExistingReport= Deletion of an existing report
 reportType.crs.additionalInformationForExistingReport = Additional information for an existing report
 reportType.crs.correctedInformationForExistingReport = Corrected information for an existing report
 
-reportType.fatca = New information
+reportType.fatca.testData = Test data
+reportType.fatca.nilReport = Nil report
+reportType.fatca.newInformation = New information
+reportType.fatca.correctedInformationForExistingReport = Corrected information for an existing report
+reportType.fatca.amendedInformationForExistingReport = Amended information for an existing report
 
 reportType.crs.empty.warning =
 reportType.crs.testData.warning = We cannot complete all checks on test data or accept the file.
@@ -335,6 +339,9 @@ reportType.crs.deletionOfExistingReport.warning = This will permanently delete a
 reportType.crs.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
 reportType.crs.deletedInformationForExistingReport.warning = This will permanently delete reported information marked for deletion.
 reportType.crs.correctedAndDeletedInformationForExistingReport.warning = This will permanently change reported information marked as a correction. It will also permanently delete reported information marked for deletion.
+reportType.fatca.testData.warning = We cannot complete all checks on test data or accept the file.
+reportType.fatca.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
+reportType.fatca.amendedInformationForExistingReport.warning = This will permanently change reported information marked as a amendment.
 
 changeFile.title = Are you sure you want to change your file?
 changeFile.heading = Are you sure you want to change your file?

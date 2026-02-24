@@ -99,9 +99,9 @@ object FATCAReportType:
     override def writes(value: FATCAReportType): JsValue = JsString(toJson(value))
   }
 
-def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = true): String =
+def messageKeyForReportType(reportType: ReportType): String =
   reportType match
-    case CRSReportType.TestData                                        => if (includeTestData) "reportType.crs.testData" else "reportType.crs.empty"
+    case CRSReportType.TestData                                        => "reportType.crs.testData"
     case CRSReportType.NilReport                                       => "reportType.crs.nilReport"
     case CRSReportType.NewInformation                                  => "reportType.crs.newInformation"
     case CRSReportType.CorrectedInformationForExistingReport           => "reportType.crs.correctedInformationForExistingReport"
@@ -109,8 +109,12 @@ def messageKeyForReportType(reportType: ReportType, includeTestData: Boolean = t
     case CRSReportType.DeletedInformationForExistingReport             => "reportType.crs.deletedInformationForExistingReport"
     case CRSReportType.AdditionalInformationForExistingReport          => "reportType.crs.additionalInformationForExistingReport"
     case CRSReportType.DeletionOfExistingReport                        => "reportType.crs.deletionOfExistingReport"
-
-    case _ => "reportType.fatca"
+    case FATCAReportType.TestData                                      => "reportType.fatca.testData"
+    case FATCAReportType.NilReport                                     => "reportType.fatca.nilReport"
+    case FATCAReportType.NewInformation                                => "reportType.fatca.newInformation"
+    case FATCAReportType.CorrectedInformationForExistingReport         => "reportType.fatca.correctedInformationForExistingReport"
+    case FATCAReportType.AmendedInformationForExistingReport           => "reportType.fatca.amendedInformationForExistingReport"
+    case FATCAReportType.VoidReport                                    => "reportType.empty"
 
 def requiresWarningMessage(reportType: ReportType): Boolean =
   Seq(
@@ -118,7 +122,10 @@ def requiresWarningMessage(reportType: ReportType): Boolean =
     CRSReportType.DeletedInformationForExistingReport,
     CRSReportType.DeletionOfExistingReport,
     CRSReportType.CorrectedInformationForExistingReport,
-    CRSReportType.CorrectedAndDeletedInformationForExistingReport
+    CRSReportType.CorrectedAndDeletedInformationForExistingReport,
+    FATCAReportType.TestData,
+    FATCAReportType.CorrectedInformationForExistingReport,
+    FATCAReportType.AmendedInformationForExistingReport
   ).contains(reportType)
 
 def messageKeyForReportTypeWithWarning(reportType: ReportType): String =
@@ -127,5 +134,8 @@ def messageKeyForReportTypeWithWarning(reportType: ReportType): String =
     CRSReportType.DeletedInformationForExistingReport             -> "reportType.crs.deletedInformationForExistingReport.warning",
     CRSReportType.CorrectedInformationForExistingReport           -> "reportType.crs.correctedInformationForExistingReport.warning",
     CRSReportType.CorrectedAndDeletedInformationForExistingReport -> "reportType.crs.correctedAndDeletedInformationForExistingReport.warning",
-    CRSReportType.DeletionOfExistingReport                        -> "reportType.crs.deletionOfExistingReport.warning"
+    CRSReportType.DeletionOfExistingReport                        -> "reportType.crs.deletionOfExistingReport.warning",
+    FATCAReportType.TestData                                      -> "reportType.fatca.testData.warning",
+    FATCAReportType.CorrectedInformationForExistingReport         -> "reportType.fatca.correctedInformationForExistingReport.warning",
+    FATCAReportType.AmendedInformationForExistingReport           -> "reportType.fatca.amendedInformationForExistingReport.warning"
   ).getOrElse(reportType, "reportType.crs.empty.warning")

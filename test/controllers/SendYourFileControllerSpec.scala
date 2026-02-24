@@ -19,7 +19,6 @@ package controllers
 import base.SpecBase
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.FATCAReportType.TestData
 import models.fileDetails.FileValidationErrors
 import models.requests.DataRequest
 import models.submission.*
@@ -81,16 +80,17 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       "must return OK and the correct view for a GET for FATCA and election not required and giin present" in {
+        val messageSpecDataLoc = getMessageSpecData(giin = Some("some-giin"),
+                                                    electionsRequired = false,
+                                                    messageType = FATCA,
+                                                    fiNameFromFim = hardcodedFiName,
+                                                    reportType = FATCAReportType.TestData
+        )
         val ua: UserAnswers = emptyUserAnswers
           .withPage(
             ValidXMLPage,
             getValidatedFileData(
-              getMessageSpecData(giin = Some("some-giin"),
-                                 electionsRequired = false,
-                                 messageType = FATCA,
-                                 fiNameFromFim = hardcodedFiName,
-                                 reportType = FATCAReportType.TestData
-              )
+              messageSpecDataLoc
             )
           )
           .withPage(ReportElectionsPage, false)
@@ -105,7 +105,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE, messageSpecData.reportType)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.NONE, messageSpecDataLoc.reportType)(request, messages(application)).toString
         }
       }
 
@@ -129,11 +129,13 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
       }
 
       "must return OK and the correct view for a GET for FATCA and election required and giin present" in {
+        val messageSpecDataLoc =
+          getMessageSpecData(giin = Some("some-giin"), messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData)
         val ua: UserAnswers = emptyUserAnswers
           .withPage(
             ValidXMLPage,
             getValidatedFileData(
-              getMessageSpecData(giin = Some("some-giin"), messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData)
+              messageSpecDataLoc
             )
           )
           .withPage(ReportElectionsPage, true)
@@ -149,15 +151,16 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           status(result) mustEqual OK
 
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS, messageSpecData.reportType)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.ELECTIONS, messageSpecDataLoc.reportType)(request, messages(application)).toString
         }
       }
 
+      val messageSpecDataFatca = getMessageSpecData(giin = None, messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData)
       "must return OK and the correct view for a GET for FATCA and election required and giin needs to be updated" in {
         val ua: UserAnswers = emptyUserAnswers
           .withPage(
             ValidXMLPage,
-            getValidatedFileData(getMessageSpecData(giin = None, messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData))
+            getValidatedFileData(messageSpecDataFatca)
           )
           .withPage(ReportElectionsPage, true)
 
@@ -171,7 +174,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.BOTH, messageSpecData.reportType)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.BOTH, messageSpecDataFatca.reportType)(request, messages(application)).toString
         }
       }
 
@@ -179,7 +182,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         val ua: UserAnswers = emptyUserAnswers
           .withPage(
             ValidXMLPage,
-            getValidatedFileData(getMessageSpecData(giin = None, messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData))
+            getValidatedFileData(messageSpecDataFatca)
           )
           .withPage(ReportElectionsPage, false)
 
@@ -193,7 +196,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val view = application.injector.instanceOf[SendYourFileView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(SendYourFileAdditionalText.GIIN, messageSpecData.reportType)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(SendYourFileAdditionalText.GIIN, messageSpecDataFatca.reportType)(request, messages(application)).toString
         }
       }
 
