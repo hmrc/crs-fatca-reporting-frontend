@@ -16,6 +16,10 @@
 
 @this()
 
-@(headingContent: String, size: String = "l", extraClasses: String = "", tag: String = "h1")
+@(listContent: Seq[String], extraClasses: String = "")
 
-<@tag class="govuk-heading-@size wrappable @extraClasses" >@headingContent</@tag>
+<ol class="govuk-list govuk-list--number @extraClasses">
+    @for(item <- listContent) {
+    <li>@Html(item)</li>
+    }
+</ol>
