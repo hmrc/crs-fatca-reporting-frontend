@@ -103,3 +103,5 @@ GET        /file-validation                                controllers.FileValid
 
 GET        /report/change-file                        controllers.ChangeFileController.onPageLoad()
 POST       /report/change-file                        controllers.ChangeFileController.onSubmit()
+
+GET        /report/problem/file-contains-fatca-void        controllers.FileContainsFatcaVoidController.onPageLoad()

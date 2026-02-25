@@ -348,3 +348,14 @@ changeFile.heading = Are you sure you want to change your file?
 changeFile.hint.1 = We’ll delete your current file and answers.
 changeFile.hint.2 = We’ll delete your current file.
 changeFile.error.required = Select yes if you are sure you want to change your file
+
+fileContainsFatcaVoid.title = There is a problem with one or more DocTypeIndic values in your file
+fileContainsFatcaVoid.heading = There is a problem with one or more DocTypeIndic values in your file
+fileContainsFatcaVoid.p1 = Your file contains one or more FATCA3 DocTypeIndic values to void information from a previous report.
+fileContainsFatcaVoid.p2 = You must void the entire report in this service instead. If you used the wrong DocTypeIndic value, then you can {0}.
+fileContainsFatcaVoid.p2.link = upload an updated file
+fileContainsFatcaVoid.subheading = How to void a previous report
+fileContainsFatcaVoid.list.1 = {0}.
+fileContainsFatcaVoid.list.1.link = Go to your reports
+fileContainsFatcaVoid.list.2 = Find the report you want to void.
+fileContainsFatcaVoid.list.3 = Send a void request to delete all information in that report.
