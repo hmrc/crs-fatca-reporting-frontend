@@ -20,7 +20,7 @@
         heading: components.Heading,
         para: components.Paragraph,
         link: components.Link,
-
+        list: components.OrderedList
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -31,12 +31,9 @@
     @para(Html(messages("fileContainsFatcaVoid.p1")))
     @para(Html(messages("fileContainsFatcaVoid.p2", link(routes.IndexController.onPageLoad().url, "fileContainsFatcaVoid.p2.link"))))
     @heading(messages("fileContainsFatcaVoid.subheading"), size = "m", tag = "h2")
-    <ol class="govuk-list govuk-list--number" >
-        <li>@Html(messages("fileContainsFatcaVoid.list.1", link("#", "fileContainsFatcaVoid.list.1.link")))</li>
-        <li>@messages("fileContainsFatcaVoid.list.2")</li>
-        <li>@messages("fileContainsFatcaVoid.list.3")</li>
-    </ol>
-
-
-
+    @list(Seq(
+        messages("fileContainsFatcaVoid.list.1", link("#", "fileContainsFatcaVoid.list.1.link")),
+        messages("fileContainsFatcaVoid.list.2"),
+        messages("fileContainsFatcaVoid.list.3")
+    ))
 }
