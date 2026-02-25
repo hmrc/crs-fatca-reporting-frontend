@@ -110,7 +110,9 @@ class Navigator @Inject() () {
   private def validFileUploadedNavigation(userAnswers: UserAnswers): Call =
     extractMessageSpecData(userAnswers) {
       messageSpecData =>
-        if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
+        if (messageSpecData.reportType == FATCAReportType.VoidReport) {
+          controllers.routes.FileContainsFatcaVoidController.onPageLoad()
+        } else if (messageSpecData.giin.isEmpty && messageSpecData.messageType == FATCA) {
           routes.RequiredGiinController.onPageLoad(NormalMode)
         } else {
           redirectToElectionPageOrCheckFileDetails(messageSpecData.electionsRequired)

@@ -34,7 +34,7 @@ class FileContainsFatcaVoidViewSpec extends SpecBase with ViewHelper {
 
   private def getHtml =
     Jsoup.parse(fileContainsFatcaVoidView().body)
-    
+
   "FileContainsFatcaVoidView" - {
     "should have title and heading" in {
       val heading: String = "There is a problem with one or more DocTypeIndic values in your file"

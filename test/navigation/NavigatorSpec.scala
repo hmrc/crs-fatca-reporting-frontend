@@ -78,6 +78,14 @@ class NavigatorSpec extends SpecBase {
             navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe controllers.elections.routes.ReportElectionsController.onPageLoad(NormalMode)
           }
         }
+        "to /file-contains-fatca-void" - {
+          "when reportType is VoidReport" in {
+            val msd         = getMessageSpecData(messageType = FATCA, FATCAReportType.VoidReport, giin = None)
+            val userAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(msd))
+
+            navigator.nextPage(ValidXMLPage, NormalMode, userAnswers) mustBe routes.FileContainsFatcaVoidController.onPageLoad()
+          }
+        }
       }
 
       "must go from /required-giin" - {
