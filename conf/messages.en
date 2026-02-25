@@ -354,3 +354,5 @@ xml.elem.value.empty = Value is missing between {0} element tags
 xml.elem.value.countryCode.invalid = {0} element must contain an ISO country code
 xml.elem.value.max = {0} element must be {1} characters or less
 xml.elem.enum.value.invalid = {0} element is not one of the allowed values
+xml.elem.sendingCompanyIn.empty = SendingCompanyIN is missing and must contain the FI ID of the ReportingFI
+xml.elem.sendingCompanyIn.max = SendingCompanyIN must contain the FI ID of the ReportingFI
