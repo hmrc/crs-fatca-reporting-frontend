@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.{CRS, MessageSpecData}
+import models.{CRS, FATCA, FATCAReportType, MessageSpecData}
 import models.CRSReportType.NewInformation
 import models.SendYourFileAdditionalText.{BOTH, ELECTIONS, GIIN, NONE}
 import org.jsoup.Jsoup
@@ -96,6 +96,20 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       allParagraphValues must include("We'll also send your elections or let you know if there are any issues with sending them.")
       allParagraphValues mustNot include("We'll also send your GIIN and elections, or let you know if there are any issues with sending them.")
       elementText(doc, "#submit") mustEqual "Confirm and send"
+    }
+
+    "should render Warning Content for FATCA" in {
+      val fatcaWarningEligibleType = Seq(
+        (FATCAReportType.CorrectedInformationForExistingReport, "This will permanently change reported information marked as a correction."),
+        (FATCAReportType.AmendedInformationForExistingReport, "This will permanently change reported information marked for amendment."),
+        (FATCAReportType.TestData, "We cannot complete all checks on test data or accept the file.")
+      )
+      fatcaWarningEligibleType.foreach(
+        (reportType, expectedWarningMessage) =>
+          val renderedHtml: HtmlFormat.Appendable = view1(NONE, reportType)
+          lazy val doc                            = Jsoup.parse(renderedHtml.body)
+          getAllElements(doc, ".govuk-warning-text").text() must include(expectedWarningMessage)
+      )
     }
   }
 }

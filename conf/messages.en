@@ -341,7 +341,7 @@ reportType.crs.deletedInformationForExistingReport.warning = This will permanent
 reportType.crs.correctedAndDeletedInformationForExistingReport.warning = This will permanently change reported information marked as a correction. It will also permanently delete reported information marked for deletion.
 reportType.fatca.testData.warning = We cannot complete all checks on test data or accept the file.
 reportType.fatca.correctedInformationForExistingReport.warning = This will permanently change reported information marked as a correction.
-reportType.fatca.amendedInformationForExistingReport.warning = This will permanently change reported information marked as a amendment.
+reportType.fatca.amendedInformationForExistingReport.warning = This will permanently change reported information marked for amendment.
 
 changeFile.title = Are you sure you want to change your file?
 changeFile.heading = Are you sure you want to change your file?
