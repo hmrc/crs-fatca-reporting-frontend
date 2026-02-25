@@ -22,7 +22,7 @@ import controllers.actions.*
 import models.MessageType
 import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
 import models.fileDetails.FileValidationErrors
-import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import models.submission.fileDetails.{NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus, Accepted as FileStatusAccepted}
 import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -71,8 +71,9 @@ class StillCheckingYourFileController @Inject() (
             case Some(RejectedSDESVirus) =>
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
             case Some(Rejected(errors)) =>
-              val regime = xmlDetails.messageSpecData.messageType
-              handleRejectedWithErrors(errors, regime)
+              handleRejectedWithErrors(errors, xmlDetails.messageSpecData.messageType)
+            case Some(NotAccepted) =>
+              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType))) // todo: add spec
             case None =>
               Future.successful(InternalServerError(errorView()))
           }
@@ -85,10 +86,11 @@ class StillCheckingYourFileController @Inject() (
 
   private def handleRejectedWithErrors(errors: FileValidationErrors, regime: MessageType): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val fileErrors            = errors.fileError.getOrElse(Nil)
-    val isNotAccepted = fileErrors.isEmpty || fileErrors.exists(
-      e => notAcceptedErrorCodes(e.code)
-    )
+    val isNotAccepted = errors.fileError
+      .getOrElse(Nil)
+      .exists(
+        e => notAcceptedErrorCodes(e.code)
+      )
 
     if (isNotAccepted) {
       Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(regime)))

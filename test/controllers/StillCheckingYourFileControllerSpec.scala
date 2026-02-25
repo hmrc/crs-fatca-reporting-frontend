@@ -209,9 +209,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
     }
 
     "must redirect to file-not-accepted" - {
-      "when file status is Rejected but without errorcodes (unexpected response)" in {
-        val validationErrors = FileValidationErrors(None, None)
-
+      "when file status is NotAccepted" in {
         val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(validUserAnswers))
@@ -221,7 +219,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           .build()
 
         when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+          .thenReturn(Future.successful(Some(NotAccepted)))
 
         running(application) {
           val request = FakeRequest(GET, routes.StillCheckingYourFileController.onPageLoad().url)
