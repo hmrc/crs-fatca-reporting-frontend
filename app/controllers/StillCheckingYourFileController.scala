@@ -22,7 +22,7 @@ import controllers.actions.*
 import models.MessageType
 import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
 import models.fileDetails.FileValidationErrors
-import models.submission.fileDetails.{NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus, Accepted as FileStatusAccepted}
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
