@@ -10,7 +10,7 @@ Service manager: CRS_FATCA_ALL
 
 Port: 10038
 
-Link: http://localhost:10038/report-for-crs-and-fatca
+Link: http://localhost:10038/report-for-crs-and-fatca/report/upload-file
 
  ---
 

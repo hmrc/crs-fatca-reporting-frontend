@@ -19,17 +19,19 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import controllers.actions.*
-import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import models.MessageType
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.FileValidationErrors
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.FileCheckViewModel.createFileSummary
+import views.html.{StillCheckingYourFileView, ThereIsAProblemView}
 
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{StillCheckingYourFileView, ThereIsAProblemView}
-import viewmodels.FileCheckViewModel.createFileSummary
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class StillCheckingYourFileController @Inject() (
@@ -68,10 +70,11 @@ class StillCheckingYourFileController @Inject() (
               Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
             case Some(RejectedSDESVirus) =>
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
-            case Some(Rejected(error)) =>
-              Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
+            case Some(Rejected(errors)) =>
+              handleRejectedWithErrors(errors, xmlDetails.messageSpecData.messageType)
+            case Some(NotAccepted) =>
+              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType))) // todo: add spec
             case None =>
-              logger.warn("Unable to get Status")
               Future.successful(InternalServerError(errorView()))
           }
         case _ =>
@@ -80,4 +83,20 @@ class StillCheckingYourFileController @Inject() (
       }
 
   }
+
+  private def handleRejectedWithErrors(errors: FileValidationErrors, regime: MessageType): Future[Result] = {
+    val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
+    val isNotAccepted = errors.fileError
+      .getOrElse(Nil)
+      .exists(
+        e => notAcceptedErrorCodes(e.code)
+      )
+
+    if (isNotAccepted) {
+      Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(regime)))
+    } else {
+      Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
+    }
+  }
+
 }

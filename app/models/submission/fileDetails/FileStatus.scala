@@ -17,6 +17,7 @@
 package models.submission.fileDetails
 
 import models.fileDetails.FileValidationErrors
+import models.submission._
 import play.api.libs.json.*
 
 sealed trait FileStatus
@@ -26,6 +27,7 @@ case object Accepted extends FileStatus
 
 case object RejectedSDES extends FileStatus
 case object RejectedSDESVirus extends FileStatus
+case object NotAccepted extends FileStatus
 
 case class Rejected(error: FileValidationErrors) extends FileStatus {
   override def toString: String = "Rejected"
@@ -47,6 +49,9 @@ object FileStatus {
       case obj: JsObject if obj.keys == Set("RejectedSDESVirus") =>
         JsSuccess(RejectedSDESVirus)
 
+      case obj: JsObject if obj.keys == Set("NotAccepted") =>
+        JsSuccess(NotAccepted)
+
       case obj: JsObject if obj.keys == Set("Rejected") =>
         (obj("Rejected") \ "error")
           .validate[FileValidationErrors]
@@ -67,6 +72,9 @@ object FileStatus {
 
       case RejectedSDESVirus =>
         Json.obj("RejectedSDESVirus" -> Json.obj())
+
+      case NotAccepted =>
+        Json.obj("NotAccepted" -> Json.obj())
 
       case Rejected(err) =>
         Json.obj("Rejected" -> Json.obj("error" -> Json.toJson(err)))

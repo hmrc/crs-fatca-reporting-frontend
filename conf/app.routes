@@ -81,17 +81,17 @@ GET        /report/send-your-file                       controllers.SendYourFile
 POST       /report/send-your-file                       controllers.SendYourFileController.onSubmit()
 GET         /check-status                               controllers.SendYourFileController.getStatus()
 
-GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
+GET        /report/problem/giin-not-sent                   controllers.GiinNotSentController.onPageLoad()
 
-GET        /report/problem/virus-found                              controllers.VirusFoundController.onPageLoad()
+GET        /report/problem/virus-found                     controllers.VirusFoundController.onPageLoad()
 
-GET        /report/still-checking-your-file                       controllers.StillCheckingYourFileController.onPageLoad()
+GET        /report/still-checking-your-file                controllers.StillCheckingYourFileController.onPageLoad()
 
-GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
+GET        /report/file-passed-checks                      controllers.FilePassedChecksController.onPageLoad()
 
 GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
 
-GET        /report/problem/file-not-accepted                       controllers.FileNotAcceptedController.onPageLoad()
+GET        /report/problem/file-not-accepted               controllers.FileNotAcceptedController.onPageLoad(regime: MessageType)
 
 GET        /report/file-confirmation                       controllers.FileConfirmationController.onPageLoad()
 
