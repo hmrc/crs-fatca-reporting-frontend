@@ -358,3 +358,4 @@ xml.elem.sendingCompanyIn.empty = SendingCompanyIN is missing and must contain t
 xml.elem.sendingCompanyIn.max = SendingCompanyIN must contain the FI ID of the ReportingFI
 xml.elem.crsoecd.version.max = CRS_OECD version attribute must have a value of "3.0"
 xml.elem.crs.corrMessageRefId = CorrMessageRefId element is not required for CRS and must be removed
+xml.elem.reportingPeriod.invalid = ReportingPeriod value must:
