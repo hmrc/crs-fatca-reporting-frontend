@@ -73,7 +73,7 @@ class StillCheckingYourFileController @Inject() (
             case Some(Rejected(errors)) =>
               handleRejectedWithErrors(errors, xmlDetails.messageSpecData.messageType)
             case Some(NotAccepted) =>
-              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType))) // todo: add spec
+              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType)))
             case None =>
               Future.successful(InternalServerError(errorView()))
           }
