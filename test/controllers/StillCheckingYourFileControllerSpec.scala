@@ -226,7 +226,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(CRS).url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
         }
       }
       "when file status is Rejected with Temp CRS Error Code 2" in {
@@ -249,7 +249,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(CRS).url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
         }
       }
       "when file status is Rejected with Temp FATCA Error Code 2" in {
@@ -274,7 +274,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(FATCA).url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
         }
       }
     }

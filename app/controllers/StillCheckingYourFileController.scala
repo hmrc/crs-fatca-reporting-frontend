@@ -71,9 +71,9 @@ class StillCheckingYourFileController @Inject() (
             case Some(RejectedSDESVirus) =>
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
             case Some(Rejected(errors)) =>
-              handleRejectedWithErrors(errors, xmlDetails.messageSpecData.messageType)
+              handleRejectedWithErrors(errors)
             case Some(NotAccepted) =>
-              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType)))
+              Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad()))
             case None =>
               Future.successful(InternalServerError(errorView()))
           }
@@ -84,7 +84,7 @@ class StillCheckingYourFileController @Inject() (
 
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors, regime: MessageType): Future[Result] = {
+  private def handleRejectedWithErrors(errors: FileValidationErrors): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
     val isNotAccepted = errors.fileError
       .getOrElse(Nil)
@@ -93,7 +93,7 @@ class StillCheckingYourFileController @Inject() (
       )
 
     if (isNotAccepted) {
-      Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad(regime)))
+      Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad()))
     } else {
       Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
     }

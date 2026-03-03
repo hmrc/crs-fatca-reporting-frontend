@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions.*
 import models.MessageType
+import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -35,8 +36,12 @@ class FileNotAcceptedController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(regimeType: MessageType): Action[AnyContent] = (identify andThen getData) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view(regimeType.toString))
+      request.userAnswers.get(ValidXMLPage) match {
+        case Some(xmlDetails) => Ok(view(xmlDetails.messageSpecData.messageType.toString))
+        case None             => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+
+      }
   }
 }

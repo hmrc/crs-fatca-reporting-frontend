@@ -17,21 +17,23 @@
 package controllers
 
 import base.SpecBase
+import models.CRSReportType.TestData
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.FileNotAcceptedView
 import models.{CRS, FATCA}
+import pages.ValidXMLPage
 
 class FileNotAcceptedControllerSpec extends SpecBase {
 
   "FileNotAccepted Controller" - {
-
     "must return OK and the correct CRS view for a GET" in {
+      val ua = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(CRS, TestData)))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(CRS).url)
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad().url)
 
         val result = route(application, request).value
 
@@ -43,11 +45,12 @@ class FileNotAcceptedControllerSpec extends SpecBase {
     }
 
     "must return OK and the correct FATCA view for a GET" in {
+      val ua = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(getMessageSpecData(FATCA, TestData)))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(ua)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(FATCA).url)
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad().url)
 
         val result = route(application, request).value
 

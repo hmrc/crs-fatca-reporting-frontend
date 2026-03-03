@@ -348,7 +348,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
     "getStatus" - {
       "must return OK and return file passed checks url when file status is accepted" in {
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -372,7 +372,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "must return OK and return no content when status is Pending" in {
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -395,7 +395,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "must return OK and return virus found when status is RejectedSDESVirus" in {
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -419,7 +419,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "must return OK and return journey recovery url when status is RejectedSDES" in {
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -440,10 +440,33 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/there-is-a-problem\"}"
         }
       }
+      "must return OK and FileNotAccepted url when status is NotAccepted" in {
+
+        val userAnswers = ua
+          .withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(Some(NotAccepted)))
+
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+        }
+      }
 
       "must return OK and return file failed checks url when status is Rejected" in {
         val validationErrors = FileValidationErrors(None, None)
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -467,7 +490,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       "must return internal server error when status is None" in {
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(ConversationIdPage, conversationId)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers))
@@ -491,7 +514,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
       "must return json pointing to giin not sent to url when missing a conversation Id and contains GiinAndElectionStatusPage with value has giinstatus false" in {
         val giinAndElectionStatus = GiinAndElectionDBStatus(false, true)
 
-        val userAnswers = UserAnswers("Id")
+        val userAnswers = ua
           .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
 
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
@@ -510,7 +533,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         "and election status false" in {
           val giinAndElectionStatus = GiinAndElectionDBStatus(true, false)
 
-          val userAnswers = UserAnswers("Id")
+          val userAnswers = ua
             .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
 
           val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
