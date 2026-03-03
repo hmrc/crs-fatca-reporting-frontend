@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json.*
+import play.api.mvc.QueryStringBindable
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,6 +37,12 @@ object MessageType {
     case "FATCA" => FATCA
     case _       => throw new NoSuchElementException
   }
+
+  implicit def queryBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[MessageType] =
+    stringBinder.transform(
+      (s: String) => MessageType.fromString(s),
+      (m: MessageType) => m.toString
+    )
 
   implicit val write: Writes[MessageType] = Writes[MessageType] {
     case CRS   => JsString("CRS")
