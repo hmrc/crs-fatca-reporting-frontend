@@ -44,7 +44,9 @@ class FileDetailsModelSpec extends SpecBase {
       lastUpdated = submittedTime,
       reportingPeriod = reportingDate,
       messageType = CRS,
-      reportType = CRSReportType.TestData
+      reportType = CRSReportType.TestData,
+      isFiUser = true,
+      fiNameFromFim = "Test FI Name"
     )
 
     val fileDetailsModel = FileDetailsModel(

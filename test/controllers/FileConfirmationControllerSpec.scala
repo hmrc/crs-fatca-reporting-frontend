@@ -57,7 +57,9 @@ class FileConfirmationControllerSpec extends SpecBase {
       lastUpdated = submittedTime,
       reportingPeriod = reportingDate,
       messageType = CRS,
-      reportType = CRSReportType.NewInformation
+      reportType = CRSReportType.NewInformation,
+      isFiUser = true,
+      fiNameFromFim = "Some-fi-name"
     )
 
     "must return OK and the correct view for a GET" in {

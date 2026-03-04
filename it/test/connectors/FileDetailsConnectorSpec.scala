@@ -102,6 +102,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           reportingPeriod = reportingDate,
           messageType = CRS,
           reportType = CRSReportType.TestData,
+          isFiUser = true,
+          fiNameFromFim = "Test FI Name",
         )
 
       }
@@ -122,6 +124,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "reportingPeriod": "2026-01-01",
       |  "messageType": "CRS",
       |  "reportType": "TEST_DATA",
+      |  "fiNameFromFim": "Test FI Name",
+      |  "isFiUser": true,
       |  "fileType":"NormalFile"
       |}
       |""".stripMargin

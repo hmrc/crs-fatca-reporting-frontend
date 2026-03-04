@@ -35,7 +35,9 @@ case class FileDetails(
   lastUpdated: LocalDateTime,
   reportingPeriod: LocalDate,
   messageType: MessageType,
-  reportType: ReportType
+  reportType: ReportType,
+  fiNameFromFim: String,
+  isFiUser: Boolean
 )
 
 object FileDetails {
@@ -55,6 +57,8 @@ object FileDetails {
           reportingPeriod     <- (json \ "reportingPeriod").validate[LocalDate]
           messageType         <- (json \ "messageType").validate[MessageType]
           reportType          <- (json \ "reportType").validate[String]
+          fiNameFromFim       <- (json \ "fiNameFromFim").validate[String]
+          isFiUser            <- (json \ "isFiUser").validate[Boolean]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -70,7 +74,9 @@ object FileDetails {
           lastUpdated = lastUpdated,
           reportingPeriod = reportingPeriod,
           messageType = messageType,
-          reportType = reportTypeValue
+          reportType = reportTypeValue,
+          isFiUser = isFiUser,
+          fiNameFromFim = fiNameFromFim
         )
     }
 
@@ -87,6 +93,9 @@ object FileDetails {
           "lastUpdated"         -> fd.lastUpdated,
           "reportingPeriod"     -> fd.reportingPeriod,
           "messageType"         -> fd.messageType,
+          "messageType"         -> fd.messageType,
+          "isFiUser"            -> fd.isFiUser,
+          "fiNameFromFim"       -> fd.fiNameFromFim,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)
@@ -128,6 +137,8 @@ object FileDetails {
           reportingPeriod     <- (json \ "reportingPeriod").validate[LocalDate]
           messageType         <- (json \ "messageType").validate[MessageType]
           reportType          <- (json \ "reportType").validate[String]
+          isFiUser            <- (json \ "isFiUser").validate[Boolean]
+          fiNameFromFim       <- (json \ "fiNameFromFim").validate[String]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -143,7 +154,9 @@ object FileDetails {
           lastUpdated = lastUpdated,
           reportingPeriod = reportingPeriod,
           messageType = messageType,
-          reportType = reportTypeValue
+          reportType = reportTypeValue,
+          isFiUser = isFiUser,
+          fiNameFromFim = fiNameFromFim
         )
     }
 
