@@ -16,13 +16,16 @@
 
 package connectors
 
+import models.{CRS, CRSReportType}
+import models.fileDetails.FileDetails
 import models.submission.ConversationId
-import models.submission.fileDetails.RejectedSDES
+import models.submission.fileDetails.{Pending, RejectedSDES}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.mustBe
 import play.api.http.Status.{NOT_FOUND, OK, REQUEST_TIMEOUT}
 import utils.ISpecBase
 
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
@@ -64,7 +67,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       "must return None when getStatus fails with Request Timeout" in {
         val conversationId = ConversationId("test-conversation-id")
         val url            = s"/crs-fatca-reporting/files/$conversationId/status"
-        stubPostResponse(url, REQUEST_TIMEOUT)
+        stubGetResponse(url, REQUEST_TIMEOUT)
 
         val result = connector.getStatus(conversationId)
 
@@ -73,5 +76,53 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       }
 
     }
+    
+    "get file details" - {
+      "get file details for a valid conversation id " in {
+        val conversationId = ConversationId("conversation-123")
+        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+
+        stubGetResponse(url, OK, getFileDetailsStubResponse)
+
+        val result = connector.getFileDetails(conversationId)
+
+        val submittedTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0)
+        val reportingDate = LocalDate.of(2026, 1, 1)
+
+
+        result.futureValue.get mustBe FileDetails(
+          _id = conversationId,
+          enrolmentId = "XACBC0000123456",
+          messageRefId = "GBXACBC12345678",
+          reportingEntityName = "Test Entity",
+          status = Pending,
+          name = "test-file.xml",
+          submitted = submittedTime,
+          lastUpdated = submittedTime,
+          reportingPeriod = reportingDate,
+          messageType = CRS,
+          reportType = CRSReportType.TestData,
+        )
+
+      }
+    }
   }
+
+  private def getFileDetailsStubResponse: String =
+    """
+      |{
+      |  "_id": "conversation-123",
+      |  "enrolmentId": "XACBC0000123456",
+      |  "messageRefId": "GBXACBC12345678",
+      |  "reportingEntityName": "Test Entity",
+      |  "status": {"Pending":{}},
+      |  "name": "test-file.xml",
+      |  "submitted": "2026-01-06T12:00:00",
+      |  "lastUpdated": "2026-01-06T12:00:00",
+      |  "reportingPeriod": "2026-01-01",
+      |  "messageType": "CRS",
+      |  "reportType": "TEST_DATA",
+      |  "fileType":"NormalFile"
+      |}
+      |""".stripMargin
 }

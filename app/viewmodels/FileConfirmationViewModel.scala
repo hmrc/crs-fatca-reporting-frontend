@@ -16,14 +16,14 @@
 
 package viewmodels
 
-import models.fileDetails.FileDetails
+import models.fileDetails.FileDetailsModel
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
 
 object FileConfirmationViewModel {
 
-  def getSummaryRows(receivedFileDetails: FileDetails)(implicit messages: Messages): SummaryList =
+  def getSummaryRows(receivedFileDetails: FileDetailsModel)(implicit messages: Messages): SummaryList =
     SummaryList(
       rows = Seq(
         SummaryListRow(

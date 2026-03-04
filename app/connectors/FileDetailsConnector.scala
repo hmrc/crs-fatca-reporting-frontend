@@ -17,12 +17,14 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.fileDetails.FileDetails
 import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
 import play.api.Logging
 import uk.gov.hmrc.http.HttpErrorFunctions.is2xx
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -45,6 +47,27 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
       .recover {
         case NonFatal(e) =>
           logger.error(s"FileDetailsConnector: Exception occurred while getting status for conversationId: ${conversationId.value}", e)
+          None
+      }
+
+  }
+
+  def getFileDetails(conversationId: ConversationId)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[FileDetails]] = {
+    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/${conversationId.value}/details"
+
+    httpClient
+      .get(url)
+      .execute[HttpResponse]
+      .map {
+        case responseMessage if is2xx(responseMessage.status) =>
+          responseMessage.json.asOpt[FileDetails]
+        case _ =>
+          logger.warn(s"FileDetailsConnector: Failed to get fileDetails for conversationId: ${conversationId.value}")
+          None
+      }
+      .recover {
+        case NonFatal(e) =>
+          logger.error(s"FileDetailsConnector: Exception occurred while getting filedetails for conversationId: ${conversationId.value}", e)
           None
       }
 
