@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import models.upscan.FileValidateRequest
 import models.{
   Errors,
+  FATCAReportType,
   FIIDDoesNotMatchSendCompanyInError,
   FIIDNotMatchingError,
   IncorrectMessageTypeError,
@@ -32,7 +33,8 @@ import models.{
   SchemaValidationErrors,
   SubmissionValidationFailure,
   SubmissionValidationResult,
-  SubmissionValidationSuccess
+  SubmissionValidationSuccess,
+  VoidReportError
 }
 import play.api.Logging
 import play.api.http.Status.OK
@@ -58,18 +60,7 @@ class ValidationConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
         response =>
           response.status match {
             case OK =>
-              response.json.as[SubmissionValidationResult] match {
-                case x: SubmissionValidationSuccess =>
-                  Right(x.messageSpecData)
-                case x: SubmissionValidationFailure =>
-                  Left(SchemaValidationErrors(x.validationErrors, x.messageType))
-                case _: FIIDDoesNotMatchSendCompanyInError =>
-                  Left(FIIDNotMatchingError)
-                case _: InvalidReportingPeriodError =>
-                  Left(ReportingPeriodError)
-                case _: InvalidMessageTypeError =>
-                  Left(IncorrectMessageTypeError)
-              }
+              handleResponse(response)
             case status =>
               logger.warn(s"Unexpected response status $status: ${response.body}")
               Left(NonFatalErrors(s"Unexpected response status $status: ${response.body}"))
@@ -85,4 +76,20 @@ class ValidationConnector @Inject() (http: HttpClientV2, config: FrontendAppConf
             Left(NonFatalErrors(e.getMessage))
           }
       }
+
+  private def handleResponse(response: HttpResponse) =
+    response.json.as[SubmissionValidationResult] match {
+      case x: SubmissionValidationSuccess =>
+        Right(x.messageSpecData)
+      case x: SubmissionValidationFailure =>
+        Left(SchemaValidationErrors(x.validationErrors, x.messageType))
+      case _: VoidReportError =>
+        Left(VoidReportError)
+      case _: FIIDDoesNotMatchSendCompanyInError =>
+        Left(FIIDNotMatchingError)
+      case _: InvalidReportingPeriodError =>
+        Left(ReportingPeriodError)
+      case _: InvalidMessageTypeError =>
+        Left(IncorrectMessageTypeError)
+    }
 }

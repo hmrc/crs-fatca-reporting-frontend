@@ -153,6 +153,12 @@ object InvalidReportingPeriodError {
   implicit val format: OFormat[InvalidReportingPeriodError] = Json.format[InvalidReportingPeriodError]
 }
 
+case class VoidReportError() extends SubmissionValidationResult
+
+object VoidReportError extends Errors {
+  implicit val format: OFormat[VoidReportError] = Json.format[VoidReportError]
+}
+
 case class InvalidMessageTypeError(error: String = "Invalid message type") extends SubmissionValidationResult
 
 object InvalidMessageTypeError {
@@ -175,6 +181,7 @@ object SubmissionValidationResult {
   private val successFmt                         = SubmissionValidationSuccess.format
   private val failureFmt                         = SubmissionValidationFailure.format
   private val invalidReportingPeriod             = InvalidReportingPeriodError.format
+  private val voidReport                         = VoidReportError.format
   private val fIIDDoesNotMatchSendCompanyInError = FIIDDoesNotMatchSendCompanyInError.format
 
   implicit val format: OFormat[SubmissionValidationResult] = {
@@ -196,6 +203,10 @@ object SubmissionValidationResult {
           Reads(
             js => invalidReportingPeriod.reads(js)
           )
+        case "VoidReport" =>
+          Reads(
+            js => voidReport.reads(js)
+          )
         case "InvalidFIID" =>
           Reads(
             js => fIIDDoesNotMatchSendCompanyInError.reads(js)
@@ -210,6 +221,7 @@ object SubmissionValidationResult {
       case s: SubmissionValidationSuccess        => successFmt.writes(s) + ("type"                         -> JsString("Success"))
       case f: SubmissionValidationFailure        => failureFmt.writes(f) + ("type"                         -> JsString("ValidationFailure"))
       case e: InvalidReportingPeriodError        => invalidReportingPeriod.writes(e) + ("type"             -> JsString("InvalidReportingPeriod"))
+      case e: VoidReportError                    => voidReport.writes(e) + ("type"                         -> JsString("VoidReport"))
       case e: FIIDDoesNotMatchSendCompanyInError => fIIDDoesNotMatchSendCompanyInError.writes(e) + ("type" -> JsString("InvalidFIID"))
       case _: InvalidMessageTypeError            => Json.obj("type" -> JsString("InvalidMessageType"))
     }
