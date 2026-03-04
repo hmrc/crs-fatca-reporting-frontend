@@ -16,18 +16,20 @@
 
 package models.fileDetails
 
+import models.CRSReportType.NilReport
 import models.messageKeyForReportType
 import play.api.i18n.Messages
 
 import java.time.LocalDateTime
 
-case class FileDetailsModel(name: String,
+case class  FileDetailsModel(name: String,
                             messageRefId: String,
                             messageType: String,
                             reportingEntityName: String,
                             fileInformation: String,
                             submitted: LocalDateTime,
-                            lastUpdated: LocalDateTime
+                            lastUpdated: LocalDateTime,
+                            isCrsNilReport: Boolean
 )
 
 object FileDetailsModel {
@@ -37,9 +39,10 @@ object FileDetailsModel {
       name = fileDetails.name,
       messageRefId = fileDetails.messageRefId,
       messageType = fileDetails.messageType.toString,
-      reportingEntityName = fileDetails.reportingEntityName,
+      reportingEntityName = if (fileDetails.reportType == NilReport) fileDetails.fiNameFromFim else fileDetails.reportingEntityName,
       fileInformation = messages(messageKeyForReportType(fileDetails.reportType)),
       submitted = fileDetails.submitted,
-      lastUpdated = fileDetails.lastUpdated
+      lastUpdated = fileDetails.lastUpdated,
+      isCrsNilReport = fileDetails.reportType == NilReport
     )
 }

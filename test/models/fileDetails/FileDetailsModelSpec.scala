@@ -26,39 +26,58 @@ import play.api.i18n.Messages
 import java.time.{LocalDate, LocalDateTime}
 
 class FileDetailsModelSpec extends SpecBase {
+  implicit val msgs: Messages = messages(app)
 
-  "Create FileDetailsModel from FileDetails" in {
-    implicit val msgs: Messages = messages(app)
+  val conversationId = ConversationId("conversation-123")
+  val submittedTime  = LocalDateTime.of(2026, 1, 6, 12, 0, 0)
+  val reportingDate  = LocalDate.of(2026, 1, 1)
 
-    val conversationId = ConversationId("conversation-123")
-    val submittedTime  = LocalDateTime.of(2026, 1, 6, 12, 0, 0)
-    val reportingDate  = LocalDate.of(2026, 1, 1)
-    val fileDetails = FileDetails(
-      _id = conversationId,
-      enrolmentId = "XACBC0000123456",
-      messageRefId = "GBXACBC12345678",
-      reportingEntityName = "Test Entity",
-      status = Pending,
-      name = "test-file.xml",
-      submitted = submittedTime,
-      lastUpdated = submittedTime,
-      reportingPeriod = reportingDate,
-      messageType = CRS,
-      reportType = CRSReportType.TestData,
-      isFiUser = true,
-      fiNameFromFim = "Test FI Name"
-    )
+  val fileDetails = FileDetails(
+    _id = conversationId,
+    enrolmentId = "XACBC0000123456",
+    messageRefId = "GBXACBC12345678",
+    reportingEntityName = "Test Entity",
+    status = Pending,
+    name = "test-file.xml",
+    submitted = submittedTime,
+    lastUpdated = submittedTime,
+    reportingPeriod = reportingDate,
+    messageType = CRS,
+    reportType = CRSReportType.TestData,
+    isFiUser = true,
+    fiNameFromFim = "Test FI Name"
+  )
 
-    val fileDetailsModel = FileDetailsModel(
-      name = "test-file.xml",
-      messageRefId = "GBXACBC12345678",
-      messageType = "CRS",
-      reportingEntityName = "Test Entity",
-      fileInformation = "Test data",
-      submitted = submittedTime,
-      lastUpdated = submittedTime
-    )
+  "FileDetails from" - {
+    "Create FileDetailsModel from FileDetails" in {
 
-    FileDetailsModel.from(fileDetails) mustEqual fileDetailsModel
+      val fileDetailsModel = FileDetailsModel(
+        name = "test-file.xml",
+        messageRefId = "GBXACBC12345678",
+        messageType = "CRS",
+        reportingEntityName = "Test Entity",
+        fileInformation = "Test data",
+        submitted = submittedTime,
+        lastUpdated = submittedTime,
+        isCrsNilReport = false
+      )
+
+      FileDetailsModel.from(fileDetails) mustEqual fileDetailsModel
+    }
+    "reportingEntityName will be taken from FileDetails#fiNameFromFim if reportyType is CRSReportType.NilReport" in {
+      val nilReportFileDetails = fileDetails.copy(reportType = CRSReportType.NilReport)
+
+      val fileDetailsModel = FileDetailsModel(
+        name = "test-file.xml",
+        messageRefId = "GBXACBC12345678",
+        messageType = "CRS",
+        reportingEntityName = "Test FI Name",
+        fileInformation = "Nil report",
+        submitted = submittedTime,
+        lastUpdated = submittedTime,
+        isCrsNilReport = true
+      )
+    }
   }
+
 }

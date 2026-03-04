@@ -42,7 +42,8 @@ object FileConfirmationViewModel {
         ),
         SummaryListRow(
           key = Key(
-            content = Text(messages("fileConfirmation.reportingFIName.key")),
+            content =
+              Text(messages(if (receivedFileDetails.isCrsNilReport) "fileConfirmation.financialInstitute.key" else "fileConfirmation.reportingFIName.key")),
             classes = "govuk-file-confirmation__key"
           ),
           value = Value(content = Text(receivedFileDetails.reportingEntityName))
