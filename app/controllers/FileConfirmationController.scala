@@ -16,12 +16,12 @@
 
 package controllers
 
-import connectors.FileDetailsConnector
 import controllers.actions.*
 import models.fileDetails.FileDetailsModel
 import models.submission.ConversationId
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats
 import utils.DateTimeFormats.dateFormatterForFileConfirmation
@@ -36,7 +36,7 @@ class FileConfirmationController @Inject() (
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
-  fileDetailsConnector: FileDetailsConnector,
+  fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: FileConfirmationView
 )(implicit ec: ExecutionContext)
@@ -45,7 +45,7 @@ class FileConfirmationController @Inject() (
 
   def onPageLoad(conversationId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      fileDetailsConnector.getFileDetails(ConversationId(conversationId)) flatMap {
+      fileDetailsService.getFileDetails(ConversationId(conversationId)) flatMap {
         case Some(fileDetails) =>
           val fileDetailsModel = FileDetailsModel(fileDetails)
           val date             = fileDetailsModel.submitted.format(dateFormatterForFileConfirmation())

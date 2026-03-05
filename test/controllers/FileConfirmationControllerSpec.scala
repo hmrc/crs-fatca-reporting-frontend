@@ -31,6 +31,7 @@ import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.FileDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{LocalDate, LocalDateTime}
@@ -38,12 +39,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FileConfirmationControllerSpec extends SpecBase {
 
-  val messageSpecData                                = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
-  val ua: UserAnswers                                = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
-  val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
-  val submittedTime                                  = LocalDateTime.parse("2025-09-12T12:01:00")
-  val reportingDate                                  = LocalDate.of(2026, 1, 1)
-  val conversationId                                 = ConversationId("conversation-123")
+  val messageSpecData                            = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
+  val ua: UserAnswers                            = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+  val mockFileDetailsService: FileDetailsService = mock[FileDetailsService]
+  val submittedTime                              = LocalDateTime.parse("2025-09-12T12:01:00")
+  val reportingDate                              = LocalDate.of(2026, 1, 1)
+  val conversationId                             = ConversationId("conversation-123")
 
   "FileConfirmation Controller" - {
     val fileDetails = FileDetails(
@@ -63,12 +64,12 @@ class FileConfirmationControllerSpec extends SpecBase {
     )
 
     "must return OK and the correct view for a GET" in {
-      when(mockFileDetailsConnector.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
+      when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(fileDetails)))
 
       val application = applicationBuilder(userAnswers = Some(ua))
         .overrides(
-          bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          bind[FileDetailsService].toInstance(mockFileDetailsService)
         )
         .build()
 
