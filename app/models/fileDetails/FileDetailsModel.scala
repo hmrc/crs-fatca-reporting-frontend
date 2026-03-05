@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 
 import java.time.LocalDateTime
 
-case class  FileDetailsModel(name: String,
+case class FileDetailsModel(name: String,
                             messageRefId: String,
                             messageType: String,
                             reportingEntityName: String,

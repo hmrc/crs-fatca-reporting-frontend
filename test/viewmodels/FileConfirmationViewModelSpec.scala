@@ -48,7 +48,15 @@ class FileConfirmationViewModelSpec extends SpecBase {
 
       "For a FileDetailsModel with isCrsNilReport true return expected Financial institution  header" in {
         val fileDetails =
-          FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", LocalDateTime.now(), LocalDateTime.now(), isCrsNilReport = true)
+          FileDetailsModel("name.xml",
+                           "c-8-new-f-va",
+                           "CRS",
+                           "EFG Bank plc",
+                           "New information",
+                           LocalDateTime.now(),
+                           LocalDateTime.now(),
+                           isCrsNilReport = true
+          )
         val expectedSummary = SummaryList(
           List(
             SummaryListRow(Key(Text("File ID (MessageRefId)"), "govuk-file-confirmation__key"), Value(Text("c-8-new-f-va"), ""), "", None),
