@@ -34,7 +34,7 @@ case class  FileDetailsModel(name: String,
 
 object FileDetailsModel {
 
-  def from(fileDetails: FileDetails)(using messages: Messages) =
+  def apply(fileDetails: FileDetails)(using messages: Messages): FileDetailsModel =
     FileDetailsModel(
       name = fileDetails.name,
       messageRefId = fileDetails.messageRefId,

@@ -48,7 +48,7 @@ class FileDetailsModelSpec extends SpecBase {
     fiNameFromFim = "Test FI Name"
   )
 
-  "FileDetails from" - {
+  "FileDetails" - {
     "Create FileDetailsModel from FileDetails" in {
 
       val fileDetailsModel = FileDetailsModel(
@@ -62,8 +62,9 @@ class FileDetailsModelSpec extends SpecBase {
         isCrsNilReport = false
       )
 
-      FileDetailsModel.from(fileDetails) mustEqual fileDetailsModel
+      FileDetailsModel(fileDetails) mustEqual fileDetailsModel
     }
+
     "reportingEntityName will be taken from FileDetails#fiNameFromFim if reportyType is CRSReportType.NilReport" in {
       val nilReportFileDetails = fileDetails.copy(reportType = CRSReportType.NilReport)
 
@@ -77,6 +78,8 @@ class FileDetailsModelSpec extends SpecBase {
         lastUpdated = submittedTime,
         isCrsNilReport = true
       )
+
+      FileDetailsModel(nilReportFileDetails) mustEqual fileDetailsModel
     }
   }
 

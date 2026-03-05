@@ -47,7 +47,7 @@ class FileConfirmationController @Inject() (
     implicit request =>
       fileDetailsConnector.getFileDetails(ConversationId(conversationId)) flatMap {
         case Some(fileDetails) =>
-          val fileDetailsModel = FileDetailsModel.from(fileDetails)
+          val fileDetailsModel = FileDetailsModel(fileDetails)
           val date             = fileDetailsModel.submitted.format(dateFormatterForFileConfirmation())
           val time             = DateTimeFormats.formatTimeForFileConfirmation(fileDetailsModel.submitted)
 
