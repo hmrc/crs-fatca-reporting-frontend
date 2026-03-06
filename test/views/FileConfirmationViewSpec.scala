@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsModel}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
@@ -43,7 +43,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
       val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
       val date          = "12 September 2025"
       val time          = "12:01am"
-      val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
+      val fileDetails   = FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now(), false)
       val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
       val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
       val listOfKeys    = Seq("File ID (MessageRefId)", "Reporting regime (MessageType)", "Financial institution (ReportingFI Name)", "File information")
@@ -78,7 +78,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
       val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
       val date          = "12 September 2025"
       val time          = "12:01am"
-      val fileDetails   = FileDetails("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now())
+      val fileDetails   = FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now(), false)
       val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
       val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
 

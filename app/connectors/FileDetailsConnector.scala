@@ -17,12 +17,18 @@
 package connectors
 
 import config.FrontendAppConfig
+import models.fileDetails.FileDetails
 import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
+import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
 import play.api.Logging
+import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.HttpErrorFunctions.is2xx
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NonFatal
@@ -49,5 +55,40 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
       }
 
   }
+
+  def getFileDetails(conversationId: ConversationId)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetails] = {
+    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/${conversationId.value}/details"
+
+    httpClient
+      .get(url)
+      .execute[HttpResponse]
+      .flatMap {
+        case responseMessage if responseMessage.status == OK =>
+          responseMessage.json.validate[FileDetails] match {
+            case JsSuccess(fileDetails, _) => Future.successful(fileDetails)
+            case JsError(errors) =>
+              val errorMsg = errors
+                .map {
+                  case (path, validationErrors) => s"$path: ${validationErrors.map(_.message).mkString(",")}"
+                }
+                .mkString("; ")
+              logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON for conversationId=${conversationId.value}. Errors: $errorMsg")
+              Future failed UnexpectedJsResult
+          }
+        case responseMessage if unExpected2xxStatus(responseMessage.status) =>
+          logger.error(
+            s"FileDetailsConnector: Failed to get fileDetails for conversationId: ${conversationId.value} of unexpected status ${responseMessage.status}"
+          )
+          Future failed UnExpectedResponse
+        case responseMessage if responseMessage.status == NOT_FOUND =>
+          logger.warn(s"FileDetailsConnector: File details does not exist for conversationId=${conversationId.value}")
+          Future failed NoResultFound
+        case responseMessage =>
+          logger.error(s"FileDetailsConnector: Failed to get fileDetails for conversationId: ${conversationId.value} with status ${responseMessage.status}")
+          Future failed IntenalIssueError
+      }
+  }
+
+  private def unExpected2xxStatus(status: Int) = status >= 201 && status < 300
 
 }

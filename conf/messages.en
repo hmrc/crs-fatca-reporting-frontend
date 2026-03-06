@@ -290,6 +290,7 @@ fileConfirmation.ChecksCompleted.time = {0} at {1}
 fileConfirmation.messageRefId.key = File ID (MessageRefId)
 fileConfirmation.messageType.key = Reporting regime (MessageType)
 fileConfirmation.reportingFIName.key = Financial institution (ReportingFI Name)
+fileConfirmation.financialInstitute.key = Financial institution
 fileConfirmation.fileInformation.key = File information
 fileConfirmation.p1 = We have sent a confirmation email to {0}.
 fileConfirmation.p2 = You can {0}.
