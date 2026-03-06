@@ -66,13 +66,14 @@ class FileDetailsServiceSpec extends SpecBase {
     }
 
     "return None when the connector call fails" in {
-      List(UnexpectedJsResult, UnexpectedJsResult, NoResultFound, IntenalIssueError).foreach { exception =>
-        val service = new FileDetailsService(mockFileDetailsConnector)
-        when(mockFileDetailsConnector.getFileDetails(any[ConversationId])(any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.failed(exception))
+      List(UnexpectedJsResult, UnexpectedJsResult, NoResultFound, IntenalIssueError).foreach {
+        exception =>
+          val service = new FileDetailsService(mockFileDetailsConnector)
+          when(mockFileDetailsConnector.getFileDetails(any[ConversationId])(any[HeaderCarrier], any[ExecutionContext]))
+            .thenReturn(Future.failed(exception))
 
-        val result = service.getFileDetails(conversationId).futureValue
-        result mustBe None
+          val result = service.getFileDetails(conversationId).futureValue
+          result mustBe None
       }
 
     }
