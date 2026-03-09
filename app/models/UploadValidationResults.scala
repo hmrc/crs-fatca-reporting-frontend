@@ -60,7 +60,7 @@ case class MessageSpecData(messageType: MessageType,
                            reportType: ReportType,
                            sendingCompanyIN: String,
                            messageRefId: String,
-                           reportingFIName: String,
+                           reportingFIName: Option[String],
                            reportingPeriod: LocalDate,
                            giin: Option[String] = None,
                            fiNameFromFim: String,
@@ -83,7 +83,7 @@ object MessageSpecData {
         reportType        <- (json \ "reportType").validate[String]
         sendingCompanyIN  <- (json \ "sendingCompanyIN").validate[String]
         messageRefId      <- (json \ "messageRefId").validate[String]
-        reportingFIName   <- (json \ "reportingFIName").validate[String]
+        reportingFIName   <- (json \ "reportingFIName").validateOpt[String]
         reportingPeriod   <- (json \ "reportingPeriod").validate[LocalDate]
         giin              <- (json \ "giin").validateOpt[String]
         fiNameFromFim     <- (json \ "fiNameFromFim").validate[String]
