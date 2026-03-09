@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import models.upscan.FileValidateRequest
 import models.{
   Errors,
-  FATCAReportType,
   FIIDDoesNotMatchSendCompanyInError,
   FIIDNotMatchingError,
   IncorrectMessageTypeError,

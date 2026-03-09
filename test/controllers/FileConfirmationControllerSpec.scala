@@ -17,16 +17,15 @@
 package controllers
 
 import base.SpecBase
-import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
 import models.fileDetails.FileDetails
-import models.submission.ConversationId
+import models.submission.*
 import models.submission.fileDetails.Accepted
-import models.{CRS, CRSReportType, UserAnswers}
+import models.{submission, CRS, CRSReportType, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.*
-import pages.ValidXMLPage
+import pages.{GiinAndElectionStatusPage, ValidXMLPage}
 import play.api.inject
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -39,8 +38,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FileConfirmationControllerSpec extends SpecBase {
 
-  val messageSpecData                            = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
-  val ua: UserAnswers                            = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+  val messageSpecData = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
+
+  val ua: UserAnswers = emptyUserAnswers
+    .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+    .withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(giinStatus = true, electionStatus = true))
   val mockFileDetailsService: FileDetailsService = mock[FileDetailsService]
   val submittedTime                              = LocalDateTime.parse("2025-09-12T12:01:00")
   val reportingDate                              = LocalDate.of(2026, 1, 1)
@@ -60,7 +62,11 @@ class FileConfirmationControllerSpec extends SpecBase {
       messageType = CRS,
       reportType = CRSReportType.NewInformation,
       isFiUser = true,
-      fiNameFromFim = "Some-fi-name"
+      fiNameFromFim = "Some-fi-name",
+      fiPrimaryContactEmail = None,
+      fiSecondaryContactEmail = None,
+      subscriptionPrimaryContactEmail = "test@email.com",
+      subscriptionSecondaryContactEmail = None
     )
 
     "must return OK and the correct view for a GET" in {
@@ -86,6 +92,8 @@ class FileConfirmationControllerSpec extends SpecBase {
         resultHtml must include("New information")
         resultHtml must include("12 September 2025")
         resultHtml must include("12:01pm")
+        resultHtml must include("test@email.com")
+        resultHtml must include("make any elections for EFG Bank plc in the service")
       }
     }
 

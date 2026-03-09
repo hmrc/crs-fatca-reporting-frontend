@@ -19,6 +19,7 @@ package controllers
 import controllers.actions.*
 import models.fileDetails.FileDetailsModel
 import models.submission.ConversationId
+import pages.GiinAndElectionStatusPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.FileDetailsService
@@ -53,14 +54,19 @@ class FileConfirmationController @Inject() (
 
           val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetailsModel)
           val paraContent =
-            FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), "fi1@email.com", Some("f12@email.com"))
-          //      below commented code is for testers to test different test data and will be removed once we integrate with technical story
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",Some("user2@email.com"),"fi1@email.com",None)
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",Some("f12@email.com"))
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",None)
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",Some("user2@email.com"))
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
-          Future.successful(Ok(view(fileSummary, paraContent, date, time, true)))
+            if (fileDetails.isFiUser) {
+              FileConfirmationViewModel.getEmailParagraphForFI(fileDetails.subscriptionPrimaryContactEmail, fileDetails.subscriptionSecondaryContactEmail)
+            } else {
+              FileConfirmationViewModel.getEmailParagraphForNonFI(
+                fileDetails.subscriptionPrimaryContactEmail,
+                fileDetails.subscriptionSecondaryContactEmail,
+                fileDetails.fiPrimaryContactEmail.getOrElse(""),
+                fileDetails.subscriptionSecondaryContactEmail
+              )
+            }
+          val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).isDefined
+
+          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed)))
         case _ =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }

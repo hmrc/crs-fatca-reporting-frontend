@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions.*
-import models.MessageType
 import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
