@@ -142,19 +142,19 @@ object FileDetails {
     given mongoReads: Reads[FileDetails] = Reads {
       json =>
         for {
-          id                  <- (json \ "_id").validate[ConversationId]
-          enrolmentId         <- (json \ "enrolmentId").validate[String]
-          messageRefId        <- (json \ "messageRefId").validate[String]
-          reportingEntityName <- (json \ "reportingEntityName").validateOpt[String]
-          status              <- (json \ "status").validate[FileStatus]
-          name                <- (json \ "name").validate[String]
-          submitted           <- (json \ "submitted").validate[LocalDateTime]
-          lastUpdated         <- (json \ "lastUpdated").validate[LocalDateTime]
-          reportingPeriod     <- (json \ "reportingPeriod").validate[LocalDate]
-          messageType         <- (json \ "messageType").validate[MessageType]
-          reportType          <- (json \ "reportType").validate[String]
-          isFiUser            <- (json \ "isFiUser").validate[Boolean]
-          fiNameFromFim       <- (json \ "fiNameFromFim").validate[String]
+          id                                <- (json \ "_id").validate[ConversationId]
+          enrolmentId                       <- (json \ "enrolmentId").validate[String]
+          messageRefId                      <- (json \ "messageRefId").validate[String]
+          reportingEntityName               <- (json \ "reportingEntityName").validateOpt[String]
+          status                            <- (json \ "status").validate[FileStatus]
+          name                              <- (json \ "name").validate[String]
+          submitted                         <- (json \ "submitted").validate[LocalDateTime]
+          lastUpdated                       <- (json \ "lastUpdated").validate[LocalDateTime]
+          reportingPeriod                   <- (json \ "reportingPeriod").validate[LocalDate]
+          messageType                       <- (json \ "messageType").validate[MessageType]
+          reportType                        <- (json \ "reportType").validate[String]
+          isFiUser                          <- (json \ "isFiUser").validate[Boolean]
+          fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
           fiPrimaryContactEmail             <- (json \ "fiPrimaryContactEmail").validateOpt[String]
           fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
@@ -187,16 +187,16 @@ object FileDetails {
     given mongoWrites: OWrites[FileDetails] = OWrites {
       fd =>
         Json.obj(
-          "_id"                 -> fd._id,
-          "enrolmentId"         -> fd.enrolmentId,
-          "messageRefId"        -> fd.messageRefId,
-          "reportingEntityName" -> fd.reportingEntityName,
-          "status"              -> fd.status,
-          "name"                -> fd.name,
-          "submitted"           -> fd.submitted,
-          "lastUpdated"         -> fd.lastUpdated,
-          "reportingPeriod"     -> fd.reportingPeriod,
-          "messageType"         -> fd.messageType,
+          "_id"                               -> fd._id,
+          "enrolmentId"                       -> fd.enrolmentId,
+          "messageRefId"                      -> fd.messageRefId,
+          "reportingEntityName"               -> fd.reportingEntityName,
+          "status"                            -> fd.status,
+          "name"                              -> fd.name,
+          "submitted"                         -> fd.submitted,
+          "lastUpdated"                       -> fd.lastUpdated,
+          "reportingPeriod"                   -> fd.reportingPeriod,
+          "messageType"                       -> fd.messageType,
           "fiPrimaryContactEmail"             -> fd.fiPrimaryContactEmail,
           "fiSecondaryContactEmail"           -> fd.fiSecondaryContactEmail,
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,

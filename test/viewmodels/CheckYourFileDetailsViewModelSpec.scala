@@ -99,7 +99,19 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
         )
         val reportingPeriodYear = 2025
         val messageSpecData =
-          MessageSpecData(CRS, CRSReportType.NilReport, "testFI", "testRefId", None, LocalDate.of(reportingPeriodYear, 1, 1), None, "fiNameFromFim", true, true, subscriptionPrimaryContactEmail = "some@email.com")
+          MessageSpecData(
+            CRS,
+            CRSReportType.NilReport,
+            "testFI",
+            "testRefId",
+            None,
+            LocalDate.of(reportingPeriodYear, 1, 1),
+            None,
+            "fiNameFromFim",
+            true,
+            true,
+            subscriptionPrimaryContactEmail = "some@email.com"
+          )
         val validatedData = getValidatedFileData(messageSpecData)
         val userAnswers   = emptyUserAnswers.withPage(ValidXMLPage, validatedData)
         val modelHelper   = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
