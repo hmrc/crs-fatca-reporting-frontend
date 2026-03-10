@@ -20,7 +20,6 @@ import base.SpecBase
 import models.submission.ConversationId
 import models.submission.fileDetails.Pending
 import models.{CRS, CRSReportType}
-import play.api.i18n.Messages.implicitMessagesProviderToMessages
 import play.api.i18n.Messages
 
 import java.time.{LocalDate, LocalDateTime}
@@ -45,7 +44,8 @@ class FileDetailsModelSpec extends SpecBase {
     messageType = CRS,
     reportType = CRSReportType.TestData,
     isFiUser = true,
-    fiNameFromFim = "Test FI Name"
+    fiNameFromFim = "Test FI Name",
+    subscriptionPrimaryContactEmail = "some@email.com"
   )
 
   "FileDetails" - {

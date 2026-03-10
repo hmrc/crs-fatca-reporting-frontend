@@ -17,7 +17,7 @@
 package viewmodels
 
 import base.SpecBase
-import models.fileDetails.{FileDetails, FileDetailsModel}
+import models.fileDetails.FileDetailsModel
 import uk.gov.hmrc.govukfrontend.views.Aliases.Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
@@ -77,26 +77,32 @@ class FileConfirmationViewModelSpec extends SpecBase {
       "must return paragraph with all emails" in {
 
         val formattedString =
-          FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), "fiuser1@email.com", Some("fiuser2@email.com"))
+          FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), Some("fiuser1@email.com"), Some("fiuser2@email.com"))
         formattedString mustEqual "user1@email.com, user2@email.com, fiuser1@email.com and fiuser2@email.com"
       }
 
       "must return paragraph with 2 user emails & 1 fi user email" in {
 
-        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), "fiuser1@email.com", None)
+        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), Some("fiuser1@email.com"), None)
         formattedString mustEqual "user1@email.com, user2@email.com and fiuser1@email.com"
       }
 
       "must return paragraph with 1 user emails & 2 fi user email" in {
 
-        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", None, "fiuser1@email.com", Some("fiuser2@email.com"))
+        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", None, Some("fiuser1@email.com"), Some("fiuser2@email.com"))
         formattedString mustEqual "user1@email.com, fiuser1@email.com and fiuser2@email.com"
       }
 
       "must return paragraph with 1 user emails & 1 fi user email" in {
 
-        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", None, "fiuser1@email.com", None)
+        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", None, Some("fiuser1@email.com"), None)
         formattedString mustEqual "user1@email.com and fiuser1@email.com"
+      }
+
+      "must return paragraph with 1 user emails" in {
+
+        val formattedString = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", None, None, None)
+        formattedString mustEqual "user1@email.com"
       }
     }
 

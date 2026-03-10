@@ -81,8 +81,9 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
                          giin: Option[String] = None,
                          fiNameFromFim: String = "testFiName",
                          electionsRequired: Boolean = true,
-                         isFiUser: Boolean = true
+                         isFiUser: Boolean = true,
+                         subscriptionPrimaryContactEmail: String = "some@email.com"
                         ): MessageSpecData =
-    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, Some(reportingFIName), reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser)
+    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, Some(reportingFIName), reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser, subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail)
 
 }

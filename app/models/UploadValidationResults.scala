@@ -65,7 +65,11 @@ case class MessageSpecData(messageType: MessageType,
                            giin: Option[String] = None,
                            fiNameFromFim: String,
                            electionsRequired: Boolean,
-                           isFiUser: Boolean
+                           isFiUser: Boolean,
+                           fiPrimaryContactEmail: Option[String] = None,
+                           fiSecondaryContactEmail: Option[String] = None,
+                           subscriptionPrimaryContactEmail: String,
+                           subscriptionSecondaryContactEmail: Option[String] = None
 )
 
 object MessageSpecData {
@@ -79,30 +83,39 @@ object MessageSpecData {
 
     override def reads(json: JsValue): JsResult[MessageSpecData] =
       for {
-        messageType       <- (json \ "messageType").validate[MessageType]
-        reportType        <- (json \ "reportType").validate[String]
-        sendingCompanyIN  <- (json \ "sendingCompanyIN").validate[String]
-        messageRefId      <- (json \ "messageRefId").validate[String]
-        reportingFIName   <- (json \ "reportingFIName").validateOpt[String]
-        reportingPeriod   <- (json \ "reportingPeriod").validate[LocalDate]
-        giin              <- (json \ "giin").validateOpt[String]
-        fiNameFromFim     <- (json \ "fiNameFromFim").validate[String]
-        electionsRequired <- (json \ "electionsRequired").validate[Boolean]
-        isFiUser          <- (json \ "isFiUser").validate[Boolean]
+        messageType                       <- (json \ "messageType").validate[MessageType]
+        reportType                        <- (json \ "reportType").validate[String]
+        sendingCompanyIN                  <- (json \ "sendingCompanyIN").validate[String]
+        messageRefId                      <- (json \ "messageRefId").validate[String]
+        reportingFIName                   <- (json \ "reportingFIName").validateOpt[String]
+        reportingPeriod                   <- (json \ "reportingPeriod").validate[LocalDate]
+        giin                              <- (json \ "giin").validateOpt[String]
+        fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
+        electionsRequired                 <- (json \ "electionsRequired").validate[Boolean]
+        isFiUser                          <- (json \ "isFiUser").validate[Boolean]
+        fiPrimaryContactEmail             <- (json \ "fiPrimaryContactEmail").validateOpt[String]
+        fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
+        subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
+        subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
         reportTypeValue <- messageType match {
           case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
           case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
         }
-      } yield MessageSpecData(messageType,
-                              reportTypeValue,
-                              sendingCompanyIN,
-                              messageRefId,
-                              reportingFIName,
-                              reportingPeriod,
-                              giin,
-                              fiNameFromFim,
-                              electionsRequired,
-                              isFiUser
+      } yield MessageSpecData(
+        messageType,
+        reportTypeValue,
+        sendingCompanyIN,
+        messageRefId,
+        reportingFIName,
+        reportingPeriod,
+        giin,
+        fiNameFromFim,
+        electionsRequired,
+        isFiUser,
+        fiPrimaryContactEmail,
+        fiSecondaryContactEmail,
+        subscriptionPrimaryContactEmail,
+        subscriptionSecondaryContactEmail
       )
 
     override def writes(messageSpecData: MessageSpecData): JsValue = {
@@ -112,16 +125,20 @@ object MessageSpecData {
       }
 
       Json.obj(
-        "messageType"       -> messageSpecData.messageType,
-        "reportType"        -> reportType,
-        "sendingCompanyIN"  -> messageSpecData.sendingCompanyIN,
-        "messageRefId"      -> messageSpecData.messageRefId,
-        "reportingFIName"   -> messageSpecData.reportingFIName,
-        "reportingPeriod"   -> messageSpecData.reportingPeriod,
-        "giin"              -> messageSpecData.giin,
-        "fiNameFromFim"     -> messageSpecData.fiNameFromFim,
-        "electionsRequired" -> messageSpecData.electionsRequired,
-        "isFiUser"          -> messageSpecData.isFiUser
+        "messageType"                       -> messageSpecData.messageType,
+        "reportType"                        -> reportType,
+        "sendingCompanyIN"                  -> messageSpecData.sendingCompanyIN,
+        "messageRefId"                      -> messageSpecData.messageRefId,
+        "reportingFIName"                   -> messageSpecData.reportingFIName,
+        "reportingPeriod"                   -> messageSpecData.reportingPeriod,
+        "giin"                              -> messageSpecData.giin,
+        "fiNameFromFim"                     -> messageSpecData.fiNameFromFim,
+        "electionsRequired"                 -> messageSpecData.electionsRequired,
+        "isFiUser"                          -> messageSpecData.isFiUser,
+        "fiPrimaryContactEmail"             -> messageSpecData.fiPrimaryContactEmail,
+        "fiSecondaryContactEmail"           -> messageSpecData.fiSecondaryContactEmail,
+        "subscriptionPrimaryContactEmail"   -> messageSpecData.subscriptionPrimaryContactEmail,
+        "subscriptionSecondaryContactEmail" -> messageSpecData.subscriptionSecondaryContactEmail
       )
     }
   }

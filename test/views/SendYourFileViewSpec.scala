@@ -17,9 +17,9 @@
 package views
 
 import base.SpecBase
-import models.{CRS, FATCA, FATCAReportType, MessageSpecData}
 import models.CRSReportType.NewInformation
 import models.SendYourFileAdditionalText.{BOTH, ELECTIONS, GIIN, NONE}
+import models.{CRS, FATCAReportType, MessageSpecData}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}

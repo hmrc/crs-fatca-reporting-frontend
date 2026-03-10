@@ -39,7 +39,8 @@ class UploadValidationResultSpec extends SpecBase {
           |    "giin": "GIIN123",
           |    "fiNameFromFim": "fi-name",
           |    "electionsRequired": true,
-          |    "isFiUser": false
+          |    "isFiUser": false,
+          |    "subscriptionPrimaryContactEmail": "some@email.com"
           |  }
           |}
             """.stripMargin)
@@ -57,7 +58,8 @@ class UploadValidationResultSpec extends SpecBase {
           giin = Some("GIIN123"),
           fiNameFromFim = "fi-name",
           electionsRequired = true,
-          isFiUser = false
+          isFiUser = false,
+          subscriptionPrimaryContactEmail = "some@email.com"
         )
       )
     }
