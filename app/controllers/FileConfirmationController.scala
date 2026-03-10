@@ -60,7 +60,7 @@ class FileConfirmationController @Inject() (
               FileConfirmationViewModel.getEmailParagraphForNonFI(
                 fileDetails.subscriptionPrimaryContactEmail,
                 fileDetails.subscriptionSecondaryContactEmail,
-                fileDetails.fiPrimaryContactEmail.getOrElse(""),
+                fileDetails.fiPrimaryContactEmail,
                 fileDetails.fiSecondaryContactEmail
               )
             }
