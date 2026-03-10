@@ -95,7 +95,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           _id = conversationId,
           enrolmentId = "XACBC0000123456",
           messageRefId = "GBXACBC12345678",
-          reportingEntityName = "Test Entity",
+          reportingEntityName = Some("Test Entity"),
           status = Pending,
           name = "test-file.xml",
           submitted = submittedTime,

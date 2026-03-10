@@ -39,7 +39,10 @@ object FileDetailsModel {
       name = fileDetails.name,
       messageRefId = fileDetails.messageRefId,
       messageType = fileDetails.messageType.toString,
-      reportingEntityName = if (fileDetails.reportType == NilReport) fileDetails.fiNameFromFim else fileDetails.reportingEntityName,
+      reportingEntityName = fileDetails.reportingEntityName match {
+        case Some(value) => value
+        case None        => fileDetails.fiNameFromFim
+      },
       fileInformation = messages(messageKeyForReportType(fileDetails.reportType)),
       submitted = fileDetails.submitted,
       lastUpdated = fileDetails.lastUpdated,

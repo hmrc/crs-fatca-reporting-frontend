@@ -28,7 +28,7 @@ case class FileDetails(
   _id: ConversationId,
   enrolmentId: String,
   messageRefId: String,
-  reportingEntityName: String,
+  reportingEntityName: Option[String],
   status: FileStatus,
   name: String,
   submitted: LocalDateTime,
@@ -49,7 +49,7 @@ object FileDetails {
           id                  <- (json \ "_id").validate[ConversationId]
           enrolmentId         <- (json \ "enrolmentId").validate[String]
           messageRefId        <- (json \ "messageRefId").validate[String]
-          reportingEntityName <- (json \ "reportingEntityName").validate[String]
+          reportingEntityName <- (json \ "reportingEntityName").validateOpt[String]
           status              <- (json \ "status").validate[FileStatus]
           name                <- (json \ "name").validate[String]
           submitted           <- (json \ "submitted").validate[LocalDateTime]
@@ -129,7 +129,7 @@ object FileDetails {
           id                  <- (json \ "_id").validate[ConversationId]
           enrolmentId         <- (json \ "enrolmentId").validate[String]
           messageRefId        <- (json \ "messageRefId").validate[String]
-          reportingEntityName <- (json \ "reportingEntityName").validate[String]
+          reportingEntityName <- (json \ "reportingEntityName").validateOpt[String]
           status              <- (json \ "status").validate[FileStatus]
           name                <- (json \ "name").validate[String]
           submitted           <- (json \ "submitted").validate[LocalDateTime]

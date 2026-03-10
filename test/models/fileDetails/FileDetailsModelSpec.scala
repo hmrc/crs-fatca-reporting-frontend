@@ -36,7 +36,7 @@ class FileDetailsModelSpec extends SpecBase {
     _id = conversationId,
     enrolmentId = "XACBC0000123456",
     messageRefId = "GBXACBC12345678",
-    reportingEntityName = "Test Entity",
+    reportingEntityName = Some("Test Entity"),
     status = Pending,
     name = "test-file.xml",
     submitted = submittedTime,
@@ -66,7 +66,7 @@ class FileDetailsModelSpec extends SpecBase {
     }
 
     "reportingEntityName will be taken from FileDetails#fiNameFromFim if reportyType is CRSReportType.NilReport" in {
-      val nilReportFileDetails = fileDetails.copy(reportType = CRSReportType.NilReport)
+      val nilReportFileDetails = fileDetails.copy(reportType = CRSReportType.NilReport, reportingEntityName = None)
 
       val fileDetailsModel = FileDetailsModel(
         name = "test-file.xml",
