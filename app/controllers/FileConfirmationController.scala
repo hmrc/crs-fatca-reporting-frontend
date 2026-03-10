@@ -61,7 +61,7 @@ class FileConfirmationController @Inject() (
                 fileDetails.subscriptionPrimaryContactEmail,
                 fileDetails.subscriptionSecondaryContactEmail,
                 fileDetails.fiPrimaryContactEmail.getOrElse(""),
-                fileDetails.subscriptionSecondaryContactEmail
+                fileDetails.fiSecondaryContactEmail
               )
             }
           val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).exists(!_.electionStatus)
