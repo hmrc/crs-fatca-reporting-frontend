@@ -35,7 +35,6 @@ class JourneyRecoveryController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = identify {
     implicit request =>
-      logger.error("Something went wrong")
       Ok(thereIsAProblemView())
   }
 }
