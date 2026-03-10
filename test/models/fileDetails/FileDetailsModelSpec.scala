@@ -44,7 +44,8 @@ class FileDetailsModelSpec extends SpecBase {
     messageType = CRS,
     reportType = CRSReportType.TestData,
     isFiUser = true,
-    fiNameFromFim = "Test FI Name"
+    fiNameFromFim = "Test FI Name",
+    subscriptionPrimaryContactEmail = "some@email.com"
   )
 
   "FileDetails" - {
