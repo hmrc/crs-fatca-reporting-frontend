@@ -17,7 +17,7 @@
 package viewmodels
 
 import base.SpecBase
-import models.fileDetails.{FileDetails, FileDetailsModel}
+import models.fileDetails.FileDetailsModel
 import uk.gov.hmrc.govukfrontend.views.Aliases.Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}

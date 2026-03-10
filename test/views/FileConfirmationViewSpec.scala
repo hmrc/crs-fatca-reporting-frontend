@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.fileDetails.{FileDetails, FileDetailsModel}
+import models.fileDetails.FileDetailsModel
 import org.jsoup.Jsoup
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}

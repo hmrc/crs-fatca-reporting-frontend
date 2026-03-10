@@ -19,7 +19,6 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FileDetailsConnector
 import controllers.actions.*
-import models.MessageType
 import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
 import models.fileDetails.FileValidationErrors
 import models.submission.fileDetails.{Accepted as FileStatusAccepted, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}

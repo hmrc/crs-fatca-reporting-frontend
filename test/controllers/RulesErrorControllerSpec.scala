@@ -55,8 +55,6 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[RulesErrorView]
-
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }

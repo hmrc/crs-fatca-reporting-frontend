@@ -143,7 +143,6 @@ class SendYourFileController @Inject() (
             case Some(RejectedSDES) =>
               Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
             case Some(NotAccepted) =>
-              val x = xmlDetails.messageSpecData.messageType
               Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
             case None =>
               logger.warn("getStatus: no status returned")
