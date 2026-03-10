@@ -42,7 +42,7 @@ class FileConfirmationControllerSpec extends SpecBase {
 
   val ua: UserAnswers = emptyUserAnswers
     .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
-    .withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(giinStatus = true, electionStatus = true))
+    .withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(giinStatus = true, electionStatus = false))
   val mockFileDetailsService: FileDetailsService = mock[FileDetailsService]
   val submittedTime                              = LocalDateTime.parse("2025-09-12T12:01:00")
   val reportingDate                              = LocalDate.of(2026, 1, 1)

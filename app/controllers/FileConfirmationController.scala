@@ -64,7 +64,7 @@ class FileConfirmationController @Inject() (
                 fileDetails.subscriptionSecondaryContactEmail
               )
             }
-          val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).isDefined
+          val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).exists(!_.electionStatus)
 
           Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed)))
         case _ =>
