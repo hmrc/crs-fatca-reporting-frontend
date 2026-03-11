@@ -440,7 +440,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val result = route(application, request).value
 
           status(result) mustEqual OK
-          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/there-is-a-problem\"}"
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/there-is-a-problem\"}"
         }
       }
       "must return OK and FileNotAccepted url when status is NotAccepted" in {
