@@ -18,24 +18,69 @@ package controllers
 
 import base.SpecBase
 import models.CRSReportType.NewInformation
-import models.{CRS, UserAnswers}
-import pages.ValidXMLPage
+import models.fileDetails.FileDetails
+import models.submission.*
+import models.submission.fileDetails.Accepted
+import models.{submission, CRS, CRSReportType, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito
+import org.mockito.Mockito.*
+import pages.{GiinAndElectionStatusPage, ValidXMLPage}
+import play.api.inject
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.FileDetailsService
+import uk.gov.hmrc.http.HeaderCarrier
+
+import java.time.{LocalDate, LocalDateTime}
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileConfirmationControllerSpec extends SpecBase {
 
   val messageSpecData = getMessageSpecData(CRS, fiNameFromFim = "Some-fi-name", reportType = NewInformation)
-  val ua: UserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+
+  val ua: UserAnswers = emptyUserAnswers
+    .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
+    .withPage(GiinAndElectionStatusPage, GiinAndElectionDBStatus(giinStatus = true, electionStatus = false))
+  val mockFileDetailsService: FileDetailsService = mock[FileDetailsService]
+  val submittedTime                              = LocalDateTime.parse("2025-09-12T12:01:00")
+  val reportingDate                              = LocalDate.of(2026, 1, 1)
+  val conversationId                             = ConversationId("conversation-123")
 
   "FileConfirmation Controller" - {
+    val fileDetails = FileDetails(
+      _id = conversationId,
+      enrolmentId = "XACBC0000123456",
+      messageRefId = "c-8-new-f-va",
+      reportingEntityName = "EFG Bank plc",
+      status = Accepted,
+      name = "name.xml",
+      submitted = submittedTime,
+      lastUpdated = submittedTime,
+      reportingPeriod = reportingDate,
+      messageType = CRS,
+      reportType = CRSReportType.NewInformation,
+      isFiUser = true,
+      fiNameFromFim = "Some-fi-name",
+      fiPrimaryContactEmail = None,
+      fiSecondaryContactEmail = None,
+      subscriptionPrimaryContactEmail = "test@email.com",
+      subscriptionSecondaryContactEmail = None
+    )
 
     "must return OK and the correct view for a GET" in {
+      when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(fileDetails)))
 
-      val application = applicationBuilder(userAnswers = Some(ua)).build()
+      val application = applicationBuilder(userAnswers = Some(ua))
+        .overrides(
+          bind[FileDetailsService].toInstance(mockFileDetailsService)
+        )
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad(conversationId.value).url)
 
         val result = route(application, request).value
 
@@ -47,15 +92,17 @@ class FileConfirmationControllerSpec extends SpecBase {
         resultHtml must include("New information")
         resultHtml must include("12 September 2025")
         resultHtml must include("12:01pm")
+        resultHtml must include("test@email.com")
+        resultHtml must include("make any elections for EFG Bank plc in the service")
       }
     }
 
-    "must redirect to page unavailable when valid xml page is missing" in {
+    "must redirect to page unavailable when invalid conversation id is used" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.FileConfirmationController.onPageLoad(conversationId.value).url)
 
         val result = route(application, request).value
 

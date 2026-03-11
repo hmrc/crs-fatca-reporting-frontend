@@ -54,7 +54,11 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         giin = Some("GIIN123"),
         fiNameFromFim = "fi-name",
         electionsRequired = true,
-        isFiUser = true
+        isFiUser = true,
+        fiPrimaryContactEmail = Some("fiPrimary@email.com"),
+        fiSecondaryContactEmail = Some("fiSecondary@email.com"),
+        subscriptionPrimaryContactEmail = "test@email.com",
+        subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
       )
     }
 
@@ -163,7 +167,11 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         |    "giin": "GIIN123",
         |    "fiNameFromFim": "fi-name",
         |    "electionsRequired": true,
-        |    "isFiUser": true
+        |    "isFiUser": true,
+        |    "fiPrimaryContactEmail":"fiPrimary@email.com",
+        |    "fiSecondaryContactEmail":"fiSecondary@email.com",
+        |    "subscriptionPrimaryContactEmail":"test@email.com",
+        |    "subscriptionSecondaryContactEmail":"secondarySub@email.com"
         |  }
         |}
             """.stripMargin

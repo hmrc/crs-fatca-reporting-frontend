@@ -16,7 +16,8 @@
 
 package models
 
-import play.api.libs.json.{__, Format, JsError, JsObject, JsResult, JsString, JsSuccess, JsValue, Json, OFormat, OWrites, Reads, Writes}
+import play.api.libs.json.*
+import play.api.mvc.QueryStringBindable
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,6 +37,12 @@ object MessageType {
     case "FATCA" => FATCA
     case _       => throw new NoSuchElementException
   }
+
+  implicit def queryBinder(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[MessageType] =
+    stringBinder.transform(
+      (s: String) => MessageType.fromString(s),
+      (m: MessageType) => m.toString
+    )
 
   implicit val write: Writes[MessageType] = Writes[MessageType] {
     case CRS   => JsString("CRS")
@@ -58,7 +65,11 @@ case class MessageSpecData(messageType: MessageType,
                            giin: Option[String] = None,
                            fiNameFromFim: String,
                            electionsRequired: Boolean,
-                           isFiUser: Boolean
+                           isFiUser: Boolean,
+                           fiPrimaryContactEmail: Option[String] = None,
+                           fiSecondaryContactEmail: Option[String] = None,
+                           subscriptionPrimaryContactEmail: String,
+                           subscriptionSecondaryContactEmail: Option[String] = None
 )
 
 object MessageSpecData {
@@ -72,30 +83,39 @@ object MessageSpecData {
 
     override def reads(json: JsValue): JsResult[MessageSpecData] =
       for {
-        messageType       <- (json \ "messageType").validate[MessageType]
-        reportType        <- (json \ "reportType").validate[String]
-        sendingCompanyIN  <- (json \ "sendingCompanyIN").validate[String]
-        messageRefId      <- (json \ "messageRefId").validate[String]
-        reportingFIName   <- (json \ "reportingFIName").validate[String]
-        reportingPeriod   <- (json \ "reportingPeriod").validate[LocalDate]
-        giin              <- (json \ "giin").validateOpt[String]
-        fiNameFromFim     <- (json \ "fiNameFromFim").validate[String]
-        electionsRequired <- (json \ "electionsRequired").validate[Boolean]
-        isFiUser          <- (json \ "isFiUser").validate[Boolean]
+        messageType                       <- (json \ "messageType").validate[MessageType]
+        reportType                        <- (json \ "reportType").validate[String]
+        sendingCompanyIN                  <- (json \ "sendingCompanyIN").validate[String]
+        messageRefId                      <- (json \ "messageRefId").validate[String]
+        reportingFIName                   <- (json \ "reportingFIName").validate[String]
+        reportingPeriod                   <- (json \ "reportingPeriod").validate[LocalDate]
+        giin                              <- (json \ "giin").validateOpt[String]
+        fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
+        electionsRequired                 <- (json \ "electionsRequired").validate[Boolean]
+        isFiUser                          <- (json \ "isFiUser").validate[Boolean]
+        fiPrimaryContactEmail             <- (json \ "fiPrimaryContactEmail").validateOpt[String]
+        fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
+        subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
+        subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
         reportTypeValue <- messageType match {
           case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
           case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
         }
-      } yield MessageSpecData(messageType,
-                              reportTypeValue,
-                              sendingCompanyIN,
-                              messageRefId,
-                              reportingFIName,
-                              reportingPeriod,
-                              giin,
-                              fiNameFromFim,
-                              electionsRequired,
-                              isFiUser
+      } yield MessageSpecData(
+        messageType,
+        reportTypeValue,
+        sendingCompanyIN,
+        messageRefId,
+        reportingFIName,
+        reportingPeriod,
+        giin,
+        fiNameFromFim,
+        electionsRequired,
+        isFiUser,
+        fiPrimaryContactEmail,
+        fiSecondaryContactEmail,
+        subscriptionPrimaryContactEmail,
+        subscriptionSecondaryContactEmail
       )
 
     override def writes(messageSpecData: MessageSpecData): JsValue = {
@@ -105,16 +125,20 @@ object MessageSpecData {
       }
 
       Json.obj(
-        "messageType"       -> messageSpecData.messageType,
-        "reportType"        -> reportType,
-        "sendingCompanyIN"  -> messageSpecData.sendingCompanyIN,
-        "messageRefId"      -> messageSpecData.messageRefId,
-        "reportingFIName"   -> messageSpecData.reportingFIName,
-        "reportingPeriod"   -> messageSpecData.reportingPeriod,
-        "giin"              -> messageSpecData.giin,
-        "fiNameFromFim"     -> messageSpecData.fiNameFromFim,
-        "electionsRequired" -> messageSpecData.electionsRequired,
-        "isFiUser"          -> messageSpecData.isFiUser
+        "messageType"                       -> messageSpecData.messageType,
+        "reportType"                        -> reportType,
+        "sendingCompanyIN"                  -> messageSpecData.sendingCompanyIN,
+        "messageRefId"                      -> messageSpecData.messageRefId,
+        "reportingFIName"                   -> messageSpecData.reportingFIName,
+        "reportingPeriod"                   -> messageSpecData.reportingPeriod,
+        "giin"                              -> messageSpecData.giin,
+        "fiNameFromFim"                     -> messageSpecData.fiNameFromFim,
+        "electionsRequired"                 -> messageSpecData.electionsRequired,
+        "isFiUser"                          -> messageSpecData.isFiUser,
+        "fiPrimaryContactEmail"             -> messageSpecData.fiPrimaryContactEmail,
+        "fiSecondaryContactEmail"           -> messageSpecData.fiSecondaryContactEmail,
+        "subscriptionPrimaryContactEmail"   -> messageSpecData.subscriptionPrimaryContactEmail,
+        "subscriptionSecondaryContactEmail" -> messageSpecData.subscriptionSecondaryContactEmail
       )
     }
   }
@@ -146,6 +170,12 @@ object InvalidReportingPeriodError {
   implicit val format: OFormat[InvalidReportingPeriodError] = Json.format[InvalidReportingPeriodError]
 }
 
+case class VoidReportError() extends SubmissionValidationResult
+
+object VoidReportError extends Errors {
+  implicit val format: OFormat[VoidReportError] = Json.format[VoidReportError]
+}
+
 case class InvalidMessageTypeError(error: String = "Invalid message type") extends SubmissionValidationResult
 
 object InvalidMessageTypeError {
@@ -168,6 +198,7 @@ object SubmissionValidationResult {
   private val successFmt                         = SubmissionValidationSuccess.format
   private val failureFmt                         = SubmissionValidationFailure.format
   private val invalidReportingPeriod             = InvalidReportingPeriodError.format
+  private val voidReport                         = VoidReportError.format
   private val fIIDDoesNotMatchSendCompanyInError = FIIDDoesNotMatchSendCompanyInError.format
 
   implicit val format: OFormat[SubmissionValidationResult] = {
@@ -189,6 +220,10 @@ object SubmissionValidationResult {
           Reads(
             js => invalidReportingPeriod.reads(js)
           )
+        case "VoidReport" =>
+          Reads(
+            js => voidReport.reads(js)
+          )
         case "InvalidFIID" =>
           Reads(
             js => fIIDDoesNotMatchSendCompanyInError.reads(js)
@@ -203,6 +238,7 @@ object SubmissionValidationResult {
       case s: SubmissionValidationSuccess        => successFmt.writes(s) + ("type"                         -> JsString("Success"))
       case f: SubmissionValidationFailure        => failureFmt.writes(f) + ("type"                         -> JsString("ValidationFailure"))
       case e: InvalidReportingPeriodError        => invalidReportingPeriod.writes(e) + ("type"             -> JsString("InvalidReportingPeriod"))
+      case e: VoidReportError                    => voidReport.writes(e) + ("type"                         -> JsString("VoidReport"))
       case e: FIIDDoesNotMatchSendCompanyInError => fIIDDoesNotMatchSendCompanyInError.writes(e) + ("type" -> JsString("InvalidFIID"))
       case _: InvalidMessageTypeError            => Json.obj("type" -> JsString("InvalidMessageType"))
     }

@@ -16,14 +16,14 @@
 
 package viewmodels
 
-import models.fileDetails.FileDetails
+import models.fileDetails.FileDetailsModel
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
 
 object FileConfirmationViewModel {
 
-  def getSummaryRows(receivedFileDetails: FileDetails)(implicit messages: Messages): SummaryList =
+  def getSummaryRows(receivedFileDetails: FileDetailsModel)(implicit messages: Messages): SummaryList =
     SummaryList(
       rows = Seq(
         SummaryListRow(
@@ -42,7 +42,8 @@ object FileConfirmationViewModel {
         ),
         SummaryListRow(
           key = Key(
-            content = Text(messages("fileConfirmation.reportingFIName.key")),
+            content =
+              Text(messages(if (receivedFileDetails.isCrsNilReport) "fileConfirmation.financialInstitute.key" else "fileConfirmation.reportingFIName.key")),
             classes = "govuk-file-confirmation__key"
           ),
           value = Value(content = Text(receivedFileDetails.reportingEntityName))
@@ -57,12 +58,16 @@ object FileConfirmationViewModel {
       )
     )
 
-  def getEmailParagraphForNonFI(regFirstEmail: String, regSecondEmail: Option[String], fiFirstEmail: String, fiSecondEmail: Option[String]): String =
-    (regSecondEmail, fiSecondEmail) match {
-      case (Some(regSecEmail), Some(fiSecEmail)) => s"$regFirstEmail, $regSecEmail, $fiFirstEmail and $fiSecEmail"
-      case (Some(regSecEmail), None)             => s"$regFirstEmail, $regSecEmail and $fiFirstEmail"
-      case (None, Some(fiSecEmail))              => s"$regFirstEmail, $fiFirstEmail and $fiSecEmail"
-      case (None, None)                          => s"$regFirstEmail and $fiFirstEmail"
+  def getEmailParagraphForNonFI(regFirstEmail: String, regSecondEmail: Option[String], fiFirstEmail: Option[String], fiSecondEmail: Option[String]): String =
+    (fiFirstEmail, regSecondEmail, fiSecondEmail) match {
+      case (Some(fiFirst), Some(regSec), Some(fiSec)) => s"$regFirstEmail, $regSec, $fiFirst and $fiSec"
+      case (Some(fiFirst), Some(regSec), None)        => s"$regFirstEmail, $regSec and $fiFirst"
+      case (Some(fiFirst), None, Some(fiSec))         => s"$regFirstEmail, $fiFirst and $fiSec"
+      case (Some(fiFirst), None, None)                => s"$regFirstEmail and $fiFirst"
+      case (None, Some(regSec), Some(fiSec))          => s"$regFirstEmail, $regSec and $fiSec"
+      case (None, Some(regSec), None)                 => s"$regFirstEmail and $regSec"
+      case (None, None, Some(fiSec))                  => s"$regFirstEmail and $fiSec"
+      case (None, None, None)                         => s"$regFirstEmail"
     }
 
   def getEmailParagraphForFI(regFirstEmail: String, regSecondEmail: Option[String]): String =

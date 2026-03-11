@@ -17,8 +17,9 @@
 package controllers
 
 import base.SpecBase
+import models.submission.ConversationId
 import models.{CRS, CRSReportType}
-import pages.ValidXMLPage
+import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 
@@ -29,12 +30,16 @@ class FilePassedChecksControllerSpec extends SpecBase {
   "FilePassedChecks Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val conversationIdText  = "some-conversation-id"
+      val conversationid      = ConversationId(conversationIdText)
       val reportingPeriodYear = 2025
       val answers =
-        emptyUserAnswers.withPage(
-          ValidXMLPage,
-          getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1)))
-        )
+        emptyUserAnswers
+          .withPage(
+            ValidXMLPage,
+            getValidatedFileData(getMessageSpecData(CRS, CRSReportType.TestData, reportingPeriod = LocalDate.of(reportingPeriodYear, 1, 1)))
+          )
+          .withPage(ConversationIdPage, conversationid)
       val application = applicationBuilder(userAnswers = Some(answers)).build()
 
       running(application) {
@@ -45,6 +50,7 @@ class FilePassedChecksControllerSpec extends SpecBase {
         status(result) mustEqual OK
         contentAsString(result) must include("testRefId")
         contentAsString(result) must include("Passed")
+        contentAsString(result) must include(s"/report/file-confirmation/$conversationIdText")
       }
     }
 

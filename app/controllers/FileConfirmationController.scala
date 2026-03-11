@@ -17,64 +17,58 @@
 package controllers
 
 import controllers.actions.*
-import models.fileDetails.FileDetails
-import models.messageKeyForReportType
-import pages.ValidXMLPage
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import models.fileDetails.FileDetailsModel
+import models.submission.ConversationId
+import pages.GiinAndElectionStatusPage
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats
 import utils.DateTimeFormats.dateFormatterForFileConfirmation
 import viewmodels.FileConfirmationViewModel
 import views.html.FileConfirmationView
 
-import java.time.LocalDateTime
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileConfirmationController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: FileConfirmationView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(conversationId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(validatedFileData) =>
-          implicit val messages: Messages = messagesApi.preferred(request)
-          val messageSpecData             = validatedFileData.messageSpecData
+      fileDetailsService.getFileDetails(ConversationId(conversationId)) flatMap {
+        case Some(fileDetails) =>
+          val fileDetailsModel = FileDetailsModel(fileDetails)
+          val date             = fileDetailsModel.submitted.format(dateFormatterForFileConfirmation())
+          val time             = DateTimeFormats.formatTimeForFileConfirmation(fileDetailsModel.submitted)
 
-          val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-          val date          = submittedTime.format(dateFormatterForFileConfirmation())
-          val time          = DateTimeFormats.formatTimeForFileConfirmation(submittedTime)
-
-          val reportTypeLabel = messages(messageKeyForReportType(messageSpecData.reportType))
-
-          val fileDetails = FileDetails(
-            "name.xml",
-            "c-8-new-f-va",
-            "CRS",
-            "EFG Bank plc",
-            reportTypeLabel,
-            submittedTime,
-            LocalDateTime.now()
-          )
-          val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
+          val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetailsModel)
           val paraContent =
-            FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com", Some("user2@email.com"), "fi1@email.com", Some("f12@email.com"))
-          //      below commented code is for testers to test different test data and will be removed once we integrate with technical story
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",Some("user2@email.com"),"fi1@email.com",None)
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",Some("f12@email.com"))
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForNonFI("user1@email.com",None,"fi1@email.com",None)
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com",Some("user2@email.com"))
-          //      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
-          Ok(view(fileSummary, paraContent, date, time, true))
+            if (fileDetails.isFiUser) {
+              FileConfirmationViewModel.getEmailParagraphForFI(fileDetails.subscriptionPrimaryContactEmail, fileDetails.subscriptionSecondaryContactEmail)
+            } else {
+              FileConfirmationViewModel.getEmailParagraphForNonFI(
+                fileDetails.subscriptionPrimaryContactEmail,
+                fileDetails.subscriptionSecondaryContactEmail,
+                fileDetails.fiPrimaryContactEmail,
+                fileDetails.fiSecondaryContactEmail
+              )
+            }
+          val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).exists(!_.electionStatus)
+
+          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed)))
         case _ =>
-          Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+          Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
   }
 }

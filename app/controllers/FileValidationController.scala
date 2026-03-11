@@ -31,7 +31,8 @@ import models.{
   ReportingPeriodError,
   SchemaValidationErrors,
   UserAnswers,
-  ValidatedFileData
+  ValidatedFileData,
+  VoidReportError
 }
 import navigation.Navigator
 import pages.*
@@ -146,6 +147,9 @@ class FileValidationController @Inject() (
 
     case SchemaValidationErrors(validationErrors, messageType) =>
       handleSchemaValidationErrors(downloadDetails.name, validationErrors.errors, messageType)
+
+    case VoidReportError =>
+      Future.successful(Redirect(routes.FileContainsFatcaVoidController.onPageLoad()))
 
     case ReportingPeriodError =>
       Future.successful(Redirect(routes.ReportingPeriodErrorController.onPageLoad()))

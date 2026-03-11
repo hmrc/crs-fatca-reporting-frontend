@@ -22,7 +22,7 @@ import models.GiinUpdateState.GinUpDateRequired
 import models.ReportElectionState.*
 import models.requests.DataRequest
 import models.submission.*
-import models.submission.fileDetails.{Accepted as FileStatusAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import models.submission.fileDetails.{Accepted as FileStatusAccepted, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import models.upscan.URL
 import models.{FATCA, GiinUpdateState, ReportElectionState, SendYourFileAdditionalText, UserAnswers, ValidatedFileData}
 import pages.*
@@ -129,11 +129,11 @@ class SendYourFileController @Inject() (
 
   def getStatus: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userAnswers.get(ConversationIdPage) match {
-        case Some(conversationId) =>
+      (request.userAnswers.get(ValidXMLPage), request.userAnswers.get(ConversationIdPage)) match {
+        case (Some(xmlDetails), Some(conversationId)) =>
           fileDetailsConnector.getStatus(conversationId) flatMap {
             case Some(FileStatusAccepted) =>
-              Future.successful(Ok(Json.toJson(URL(routes.FileConfirmationController.onPageLoad().url))))
+              Future.successful(Ok(Json.toJson(URL(routes.FileConfirmationController.onPageLoad(conversationId.value).url))))
             case Some(Pending) =>
               Future.successful(NoContent)
             case Some(Rejected(error)) =>
@@ -142,11 +142,13 @@ class SendYourFileController @Inject() (
               Future.successful(Ok(Json.toJson(URL(routes.VirusFoundController.onPageLoad().url))))
             case Some(RejectedSDES) =>
               Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
+            case Some(NotAccepted) =>
+              Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
             case None =>
               logger.warn("getStatus: no status returned")
               Future.successful(InternalServerError)
           }
-        case None =>
+        case _ =>
           request.userAnswers.get(GiinAndElectionStatusPage) match {
             case Some(giinAndElectionStatus) =>
               if (!giinAndElectionStatus.giinStatus) {

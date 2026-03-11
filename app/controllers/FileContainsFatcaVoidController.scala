@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,24 @@
 
 package controllers
 
-import controllers.actions.*
-import pages.ValidXMLPage
+import controllers.actions._
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.FileNotAcceptedView
+import views.html.FileContainsFatcaVoidView
 
-import javax.inject.Inject
-
-class FileNotAcceptedController @Inject() (
+class FileContainsFatcaVoidController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
-  view: FileNotAcceptedView
+  view: FileContainsFatcaVoidView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData) {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(xmlDetails) => Ok(view(xmlDetails.messageSpecData.messageType.toString))
-        case None             => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-
-      }
+      Ok(view())
   }
 }

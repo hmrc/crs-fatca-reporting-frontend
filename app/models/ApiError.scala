@@ -1,5 +1,5 @@
-@*
- * Copyright 2025 HM Revenue & Customs
+/*
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,10 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models
 
-@(headingContent: String, size: String = "l", extraClasses: String = "", tag: String = "h1")
-
-<@tag class="govuk-heading-@size wrappable @extraClasses" >@headingContent</@tag>
+sealed trait ApiError extends Throwable
+case object NoResultFound extends ApiError
+case object UnexpectedJsResult extends ApiError
+case object UnExpectedResponse extends ApiError
+case object IntenalIssueError extends ApiError

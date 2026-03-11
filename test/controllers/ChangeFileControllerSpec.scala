@@ -27,7 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.{ReportElectionsPage, RequiredGiinPage}
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
-import play.api.mvc.{Call, MessagesControllerComponents}
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
@@ -36,8 +36,6 @@ import views.html.ChangeFileView
 import scala.concurrent.Future
 
 class ChangeFileControllerSpec extends SpecBase with MockitoSugar with PrivateMethodTester {
-
-  private def onwardRoute = Call("GET", "/foo")
 
   private val formProvider = new ChangeFileFormProvider()
   private val form         = formProvider()

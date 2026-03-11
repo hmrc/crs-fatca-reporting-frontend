@@ -10,7 +10,7 @@ GET         /language/:lang                                 controllers.Language
 
 GET         /refresh-session                                controllers.KeepAliveController.keepAlive()
 
-GET         /there-is-a-problem                             controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
+GET         /report/problem/there-is-a-problem              controllers.JourneyRecoveryController.onPageLoad()
 
 GET         /check-your-answers                             controllers.CheckYourAnswersController.onPageLoad()
 
@@ -81,19 +81,19 @@ GET        /report/send-your-file                       controllers.SendYourFile
 POST       /report/send-your-file                       controllers.SendYourFileController.onSubmit()
 GET         /check-status                               controllers.SendYourFileController.getStatus()
 
-GET        /report/problem/giin-not-sent                            controllers.GiinNotSentController.onPageLoad()
+GET        /report/problem/giin-not-sent                   controllers.GiinNotSentController.onPageLoad()
 
-GET        /report/problem/virus-found                              controllers.VirusFoundController.onPageLoad()
+GET        /report/problem/virus-found                     controllers.VirusFoundController.onPageLoad()
 
-GET        /report/still-checking-your-file                       controllers.StillCheckingYourFileController.onPageLoad()
+GET        /report/still-checking-your-file                controllers.StillCheckingYourFileController.onPageLoad()
 
-GET        /report/file-passed-checks                    controllers.FilePassedChecksController.onPageLoad()
+GET        /report/file-passed-checks                      controllers.FilePassedChecksController.onPageLoad()
 
 GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
 
-GET        /report/problem/file-not-accepted                       controllers.FileNotAcceptedController.onPageLoad()
+GET        /report/problem/file-not-accepted               controllers.FileNotAcceptedController.onPageLoad()
 
-GET        /report/file-confirmation                       controllers.FileConfirmationController.onPageLoad()
+GET        /report/file-confirmation/:conversationId                       controllers.FileConfirmationController.onPageLoad(conversationId: String)
 
 GET        /report/status                                  controllers.IndexController.getStatus(uploadId: upscan.UploadId)
 
@@ -103,3 +103,5 @@ GET        /file-validation                                controllers.FileValid
 
 GET        /report/change-file                        controllers.ChangeFileController.onPageLoad()
 POST       /report/change-file                        controllers.ChangeFileController.onSubmit()
+
+GET        /report/problem/file-contains-fatca-void        controllers.FileContainsFatcaVoidController.onPageLoad()

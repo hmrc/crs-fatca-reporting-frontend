@@ -29,7 +29,8 @@ import models.{
   NormalMode,
   ReportingPeriodError,
   UserAnswers,
-  ValidatedFileData
+  ValidatedFileData,
+  VoidReportError
 }
 import org.bson.types.ObjectId
 import org.mockito.ArgumentCaptor
@@ -146,6 +147,18 @@ class FileValidationControllerSpec extends SpecBase with BeforeAndAfterEach {
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustEqual routes.ReportingPeriodErrorController.onPageLoad().url
+    }
+
+    "must redirect to Void Report page if a void report is detected" in {
+      fakeUpscanConnector.setDetails(uploadDetails)
+
+      when(mockValidationConnector.sendForValidation(any())(any(), any())).thenReturn(Future.successful(Left(VoidReportError)))
+
+      val controller             = application.injector.instanceOf[FileValidationController]
+      val result: Future[Result] = controller.onPageLoad()(FakeRequest("", ""))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual routes.FileContainsFatcaVoidController.onPageLoad().url
     }
 
     "must return ThereIsAProblemPage when a valid UploadId cannot be found" in {
