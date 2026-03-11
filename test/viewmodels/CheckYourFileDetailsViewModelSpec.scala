@@ -79,7 +79,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
-              Value(Text("Nil report")),
+              Value(Text("No reportable information")),
               "",
               Some(
                 Actions(

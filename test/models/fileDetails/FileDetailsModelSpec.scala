@@ -73,7 +73,7 @@ class FileDetailsModelSpec extends SpecBase {
         messageRefId = "GBXACBC12345678",
         messageType = "CRS",
         reportingEntityName = "Test FI Name",
-        fileInformation = "Nil report",
+        fileInformation = "No reportable information",
         submitted = submittedTime,
         lastUpdated = submittedTime,
         isCrsNilReport = true
