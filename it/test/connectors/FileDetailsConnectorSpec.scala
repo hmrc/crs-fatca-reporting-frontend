@@ -105,6 +105,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           reportType = CRSReportType.TestData,
           isFiUser = true,
           fiNameFromFim = "Test FI Name",
+          fiPrimaryContactEmail = Some("fiPrimary@email.com"),
+          fiSecondaryContactEmail = Some("fiSecondary@email.com"),
+          subscriptionPrimaryContactEmail = "test@email.com",
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
         )
 
       }
@@ -171,7 +175,11 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "reportType": "TEST_DATA",
       |  "fiNameFromFim": "Test FI Name",
       |  "isFiUser": true,
-      |  "fileType":"NormalFile"
+      |  "fileType":"NormalFile",
+      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
+      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
+      |  "subscriptionPrimaryContactEmail":"test@email.com",
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com"
       |}
       |""".stripMargin
 }

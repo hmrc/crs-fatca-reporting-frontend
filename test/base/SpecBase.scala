@@ -69,7 +69,19 @@ trait SpecBase
                          electionsRequired: Boolean = true,
                          isFiUser: Boolean = true
   ): MessageSpecData =
-    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, reportingFIName, reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser)
+    MessageSpecData(
+      messageType,
+      reportType,
+      sendingCompanyIN,
+      messageRefId,
+      reportingFIName,
+      reportingPeriod,
+      giin,
+      fiNameFromFim,
+      electionsRequired,
+      isFiUser,
+      subscriptionPrimaryContactEmail = "test@email.com"
+    )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
