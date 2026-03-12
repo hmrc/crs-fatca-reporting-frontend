@@ -62,7 +62,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       messageType = CRS,
       reportType = CRSReportType.NewInformation,
       isFiUser = true,
-      fiNameFromFim = "Some-fi-name",
+      fiNameFromFim = "EFG Bank plc",
       fiPrimaryContactEmail = None,
       fiSecondaryContactEmail = None,
       subscriptionPrimaryContactEmail = "test@email.com",

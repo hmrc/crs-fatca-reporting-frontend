@@ -26,7 +26,7 @@
         appConfig: FrontendAppConfig
 )
 
-@(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean)(implicit request: Request[_], messages: Messages)
+@(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("fileConfirmation.title")), showBackLink = false) {
 
@@ -39,7 +39,7 @@ content = HtmlContent(s"${messages("fileConfirmation.ChecksCompleted.prefix")}<b
 </div>
 <p class="govuk-body">@messages("fileConfirmation.p1", paraContent)</p>
 @if(isElectionFailed){
-<p class="govuk-body">@Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text")))</p> <!--TODO : Add link to elections-->
+<p class="govuk-body">@Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text", messageArgs = Seq(fiName))))</p> <!--TODO : Add link to elections-->
 }
 <h2 class="govuk-heading-m">@messages("fileConfirmation.subheading1")</h2>
 
