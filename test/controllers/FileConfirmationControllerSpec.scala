@@ -53,7 +53,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       _id = conversationId,
       enrolmentId = "XACBC0000123456",
       messageRefId = "c-8-new-f-va",
-      reportingEntityName = Some("EFG Bank plc"),
+      reportingEntityName = Some("Some-fi-name"),
       status = Accepted,
       name = "name.xml",
       submitted = submittedTime,
@@ -62,7 +62,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       messageType = CRS,
       reportType = CRSReportType.NewInformation,
       isFiUser = true,
-      fiNameFromFim = "EFG Bank plc",
+      fiNameFromFim = "Some-fi-name",
       fiPrimaryContactEmail = None,
       fiSecondaryContactEmail = None,
       subscriptionPrimaryContactEmail = "test@email.com",
@@ -88,12 +88,12 @@ class FileConfirmationControllerSpec extends SpecBase {
         val resultHtml = contentAsString(result)
         resultHtml must include("c-8-new-f-va")
         resultHtml must include("CRS")
-        resultHtml must include("EFG Bank plc")
+        resultHtml must include("Some-fi-name")
         resultHtml must include("New information")
         resultHtml must include("12 September 2025")
         resultHtml must include("12:01pm")
         resultHtml must include("test@email.com")
-        resultHtml must include("make any elections for EFG Bank plc in the service")
+        resultHtml must include("make any elections for Some-fi-name in the service")
       }
     }
 
