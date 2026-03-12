@@ -66,7 +66,7 @@ class FileConfirmationController @Inject() (
             }
           val hasElectionFailed = request.userAnswers.get(GiinAndElectionStatusPage).exists(!_.electionStatus)
 
-          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed)))
+          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim)))
         case _ =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
