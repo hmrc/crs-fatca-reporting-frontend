@@ -319,7 +319,7 @@ change.fatca.threshold.hidden.text = Change if they are applying thresholds to a
 
 reportType.empty =
 reportType.crs.testData = Test data
-reportType.crs.nilReport = Nil report
+reportType.crs.nilReport = No reportable information
 reportType.crs.newInformation = New information
 reportType.crs.additionalInformationForExistingReport = Additional information for an existing report
 reportType.crs.correctedAndDeletedInformationForExistingReport = Corrected and deleted information for an existing report

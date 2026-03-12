@@ -53,7 +53,7 @@ class UploadValidationResultSpec extends SpecBase {
           reportType = CRSReportType.TestData,
           sendingCompanyIN = "COMP123",
           messageRefId = "MSGREF001",
-          reportingFIName = "Test FI",
+          reportingFIName = Some("Test FI"),
           reportingPeriod = LocalDate.parse("2024-01-01"),
           giin = Some("GIIN123"),
           fiNameFromFim = "fi-name",

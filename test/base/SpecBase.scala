@@ -74,7 +74,7 @@ trait SpecBase
       reportType,
       sendingCompanyIN,
       messageRefId,
-      reportingFIName,
+      Some(reportingFIName),
       reportingPeriod,
       giin,
       fiNameFromFim,

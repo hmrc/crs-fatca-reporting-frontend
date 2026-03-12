@@ -18,7 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{CRS, CRSReportType, CheckMode, FATCA, FATCAReportType, ValidatedFileData}
+import models.{CRS, CRSReportType, CheckMode, FATCA, FATCAReportType, MessageSpecData, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
@@ -69,6 +69,52 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
         val reportingPeriodYear = 2025
         val userAnswers         = emptyUserAnswers.withPage(ValidXMLPage, crsValidatedFileData(reportingPeriodYear))
         val modelHelper         = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
+        modelHelper.fileDetailsSummary mustBe expectedSummary
+      }
+      "must return the getSummaryList for File Details when No Election Required for CRS without Reporting FI" in {
+        val expectedSummary = SummaryList(
+          List(
+            SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("testRefId")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("CRS")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
+            SummaryListRow(
+              Key(Text("File information")),
+              Value(Text("No reportable information")),
+              "",
+              Some(
+                Actions(
+                  items = Seq(
+                    ActionItem(
+                      href = routes.ChangeFileController.onPageLoad().url,
+                      content = Text("Change file")
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          None,
+          "",
+          Map()
+        )
+        val reportingPeriodYear = 2025
+        val messageSpecData =
+          MessageSpecData(
+            CRS,
+            CRSReportType.NilReport,
+            "testFI",
+            "testRefId",
+            None,
+            LocalDate.of(reportingPeriodYear, 1, 1),
+            None,
+            "fiNameFromFim",
+            true,
+            true,
+            subscriptionPrimaryContactEmail = "some@email.com"
+          )
+        val validatedData = getValidatedFileData(messageSpecData)
+        val userAnswers   = emptyUserAnswers.withPage(ValidXMLPage, validatedData)
+        val modelHelper   = CheckYourFileDetailsViewModel(userAnswers)(using messages(app))
         modelHelper.fileDetailsSummary mustBe expectedSummary
       }
       "must return the getSummaryList for File Details when No Election Required for FATCA" in {

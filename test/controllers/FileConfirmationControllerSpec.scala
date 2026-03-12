@@ -53,7 +53,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       _id = conversationId,
       enrolmentId = "XACBC0000123456",
       messageRefId = "c-8-new-f-va",
-      reportingEntityName = "EFG Bank plc",
+      reportingEntityName = Some("EFG Bank plc"),
       status = Accepted,
       name = "name.xml",
       submitted = submittedTime,
