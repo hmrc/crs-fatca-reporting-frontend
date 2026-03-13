@@ -32,21 +32,27 @@ class ErrorViewHelper @Inject() () {
         er.message.messageKey match {
           case "xml.elem.reportingPeriod.invalid" =>
             val htmlContent = s"""
-                      <p class="govuk-body">${messages("xml.elem.reportingPeriod.invalid")}</p>
-                      <ol class="govuk-list govuk-list--bullet">
+                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.reportingPeriod.invalid")}</p>
+                      <ul class="govuk-list govuk-list--bullet">
                         <li>${messages("xml.elem.reportingPeriod.invalid.li1")}</li>
                         <li>${messages("xml.elem.reportingPeriod.invalid.li2")}</li>
                         <li>${messages("xml.elem.reportingPeriod.invalid.li3")}</li>
-                      </ol>
-                      <p class="govuk-body">${messages("xml.elem.reportingPeriod.invalid.p2")}</p>
+                      </ul>
+                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.reportingPeriod.invalid.p2")}</p>
                       """
             Seq(
-              TableRow(content = Text(er.lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_${er.lineNumber}")),
+              TableRow(content = Text(er.lineNumber.toString),
+                       classes = "govuk-table__cell--numeric",
+                       attributes = Map("id" -> s"lineNumber_${er.lineNumber}")
+              ),
               TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_${er.lineNumber}"))
             )
           case _ =>
             Seq(
-              TableRow(content = Text(er.lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_${er.lineNumber}")),
+              TableRow(content = Text(er.lineNumber.toString),
+                       classes = "govuk-table__cell--numeric",
+                       attributes = Map("id" -> s"lineNumber_${er.lineNumber}")
+              ),
               TableRow(content = Text(messages(er.message.messageKey, er.message.args: _*)), attributes = Map("id" -> s"errorMessage_${er.lineNumber}"))
             )
         }
