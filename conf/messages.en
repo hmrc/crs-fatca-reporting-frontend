@@ -372,4 +372,9 @@ xml.elem.sendingCompanyIn.max = SendingCompanyIN must contain the FI ID of the R
 xml.elem.crsoecd.version.max = CRS_OECD version attribute must have a value of "3.0"
 xml.elem.crs.corrMessageRefId = CorrMessageRefId element is not required for CRS and must be removed
 xml.elem.reportingPeriod.invalid = ReportingPeriod value must:
+xml.elem.reportingPeriod.invalid.li1 = be in the format YYYY-MM-DD
+xml.elem.reportingPeriod.invalid.li2 = be between 2014 and the end of the current year
+xml.elem.reportingPeriod.invalid.li3 = include 31 as the day and 12 as the month
+xml.elem.reportingPeriod.invalid.p2 = For example, 2024-12-31
+
 xml.elem.in.issuedBy.empty = Value is missing for IN issuedBy attribute. Attribute is not required if IN value is NOTIN
