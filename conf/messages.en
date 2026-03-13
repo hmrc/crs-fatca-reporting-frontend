@@ -379,3 +379,5 @@ xml.elem.reportingPeriod.invalid.p2 = For example, 2024-12-31
 
 xml.elem.in.issuedBy.empty = Value is missing for IN issuedBy attribute. Attribute is not required if IN value is NOTIN
 xml.elem.in.issuedBy.invalid = IN issuedBy attribute is not one of the allowed values. Attribute is not required if IN value is NOTIN
+xml.elem.arg.min = Value is missing for {0} {1} attribute
+xml.elem.arg.max = {0} {1} attribute must be {2} characters or less
