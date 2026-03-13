@@ -381,3 +381,5 @@ xml.elem.in.issuedBy.empty = Value is missing for IN issuedBy attribute. Attribu
 xml.elem.in.issuedBy.invalid = IN issuedBy attribute is not one of the allowed values. Attribute is not required if IN value is NOTIN
 xml.elem.arg.min = Value is missing for {0} {1} attribute
 xml.elem.arg.max = {0} {1} attribute must be {2} characters or less
+xml.elem.arg.enum.empty = Value is missing for {0} {1} attribute
+xml.elem.arg.enum.invalid = {0} {1} attribute is not one of the allowed values
