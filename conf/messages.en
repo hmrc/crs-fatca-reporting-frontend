@@ -362,7 +362,7 @@ fileContainsFatcaVoid.list.2 = Find the report you want to void.
 fileContainsFatcaVoid.list.3 = Send a void request to delete all information in that report.
 
 xml.elem.missing = {0} element is missing
-xml.session.missing = {0} session is missing
+xml.section.missing = {0} section is missing
 xml.elem.value.empty = Value is missing between {0} element tags
 xml.elem.value.countryCode.invalid = {0} element must contain an ISO country code
 xml.elem.value.max = {0} element must be {1} characters or less
