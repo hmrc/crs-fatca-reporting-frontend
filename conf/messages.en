@@ -388,3 +388,6 @@ xml.elem.DocRefId.max.li1 = the same value as the MessageRefId, up to 100 charac
 xml.elem.DocRefId.max.li2 = a hyphen (-)
 xml.elem.DocRefId.max.li3 = one to 63 characters of your choice to make the ID unique
 xml.elem.DocRefId.max.p2 = If OECD0 is in the ReportingFI section, the DocRefId must match a previous DocRefId for the section you want to resend
+xml.elem.accountNumber.max = AccountNumber element must be 200 characters or less. If no account number, use NANUM as the value
+xml.elem.arg.bool.empty = Value is missing for {0} {1} attribute
+xml.elem.arg.bool.invalid = {0} {1} attribute value must be true or false
