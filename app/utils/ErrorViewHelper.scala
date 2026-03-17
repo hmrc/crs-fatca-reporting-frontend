@@ -30,23 +30,8 @@ class ErrorViewHelper @Inject() () {
     error.map {
       er =>
         er.message.messageKey match {
-          case "xml.elem.reportingPeriod.invalid" =>
-            val htmlContent = s"""
-                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.reportingPeriod.invalid")}</p>
-                      <ul class="govuk-list govuk-list--bullet">
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li1")}</li>
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li2")}</li>
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li3")}</li>
-                      </ul>
-                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.reportingPeriod.invalid.p2")}</p>
-                      """
-            Seq(
-              TableRow(content = Text(er.lineNumber.toString),
-                       classes = "govuk-table__cell--numeric",
-                       attributes = Map("id" -> s"lineNumber_${er.lineNumber}")
-              ),
-              TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_${er.lineNumber}"))
-            )
+          case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
+          case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber)
           case _ =>
             Seq(
               TableRow(content = Text(er.lineNumber.toString),
@@ -58,4 +43,38 @@ class ErrorViewHelper @Inject() () {
         }
 
     }
+
+  private def invalidReportingPeriod(lineNumber: Int)(implicit messages: Messages) = {
+    val htmlContent =
+      s"""
+                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.reportingPeriod.invalid")}</p>
+                      <ul class="govuk-list govuk-list--bullet">
+                        <li>${messages("xml.elem.reportingPeriod.invalid.li1")}</li>
+                        <li>${messages("xml.elem.reportingPeriod.invalid.li2")}</li>
+                        <li>${messages("xml.elem.reportingPeriod.invalid.li3")}</li>
+                      </ul>
+                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.reportingPeriod.invalid.p2")}</p>
+                      """
+    Seq(
+      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
+      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
+    )
+  }
+
+  private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = {
+    val htmlContent =
+      s"""
+                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.DocRefId.max")}</p>
+                      <ul class="govuk-list govuk-list--bullet">
+                        <li>${messages("xml.elem.DocRefId.max.li1")}</li>
+                        <li>${messages("xml.elem.DocRefId.max.li2")}</li>
+                        <li>${messages("xml.elem.DocRefId.max.li3")}</li>
+                      </ul>
+                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.DocRefId.max.p2")}</p>
+                      """
+    Seq(
+      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
+      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
+    )
+  }
 }
