@@ -391,3 +391,5 @@ xml.elem.DocRefId.max.p2 = If OECD0 is in the ReportingFI section, the DocRefId 
 xml.elem.accountNumber.max = AccountNumber element must be 200 characters or less. If no account number, use NANUM as the value
 xml.elem.arg.bool.empty = Value is missing for {0} {1} attribute
 xml.elem.arg.bool.invalid = {0} {1} attribute value must be true or false
+xml.elem.tin.issuedBy.empty = Value is missing for TIN issuedBy attribute. Attribute is not required if TIN value is NOTIN
+xml.elem.tin.issuedBy.invalid = TIN issuedBy attribute is not one of the allowed values. Attribute is not required if TIN value is NOTIN
