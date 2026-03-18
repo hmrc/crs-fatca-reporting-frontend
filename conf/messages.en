@@ -393,3 +393,4 @@ xml.elem.arg.bool.empty = Value is missing for {0} {1} attribute
 xml.elem.arg.bool.invalid = {0} {1} attribute value must be true or false
 xml.elem.tin.issuedBy.empty = Value is missing for TIN issuedBy attribute. Attribute is not required if TIN value is NOTIN
 xml.elem.tin.issuedBy.invalid = TIN issuedBy attribute is not one of the allowed values. Attribute is not required if TIN value is NOTIN
+xml.elem.firstName.empty = FirstName value is missing. If no first name, use NFN as the value
