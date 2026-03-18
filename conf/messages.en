@@ -401,3 +401,4 @@ xml.elem.birthinfo.city.max = Optional City element must be 200 characters or le
 xml.elem.addressfix.city.max = City element must be 200 characters or less for AddressFix
 xml.elem.addressfix.city.missing = City element is missing for AddressFix
 xml.elem.date.invalid = {0} element must be in the format YYYY-MM-DD
+xml.elem.decimal.invalid = {0} element must be a number
