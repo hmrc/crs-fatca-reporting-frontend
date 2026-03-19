@@ -407,3 +407,4 @@ xml.elem.attr.missing = {0} {1} attribute is missing
 xml.elem.enum.iso.invalid = {0} {1} attribute must contain an ISO currency code
 xml.elem.number.invalid = Number element must contain a number between 1 to 200
 xml.elem.crs.poolreport.invalid = PoolReport section is not required for CRS and should be removed
+xml.elem.unknown = {0} is not a recognised element name
