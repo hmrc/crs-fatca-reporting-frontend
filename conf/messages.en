@@ -294,7 +294,7 @@ fileConfirmation.financialInstitute.key = Financial institution
 fileConfirmation.fileInformation.key = File information
 fileConfirmation.p1 = We have sent a confirmation email to {0}.
 fileConfirmation.p2 = You can {0}.
-fileConfirmation.p2.link.text = make any elections for EFG Bank plc in the service
+fileConfirmation.p2.link.text = make any elections for {0} in the service
 fileConfirmation.subheading1 = What happens next
 fileConfirmation.p3 = We will contact you if we have any questions about your report.
 fileConfirmation.subheading2 = Before you go
@@ -319,7 +319,7 @@ change.fatca.threshold.hidden.text = Change if they are applying thresholds to a
 
 reportType.empty =
 reportType.crs.testData = Test data
-reportType.crs.nilReport = Nil report
+reportType.crs.nilReport = No reportable information
 reportType.crs.newInformation = New information
 reportType.crs.additionalInformationForExistingReport = Additional information for an existing report
 reportType.crs.correctedAndDeletedInformationForExistingReport = Corrected and deleted information for an existing report

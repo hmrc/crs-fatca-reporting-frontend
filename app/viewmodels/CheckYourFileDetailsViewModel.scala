@@ -36,26 +36,29 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
   def fileDetailsSummary: SummaryList =
     extractMessageSpecData(userAnswers) {
       messageSpecData =>
-        SummaryList(
-          rows = Seq(
-            summaryListRowHelper(messages("checkYourFileDetails.fileId.key"), messageSpecData.messageRefId, rowClasses = Some("no-border-bottom")),
-            summaryListRowHelper(messages("checkYourFileDetails.reportingRegime.key"), messageSpecData.messageType.name, rowClasses = Some("no-border-bottom")),
-            summaryListRowHelper(messages("checkYourFileDetails.fiId.key"), messageSpecData.sendingCompanyIN, rowClasses = Some("no-border-bottom")),
-            summaryListRowHelper(messages("checkYourFileDetails.financialInstitution.key"),
-                                 messageSpecData.reportingFIName,
-                                 rowClasses = Some("no-border-bottom")
-            ),
-            summaryListRowHelper(
-              messages("checkYourFileDetails.fileInformation.key"),
-              messages(messageKeyForReportType(messageSpecData.reportType)),
-              actionItem = Some(
-                ActionItem(
-                  href = routes.ChangeFileController.onPageLoad().url,
-                  content = Text(messages("checkYourFileDetails.fileInformation.change"))
-                )
+        val baseRows = Seq(
+          summaryListRowHelper(messages("checkYourFileDetails.fileId.key"), messageSpecData.messageRefId, rowClasses = Some("no-border-bottom")),
+          summaryListRowHelper(messages("checkYourFileDetails.reportingRegime.key"), messageSpecData.messageType.name, rowClasses = Some("no-border-bottom")),
+          summaryListRowHelper(messages("checkYourFileDetails.fiId.key"), messageSpecData.sendingCompanyIN, rowClasses = Some("no-border-bottom")),
+          summaryListRowHelper(
+            messages("checkYourFileDetails.fileInformation.key"),
+            messages(messageKeyForReportType(messageSpecData.reportType)),
+            actionItem = Some(
+              ActionItem(
+                href = routes.ChangeFileController.onPageLoad().url,
+                content = Text(messages("checkYourFileDetails.fileInformation.change"))
               )
             )
           )
+        )
+        val rows = messageSpecData.reportingFIName match {
+          case Some(value) =>
+            val reportingFI = summaryListRowHelper(messages("checkYourFileDetails.financialInstitution.key"), value, rowClasses = Some("no-border-bottom"))
+            baseRows.patch(3, Seq(reportingFI), 0)
+          case None => baseRows
+        }
+        SummaryList(
+          rows = rows
         )
     }
 

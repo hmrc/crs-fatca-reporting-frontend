@@ -61,7 +61,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
         "Back to manage your CRS and FATCA reports"
       )
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, true)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, true, "EFG Bank plc")
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("File successfully sent")
@@ -82,7 +82,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
       val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
       val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false, fileDetails.reportingEntityName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getAllParagraph(doc).text() mustNot include("You can make any elections for EFG Bank plc in the service.")
