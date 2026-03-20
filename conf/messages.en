@@ -409,3 +409,4 @@ xml.elem.number.invalid = Number element must contain a number between 1 to 200
 xml.elem.crs.poolreport.invalid = PoolReport section is not required for CRS and should be removed
 xml.elem.unknown = {0} is not a recognised element name
 xml.elem.attr.unknown = {0} is not a recognised attribute name
+xml.elem.child.unknown = {0} should not contain any child elements
