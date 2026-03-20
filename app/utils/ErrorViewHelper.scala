@@ -32,6 +32,7 @@ class ErrorViewHelper @Inject() () {
         er.message.messageKey match {
           case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
           case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber)
+          case "xml.elem.messageRefId.max"        => messageRefId(er.lineNumber)
           case _ =>
             Seq(
               TableRow(content = Text(er.lineNumber.toString),
@@ -71,6 +72,27 @@ class ErrorViewHelper @Inject() () {
                         <li>${messages("xml.elem.DocRefId.max.li3")}</li>
                       </ul>
                       <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.DocRefId.max.p2")}</p>
+                      """
+    Seq(
+      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
+      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
+    )
+  }
+
+  private def messageRefId(lineNumber: Int)(implicit messages: Messages) = {
+    val htmlContent =
+      s"""
+                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.messageRefId.max")}</p>
+                      <ul class="govuk-list govuk-list--bullet">
+                        <li>${messages("xml.elem.messageRefId.max.li1")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li2")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li3")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li4")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li5")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li6")}</li>
+                        <li>${messages("xml.elem.messageRefId.max.li7")}</li>
+                      </ul>
+                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.messageRefId.max.p2")}</p>
                       """
     Seq(
       TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
