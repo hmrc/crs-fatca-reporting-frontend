@@ -422,3 +422,4 @@ xml.elem.messageRefId.max.li7 = one to 77 characters of your choice to make the 
 xml.elem.messageRefId.max.p2 = MessageRefId must also not include less than signs (<), greater than signs (>), colons (:), straight double quotes ("), apostrophes (''), ampersands (&), forward slashes (/), backslashes (\), vertical bars (|), question marks (?) or asterisks (*)
 xml.elem.timestamp.invalid = Timestamp element must be in the format YYYY-MM-DDThh:mm:ss or YYYY-MM-DDThh:mm:ss.nnn with a real date and time. For example, 2026-08-12T09:45:30
 xml.elem.crs.countryinfo.invalid = Optional CountryInfo element must include CountryCode or FormerCountryName
+xml.elem.crs.addressfix.missing = Address must contain AddressFix
