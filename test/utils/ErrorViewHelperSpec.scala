@@ -12,7 +12,9 @@ import utils.ErrorViewHelper
 class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
 
   private val mockMessages: Messages = mock[Messages]
-  when(mockMessages.apply(any[String], any[Any]())).thenAnswer(invocation => invocation.getArgument(0))
+  when(mockMessages.apply(any[String], any[Any]())).thenAnswer(
+    invocation => invocation.getArgument(0)
+  )
 
   private val helper = new ErrorViewHelper()
 
@@ -23,7 +25,7 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
       "default case" - {
 
         "generates a plain text row for an unrecognised message key" in {
-          val error = GenericError(lineNumber = 5, message = Message("xml.elem.unknown"))
+          val error  = GenericError(lineNumber = 5, message = Message("xml.elem.unknown"))
           val result = helper.generateTable(Seq(error))(mockMessages)
 
           result.size shouldBe 1
@@ -45,9 +47,9 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
       "xml.elem.reportingPeriod.invalid" - {
 
         "generates an HtmlContent row" in {
-          val error = GenericError(lineNumber = 10, message = Message("xml.elem.reportingPeriod.invalid"))
+          val error  = GenericError(lineNumber = 10, message = Message("xml.elem.reportingPeriod.invalid"))
           val result = helper.generateTable(Seq(error))(mockMessages)
-          val row = result.head
+          val row    = result.head
 
           row.head.content shouldBe Text("10")
           row.head.attributes shouldBe Map("id" -> "lineNumber_10")
@@ -57,7 +59,7 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
 
         "includes all expected message keys in the html" in {
           val error = GenericError(lineNumber = 10, message = Message("xml.elem.reportingPeriod.invalid"))
-          val html = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
+          val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
 
           html should include("xml.elem.reportingPeriod.invalid")
           html should include("xml.elem.reportingPeriod.invalid.li1")
@@ -71,9 +73,9 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
       "xml.elem.DocRefId.max" - {
 
         "generates an HtmlContent row" in {
-          val error = GenericError(lineNumber = 20, message = Message("xml.elem.DocRefId.max"))
+          val error  = GenericError(lineNumber = 20, message = Message("xml.elem.DocRefId.max"))
           val result = helper.generateTable(Seq(error))(mockMessages)
-          val row = result.head
+          val row    = result.head
 
           row.head.attributes shouldBe Map("id" -> "lineNumber_20")
           row(1).attributes shouldBe Map("id" -> "errorMessage_20")
@@ -82,7 +84,7 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
 
         "includes all expected message keys in the html" in {
           val error = GenericError(lineNumber = 20, message = Message("xml.elem.DocRefId.max"))
-          val html = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
+          val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
 
           html should include("xml.elem.DocRefId.max")
           html should include("xml.elem.DocRefId.max.li1")
@@ -95,9 +97,9 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
       "xml.elem.messageRefId.max" - {
 
         "generates an HtmlContent row" in {
-          val error = GenericError(lineNumber = 30, message = Message("xml.elem.messageRefId.max"))
+          val error  = GenericError(lineNumber = 30, message = Message("xml.elem.messageRefId.max"))
           val result = helper.generateTable(Seq(error))(mockMessages)
-          val row = result.head
+          val row    = result.head
 
           row.head.attributes shouldBe Map("id" -> "lineNumber_30")
           row(1).attributes shouldBe Map("id" -> "errorMessage_30")
@@ -106,10 +108,12 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
 
         "includes all expected message keys including all 7 list items in the html" in {
           val error = GenericError(lineNumber = 30, message = Message("xml.elem.messageRefId.max"))
-          val html = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
+          val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
 
           html should include("xml.elem.messageRefId.max")
-          (1 to 7).foreach(i => html should include(s"xml.elem.messageRefId.max.li$i"))
+          (1 to 7).foreach(
+            i => html should include(s"xml.elem.messageRefId.max.li$i")
+          )
           html should include("xml.elem.messageRefId.max.p2")
         }
       }
@@ -124,13 +128,14 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
             "xml.elem.unknown"
           )
 
-          keys.zipWithIndex.foreach { case (key, i) =>
-            val lineNumber = i + 100
-            val result = helper.generateTable(Seq(GenericError(lineNumber, Message(key))))(mockMessages)
-            val row = result.head
+          keys.zipWithIndex.foreach {
+            case (key, i) =>
+              val lineNumber = i + 100
+              val result     = helper.generateTable(Seq(GenericError(lineNumber, Message(key))))(mockMessages)
+              val row        = result.head
 
-            row.head.attributes shouldBe Map("id" -> s"lineNumber_$lineNumber")
-            row(1).attributes shouldBe Map("id" -> s"errorMessage_$lineNumber")
+              row.head.attributes shouldBe Map("id" -> s"lineNumber_$lineNumber")
+              row(1).attributes shouldBe Map("id" -> s"errorMessage_$lineNumber")
           }
         }
       }
@@ -146,6 +151,14 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
           )
 
           helper.generateTable(errors)(mockMessages).size shouldBe 4
+        }
+
+        "generates a row for each error more than 100" in {
+          val errors = Seq.tabulate(101) {
+            i =>
+              GenericError(i, Message("xml.elem.unknown"))
+          }
+          helper.generateTable(errors)(mockMessages).size shouldBe 100
         }
       }
     }

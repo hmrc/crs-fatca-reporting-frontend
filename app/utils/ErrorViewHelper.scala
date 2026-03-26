@@ -21,13 +21,14 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+import utils.ReportingConstants.MAX_DATA_ERRORS
 
 import javax.inject.Inject
 
 class ErrorViewHelper @Inject() () {
 
   def generateTable(error: Seq[GenericError])(implicit messages: Messages): Seq[Seq[TableRow]] =
-    error.map {
+    error.take(MAX_DATA_ERRORS).map {
       er =>
         er.message.messageKey match {
           case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
