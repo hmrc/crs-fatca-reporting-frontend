@@ -370,6 +370,7 @@ xml.elem.enum.value.invalid = {0} element is not one of the allowed values
 xml.elem.sendingCompanyIn.empty = SendingCompanyIN is missing and must contain the FI ID of the ReportingFI
 xml.elem.sendingCompanyIn.max = SendingCompanyIN must contain the FI ID of the ReportingFI
 xml.elem.crsoecd.version.invalid = CRS_OECD version attribute must have a value of "3.0"
+xml.elem.crsoecd.version.min = CRS_OECD version attribute is missing. The value must be "3.0"
 xml.elem.crs.corrMessageRefId = CorrMessageRefId element is not required for CRS and must be removed
 xml.elem.reportingPeriod.invalid = ReportingPeriod value must:
 xml.elem.reportingPeriod.invalid.li1 = be in the format YYYY-MM-DD
