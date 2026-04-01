@@ -41,12 +41,13 @@ class RulesErrorController @Inject() (
   fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: RulesErrorView
-)(implicit ec: ExecutionContext) extends FrontendBaseController
-    with I18nSupport with Logging {
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(conversationId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-
       fileDetailsService.getFileDetails(ConversationId(conversationId)).map {
         case Some(fileDetails) =>
           fileDetails.status match {
@@ -56,8 +57,8 @@ class RulesErrorController @Inject() (
               val fileRejectedViewModel = FileRejectedViewModel(fileValidationErrors)
               request.userAnswers.get(ValidXMLPage) match {
                 case Some(validXmlData) =>
-                  val fileName = validXmlData.fileName
-                  val regimeType = validXmlData.messageSpecData.messageType
+                  val fileName    = validXmlData.fileName
+                  val regimeType  = validXmlData.messageSpecData.messageType
                   val errorLength = 101
                   Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
                 case None =>

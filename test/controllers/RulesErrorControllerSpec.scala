@@ -131,7 +131,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
 
     "must redirect to page unavailable when file detail service returns file details with status not rejected" in {
       val notRejectedFileDetails = fileDetails.copy(status = Pending)
-      val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
+      val messageSpecData        = getMessageSpecData(CRS, CRSReportType.TestData)
       val userAnswers = emptyUserAnswers
         .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 

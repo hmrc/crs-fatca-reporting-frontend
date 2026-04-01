@@ -25,7 +25,7 @@ enum BusinessRuleErrorCode(val code: String):
   case FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
   case FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
-  //crs
+  // crs
   case CRSFailedThreatScan extends BusinessRuleErrorCode("CRS Error Code 1")
   case CRSEmojis extends BusinessRuleErrorCode("CRS Error Code 3")
   case CRSEmptyStringMin1Elements extends BusinessRuleErrorCode("CRS Error Code 4")
