@@ -25,16 +25,46 @@ enum BusinessRuleErrorCode(val code: String):
   case FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
   case FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
+  //crs
+  case CRSFailedThreatScan extends BusinessRuleErrorCode("CRS Error Code 1")
+  case CRSEmojis extends BusinessRuleErrorCode("CRS Error Code 3")
+  case CRSEmptyStringMin1Elements extends BusinessRuleErrorCode("CRS Error Code 4")
+  case CRSTestData extends BusinessRuleErrorCode("CRS Error Code 5")
+  case CRSBody extends BusinessRuleErrorCode("CRS Error Code 6")
+  case CRSMultipleNilReports extends BusinessRuleErrorCode("CRS Error Code 7")
+  case CRSMessageTypeIndic_CRS701_Or_CRS702 extends BusinessRuleErrorCode("CRS Error Code 8")
+  case CRSMultipleReportingFis extends BusinessRuleErrorCode("CRS Error Code 9")
+  case CRSSendingCompanyIN extends BusinessRuleErrorCode("CRS Error Code 10")
+  case CRSMessageRefIdFormatInvalid extends BusinessRuleErrorCode("CRS Error Code 11")
+  case CRSDuplicateMessageRefId extends BusinessRuleErrorCode("CRS Error Code 12")
+  case CRSFileNameMessageRefIdMismatch extends BusinessRuleErrorCode("CRS Error Code 13")
+  case CRSMessageSpecContainsCorrMessageRefId extends BusinessRuleErrorCode("CRS Error Code 14")
+  case CRSReportingPeriodFormat extends BusinessRuleErrorCode("CRS Error Code 15")
+
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
 object BusinessRuleErrorCode:
 
-  private val values: Seq[BusinessRuleErrorCode] = Seq(
+  val values: Seq[BusinessRuleErrorCode] = Seq(
     InvalidMessageRefIDFormat,
     DocRefIDFormat,
     CorrDocRefIdUnknown,
     FailedSchemaValidationCrs,
-    FailedSchemaValidationFatca
+    FailedSchemaValidationFatca,
+    CRSFailedThreatScan,
+    CRSEmojis,
+    CRSEmptyStringMin1Elements,
+    CRSTestData,
+    CRSBody,
+    CRSMultipleNilReports,
+    CRSMessageTypeIndic_CRS701_Or_CRS702,
+    CRSMultipleReportingFis,
+    CRSSendingCompanyIN,
+    CRSMessageRefIdFormatInvalid,
+    CRSDuplicateMessageRefId,
+    CRSFileNameMessageRefIdMismatch,
+    CRSMessageSpecContainsCorrMessageRefId,
+    CRSReportingPeriodFormat
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

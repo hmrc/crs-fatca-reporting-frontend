@@ -22,7 +22,7 @@
         govukSummaryList: GovukSummaryList,
 )
 
-@(fileCheckTable: SummaryList)(implicit request: Request[_], messages: Messages)
+@(fileCheckTable: SummaryList, conversationId: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("fileFailedChecks.title")), showBackLink=false) {
 
@@ -37,6 +37,6 @@
     @govukButton(
         ButtonViewModel(messages("fileFailedChecks.submit"))
         .withAttribute("id" -> "submit")
-        .asLink(routes.RulesErrorController.onPageLoad().url)
+        .asLink(routes.RulesErrorController.onPageLoad(conversationId).url)
     )
 }

@@ -21,22 +21,22 @@ import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
 import viewmodels.FileRejectedViewModel
 
 trait RulesErrorHelper {
+  val fileErrors: Seq[FileErrors] = Seq(FileErrors(CorrDocRefIdUnknown, None))
 
-  def createFileRejectedViewModel() = {
-    val fileErrors: Seq[FileErrors] = Seq(FileErrors(CorrDocRefIdUnknown, None))
-    val recordErrors: Seq[RecordError] = Seq(
-      RecordError(
-        InvalidMessageRefIDFormat,
-        Some("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"),
-        Some(Seq("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"))
-      )
+  val recordErrors: Seq[RecordError] = Seq(
+    RecordError(
+      InvalidMessageRefIDFormat,
+      Some("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"),
+      Some(Seq("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"))
     )
-    val validationErrors = FileValidationErrors(
-      fileError = Some(fileErrors),
-      recordError = Some(recordErrors)
-    )
+  )
 
+  val validationErrors = FileValidationErrors(
+    fileError = Some(fileErrors),
+    recordError = Some(recordErrors)
+  )
+
+  def createFileRejectedViewModel() =
     FileRejectedViewModel(validationErrors)
-  }
 
 }

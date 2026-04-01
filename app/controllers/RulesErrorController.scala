@@ -19,34 +19,59 @@ package controllers
 import controllers.actions.*
 import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
+import models.submission.ConversationId
+import models.submission.fileDetails.Rejected
 import pages.ValidXMLPage
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.FileRejectedViewModel
 import views.html.RulesErrorView
 
 import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class RulesErrorController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: RulesErrorView
-) extends FrontendBaseController
-    with I18nSupport {
+)(implicit ec: ExecutionContext) extends FrontendBaseController
+    with I18nSupport with Logging {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(conversationId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(validXmlData) =>
-          val fileName    = validXmlData.fileName
-          val regimeType  = validXmlData.messageSpecData.messageType
-          val errorLength = 101
-          Ok(view(fileName, regimeType.toString, errorLength, createFileRejectedViewModel()))
-        case _ => Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+
+      fileDetailsService.getFileDetails(ConversationId(conversationId)).map {
+        case Some(fileDetails) =>
+          fileDetails.status match {
+            case r: Rejected =>
+              val fileValidationErrors: FileValidationErrors = r.error
+              println("File validation errors: " + fileValidationErrors)
+              val fileRejectedViewModel = FileRejectedViewModel(fileValidationErrors)
+              request.userAnswers.get(ValidXMLPage) match {
+                case Some(validXmlData) =>
+                  val fileName = validXmlData.fileName
+                  val regimeType = validXmlData.messageSpecData.messageType
+                  val errorLength = 101
+                  Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
+                case None =>
+                  logger.warn("File details found for conversation ID: " + conversationId + " but no valid XML data found in user answers")
+                  Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+              }
+            case _ =>
+              logger.warn("File details found for conversation ID: " + conversationId + " but status is not Rejected")
+              Redirect(controllers.routes.PageUnavailableController.onPageLoad())
+          }
+
+        case None =>
+          logger.warn("No file details (for Business rule errors) found for conversation ID: " + conversationId)
+          Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
   }
 
