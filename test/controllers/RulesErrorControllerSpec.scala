@@ -111,7 +111,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
         .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
       when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(fileDetails)))
+        .thenReturn(Future.successful(None))
 
       val application = applicationBuilder(userAnswers = Some(userAnswers))
         .overrides(
