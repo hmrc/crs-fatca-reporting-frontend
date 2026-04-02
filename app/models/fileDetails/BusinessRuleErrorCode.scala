@@ -40,6 +40,17 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSFileNameMessageRefIdMismatch extends BusinessRuleErrorCode("CRS Error Code 13")
   case CRSMessageSpecContainsCorrMessageRefId extends BusinessRuleErrorCode("CRS Error Code 14")
   case CRSReportingPeriodFormat extends BusinessRuleErrorCode("CRS Error Code 15")
+  case CRSReportingPeriodEarly extends BusinessRuleErrorCode("CRS Error Code 16")
+  case CRSReportingPeriodLaterThanCurrentYear extends BusinessRuleErrorCode("CRS Error Code 17")
+  case CRSReportingPeriodMustPreviousSentFile extends BusinessRuleErrorCode("CRS Error Code 18")
+  case CRSReportingFIResCountryCode extends BusinessRuleErrorCode("CRS Error Code 19")
+  case CRSRegimeIncorrect extends BusinessRuleErrorCode("CRS Error Code 20")
+  case CRSRegimeIncorrectDeuToAcctHolderTypeAndAccountReport extends BusinessRuleErrorCode("CRS Error Code 21")
+  case CRSInMissing extends BusinessRuleErrorCode("CRS Error Code 22")
+  case CRSInIssueByAttrMissing extends BusinessRuleErrorCode("CRS Error Code 23")
+  case CRSIndividualNameTypeInvalid extends BusinessRuleErrorCode("CRS Error Code 24")
+  case CRSAddress_AddressFixInvalid extends BusinessRuleErrorCode("CRS Error Code 25")
+  case CRSDeleteParentRecord extends BusinessRuleErrorCode("CRS Error Code 26")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -64,7 +75,17 @@ object BusinessRuleErrorCode:
     CRSDuplicateMessageRefId,
     CRSFileNameMessageRefIdMismatch,
     CRSMessageSpecContainsCorrMessageRefId,
-    CRSReportingPeriodFormat
+    CRSReportingPeriodFormat,
+    CRSReportingPeriodEarly,
+    CRSReportingPeriodLaterThanCurrentYear,
+    CRSReportingPeriodMustPreviousSentFile,
+    CRSReportingFIResCountryCode,
+    CRSRegimeIncorrect,
+    CRSRegimeIncorrectDeuToAcctHolderTypeAndAccountReport,
+    CRSInMissing,
+    CRSIndividualNameTypeInvalid,
+    CRSAddress_AddressFixInvalid,
+    CRSDeleteParentRecord
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

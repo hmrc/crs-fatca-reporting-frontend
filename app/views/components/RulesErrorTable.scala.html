@@ -98,6 +98,12 @@
             <p class="govuk-body">{messages("crs.code.13.paragraph1")}</p>
             <p class="govuk-!-margin-top-3">{messages("crs.code.13.paragraph2")}</p>
             <p class="govuk-!-margin-top-3">{messages("crs.code.13.paragraph3")}</p>
+        case CRSRegimeIncorrectDeuToAcctHolderTypeAndAccountReport.code =>
+            <p class="govuk-body">{messages("crs.code.21.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.21.bullet1")}</li>
+                <li>{messages("crs.code.21.bullet2")}</li>
+            </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 
