@@ -75,6 +75,16 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSSpecifiedElectronicMoneyProduct extends BusinessRuleErrorCode("CRS Error Code 48")
   case CRSIBAN extends BusinessRuleErrorCode("CRS Error Code 49")
   case CRSCashValueInsuranceContractOrAnnuityContract extends BusinessRuleErrorCode("CRS Error Code 50")
+  case CRSEquityInterestType extends BusinessRuleErrorCode("CRS Error Code 51")
+  case CRSAccountHolderSelfCert extends BusinessRuleErrorCode("CRS Error Code 52")
+  case CRSTINMissing extends BusinessRuleErrorCode("CRS Error Code 53")
+  case CRSTINIssuedByAttributeMissing extends BusinessRuleErrorCode("CRS Error Code 54")
+  case CRSNationality extends BusinessRuleErrorCode("CRS Error Code 55")
+  case CRSBirthDateRange extends BusinessRuleErrorCode("CRS Error Code 56")
+  case CRSOrganisationResCountryCode extends BusinessRuleErrorCode("CRS Error Code 57")
+  case CRSControllingPerson extends BusinessRuleErrorCode("CRS Error Code 58")
+  case CRSControllingPersonRequired extends BusinessRuleErrorCode("CRS Error Code 59")
+  case ControllingPersonIndividual extends BusinessRuleErrorCode("CRS Error Code 60")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -132,7 +142,17 @@ object BusinessRuleErrorCode:
     CRSISINFormatInvalid,
     CRSSpecifiedElectronicMoneyProduct,
     CRSIBAN,
-    CRSCashValueInsuranceContractOrAnnuityContract
+    CRSCashValueInsuranceContractOrAnnuityContract,
+    CRSEquityInterestType,
+    CRSAccountHolderSelfCert,
+    CRSTINMissing,
+    CRSTINIssuedByAttributeMissing,
+    CRSNationality,
+    CRSBirthDateRange,
+    CRSOrganisationResCountryCode,
+    CRSControllingPerson,
+    CRSControllingPersonRequired,
+    ControllingPersonIndividual
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

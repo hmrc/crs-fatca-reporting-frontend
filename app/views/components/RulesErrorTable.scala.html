@@ -137,6 +137,18 @@
                 <li>{messages("crs.code.47.bullet2")}</li>
                 <li>{messages("crs.code.47.bullet3")}</li>
             </ul>
+        case CRSControllingPerson.code =>
+            <p class="govuk-body">{messages("crs.code.58.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.58.bullet1")}</li>
+                <li>{messages("crs.code.58.bullet2")}</li>
+            </ul>
+        case CRSControllingPersonRequired.code =>
+        <p class="govuk-body">{messages("crs.code.59.intro")}</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>{messages("crs.code.59.bullet1")}</li>
+            <li>{messages("crs.code.59.bullet2")}</li>
+        </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 
