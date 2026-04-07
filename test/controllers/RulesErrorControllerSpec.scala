@@ -66,7 +66,6 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
     "must return OK and the correct view for a GET" in {
       val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
       val userAnswers = emptyUserAnswers
-        .withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
 
       when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(fileDetails)))
@@ -85,23 +84,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
         val view = application.injector.instanceOf[RulesErrorView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("testFile", "CRS", errorLength = 1200, createFileRejectedViewModel())(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to page unavailable when valid-xml is not present" in {
-
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
-        .thenReturn(Future.successful(Some(fileDetails)))
-
-      running(application) {
-        val request = FakeRequest(GET, routes.RulesErrorController.onPageLoad(conversationId.value).url)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+        contentAsString(result) mustEqual view("name.xml", "CRS", errorLength = 1200, createFileRejectedViewModel())(request, messages(application)).toString
       }
     }
 

@@ -55,16 +55,11 @@ class RulesErrorController @Inject() (
               val fileValidationErrors: FileValidationErrors = r.error
               println("File validation errors: " + fileValidationErrors)
               val fileRejectedViewModel = FileRejectedViewModel(fileValidationErrors)
-              request.userAnswers.get(ValidXMLPage) match {
-                case Some(validXmlData) =>
-                  val fileName    = validXmlData.fileName
-                  val regimeType  = validXmlData.messageSpecData.messageType
-                  val errorLength = 101
-                  Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
-                case None =>
-                  logger.warn("File details found for conversation ID: " + conversationId + " but no valid XML data found in user answers")
-                  Redirect(controllers.routes.PageUnavailableController.onPageLoad())
-              }
+
+              val fileName = fileDetails.name
+              val regimeType = fileDetails.messageType
+              val errorLength = 101
+              Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
             case _ =>
               logger.warn("File details found for conversation ID: " + conversationId + " but status is not Rejected")
               Redirect(controllers.routes.PageUnavailableController.onPageLoad())
