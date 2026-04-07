@@ -37,7 +37,7 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
   "RulesErrorsView" - {
 
-    "should render page components for CRS regimeType with under 100 errors" in {
+    "should render page components for CRS regimeType with under 100 errors" in new RulesErrorTestContext {
       val regimeType = "CRS"
       val paragraphValues = Seq(
         "We cannot accept the file filename.xml because it does not meet the CRS business rules."
@@ -83,8 +83,13 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
       validateListValues(getAllElements(doc, ".govuk-table__header"), tableHeaderValues)
       doc.select(".govuk-table__body .govuk-table__row").size() mustEqual 2
-      validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(1)"), tableCellValueFirstRow)
-      validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(2)"), tableCellValueSecondRow)
+
+      tableRows.zipWithIndex.foreach {
+        case (row, index) =>
+          validateListValues(getAllElements(doc, s".govuk-table__body .govuk-table__row:nth-child(${index + 1})"), row)
+      }
+      // validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(1)"), tableCellValueFirstRow)
+      // validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(2)"), tableCellValueSecondRow)
 
     }
 

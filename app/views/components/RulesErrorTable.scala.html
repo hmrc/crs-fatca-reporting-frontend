@@ -104,6 +104,26 @@
                 <li>{messages("crs.code.21.bullet1")}</li>
                 <li>{messages("crs.code.21.bullet2")}</li>
             </ul>
+        case CRSDocTypeIndicCombinationInvalid.code =>
+            <p class="govuk-body">{messages("crs.code.27.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.27.bullet1")}</li>
+                <li>{messages("crs.code.27.bullet2")}</li>
+            </ul>
+            <p class="govuk-!-margin-top-4">{messages("crs.code.27.intro.2")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.27.bullet1")}</li>
+                <li>{messages("crs.code.27.bullet2")}</li>
+            </ul>
+        case CRSDocRefIDInvalidFormat.code =>
+          <p class="govuk-body">{messages("crs.code.30.paragraph1")}</p>
+          <p class="govuk-!-margin-top-3">{messages("crs.code.30.paragraph2")}</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>{messages("crs.code.30.bullet1")}</li>
+            <li>{messages("crs.code.30.bullet2")}</li>
+            <li>{messages("crs.code.30.bullet3")}</li>
+          </ul>
+
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 

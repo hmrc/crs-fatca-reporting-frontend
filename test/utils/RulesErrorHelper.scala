@@ -16,7 +16,7 @@
 
 package utils
 
-import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
+import models.fileDetails.BusinessRuleErrorCode.{CRSFailedThreatScan, CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
 import viewmodels.FileRejectedViewModel
 
@@ -25,7 +25,7 @@ trait RulesErrorHelper {
 
   val recordErrors: Seq[RecordError] = Seq(
     RecordError(
-      InvalidMessageRefIDFormat,
+      CRSFailedThreatScan,
       Some("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"),
       Some(Seq("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"))
     )

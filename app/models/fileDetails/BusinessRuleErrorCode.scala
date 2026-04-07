@@ -51,6 +51,20 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSIndividualNameTypeInvalid extends BusinessRuleErrorCode("CRS Error Code 24")
   case CRSAddress_AddressFixInvalid extends BusinessRuleErrorCode("CRS Error Code 25")
   case CRSDeleteParentRecord extends BusinessRuleErrorCode("CRS Error Code 26")
+  case CRSDocTypeIndicCombinationInvalid extends BusinessRuleErrorCode("CRS Error Code 27")
+  case CRSResendOption extends BusinessRuleErrorCode("CRS Error Code 28")
+  case CRSDuplicateDocRefIds extends BusinessRuleErrorCode("CRS Error Code 29")
+  case CRSDocRefIDInvalidFormat extends BusinessRuleErrorCode("CRS Error Code 30")
+  case CRSDocRefIDUnknown extends BusinessRuleErrorCode("CRS Error Code 31")
+  case CRSDocRefInvalid extends BusinessRuleErrorCode("CRS Error Code 32")
+  case CRSDocSpeCorrMessageRefId extends BusinessRuleErrorCode("CRS Error Code 33")
+  case CRSCorrDocRefIdUnknown extends BusinessRuleErrorCode("CRS Error Code 34")
+  case CRSOECD1CorrDocRefId extends BusinessRuleErrorCode("CRS Error Code 35")
+  case CRSCorrDocRefIdMissing extends BusinessRuleErrorCode("CRS Error Code 36")
+  case CRSDuplicateCorrDocRefIds extends BusinessRuleErrorCode("CRS Error Code 37")
+  case CRSCorrDocRefIdInvalid extends BusinessRuleErrorCode("CRS Error Code 38")
+  case CRSInvalidCorrDocRefId extends BusinessRuleErrorCode("CRS Error Code 39")
+  case CRSCorrDocRefIdForOECD0 extends BusinessRuleErrorCode("CRS Error Code 40")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -85,7 +99,20 @@ object BusinessRuleErrorCode:
     CRSInMissing,
     CRSIndividualNameTypeInvalid,
     CRSAddress_AddressFixInvalid,
-    CRSDeleteParentRecord
+    CRSDeleteParentRecord,
+    CRSDocTypeIndicCombinationInvalid,
+    CRSResendOption,
+    CRSDuplicateDocRefIds,
+    CRSDocRefIDInvalidFormat,
+    CRSDocRefIDUnknown,
+    CRSDocSpeCorrMessageRefId,
+    CRSCorrDocRefIdUnknown,
+    CRSOECD1CorrDocRefId,
+    CRSCorrDocRefIdMissing,
+    CRSDuplicateCorrDocRefIds,
+    CRSCorrDocRefIdInvalid,
+    CRSInvalidCorrDocRefId,
+    CRSCorrDocRefIdForOECD0
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =
