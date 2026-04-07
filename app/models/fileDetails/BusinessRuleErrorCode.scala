@@ -65,6 +65,16 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSCorrDocRefIdInvalid extends BusinessRuleErrorCode("CRS Error Code 38")
   case CRSInvalidCorrDocRefId extends BusinessRuleErrorCode("CRS Error Code 39")
   case CRSCorrDocRefIdForOECD0 extends BusinessRuleErrorCode("CRS Error Code 40")
+  case CRSMultipleReportingGroup extends BusinessRuleErrorCode("CRS Error Code 41")
+  case CRSSponsor extends BusinessRuleErrorCode("CRS Error Code 42")
+  case CRSIntermediary extends BusinessRuleErrorCode("CRS Error Code 43")
+  case CRSAccountReport extends BusinessRuleErrorCode("CRS Error Code 44")
+  case CRSClosedAccount extends BusinessRuleErrorCode("CRS Error Code 45")
+  case CRSIBANFormatInvalid extends BusinessRuleErrorCode("CRS Error Code 46")
+  case CRSISINFormatInvalid extends BusinessRuleErrorCode("CRS Error Code 47")
+  case CRSSpecifiedElectronicMoneyProduct extends BusinessRuleErrorCode("CRS Error Code 48")
+  case CRSIBAN extends BusinessRuleErrorCode("CRS Error Code 49")
+  case CRSCashValueInsuranceContractOrAnnuityContract extends BusinessRuleErrorCode("CRS Error Code 50")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -112,7 +122,17 @@ object BusinessRuleErrorCode:
     CRSDuplicateCorrDocRefIds,
     CRSCorrDocRefIdInvalid,
     CRSInvalidCorrDocRefId,
-    CRSCorrDocRefIdForOECD0
+    CRSCorrDocRefIdForOECD0,
+    CRSMultipleReportingGroup,
+    CRSSponsor,
+    CRSIntermediary,
+    CRSAccountReport,
+    CRSClosedAccount,
+    CRSIBANFormatInvalid,
+    CRSISINFormatInvalid,
+    CRSSpecifiedElectronicMoneyProduct,
+    CRSIBAN,
+    CRSCashValueInsuranceContractOrAnnuityContract
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

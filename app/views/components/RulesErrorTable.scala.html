@@ -123,7 +123,20 @@
             <li>{messages("crs.code.30.bullet2")}</li>
             <li>{messages("crs.code.30.bullet3")}</li>
           </ul>
-
+        case CRSIBANFormatInvalid.code =>
+            <p class="govuk-body">{messages("crs.code.46.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.46.bullet1")}</li>
+                <li>{messages("crs.code.46.bullet2")}</li>
+                <li>{messages("crs.code.46.bullet3")}</li>
+            </ul>
+        case CRSISINFormatInvalid.code =>
+            <p class="govuk-body">{messages("crs.code.47.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("crs.code.47.bullet1")}</li>
+                <li>{messages("crs.code.47.bullet2")}</li>
+                <li>{messages("crs.code.47.bullet3")}</li>
+            </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 
