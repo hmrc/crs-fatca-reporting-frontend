@@ -46,58 +46,39 @@ class ErrorViewHelper @Inject() () {
 
     }
 
-  private def invalidReportingPeriod(lineNumber: Int)(implicit messages: Messages) = {
-    val htmlContent =
-      s"""
-                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.reportingPeriod.invalid")}</p>
-                      <ul class="govuk-list govuk-list--bullet">
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li1")}</li>
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li2")}</li>
-                        <li>${messages("xml.elem.reportingPeriod.invalid.li3")}</li>
-                      </ul>
-                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.reportingPeriod.invalid.p2")}</p>
-                      """
-    Seq(
-      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
-      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
-    )
-  }
+  private def invalidReportingPeriod(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.reportingPeriod.invalid", 3)
 
-  private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = {
-    val htmlContent =
-      s"""
-                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.DocRefId.max")}</p>
-                      <ul class="govuk-list govuk-list--bullet">
-                        <li>${messages("xml.elem.DocRefId.max.li1")}</li>
-                        <li>${messages("xml.elem.DocRefId.max.li2")}</li>
-                        <li>${messages("xml.elem.DocRefId.max.li3")}</li>
-                      </ul>
-                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.DocRefId.max.p2")}</p>
-                      """
-    Seq(
-      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
-      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
-    )
-  }
+  private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.DocRefId.max", 3)
 
-  private def messageRefId(lineNumber: Int)(implicit messages: Messages) = {
+  private def messageRefId(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.messageRefId.max", 7)
+
+  private def errorRows(lineNumber: Int, messageTag: String, listCount: Int)(implicit messages: Messages): Seq[TableRow] = {
+
+    val listItemsHtml = (1 to listCount)
+      .map {
+        index => s"<li>$index. ${messages(s"$messageTag.li$index")}</li>"
+      }
+      .mkString("\n")
+
     val htmlContent =
       s"""
-                      <p class="govuk-body govuk-!-margin-bottom-1">${messages("xml.elem.messageRefId.max")}</p>
-                      <ul class="govuk-list govuk-list--bullet">
-                        <li>${messages("xml.elem.messageRefId.max.li1")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li2")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li3")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li4")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li5")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li6")}</li>
-                        <li>${messages("xml.elem.messageRefId.max.li7")}</li>
-                      </ul>
-                      <p class="govuk-body govuk-!-margin-bottom-0">${messages("xml.elem.messageRefId.max.p2")}</p>
-                      """
+         |<p class="govuk-body govuk-!-margin-bottom-1">${messages(messageTag)}</p>
+         |<ul class="govuk-list govuk-list--bullet">
+         |  $listItemsHtml
+         |</ul>
+         |<p class="govuk-body govuk-!-margin-bottom-0">${messages(s"$messageTag.p2")}</p>
+         |""".stripMargin
+
     Seq(
-      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
-      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
+      TableRow(
+        content = Text(lineNumber.toString),
+        classes = "govuk-table__cell--numeric",
+        attributes = Map("id" -> s"lineNumber_$lineNumber")
+      ),
+      TableRow(
+        content = HtmlContent(htmlContent),
+        attributes = Map("id" -> s"errorMessage_$lineNumber")
+      )
     )
   }
 }
