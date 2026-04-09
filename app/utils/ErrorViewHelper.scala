@@ -72,7 +72,7 @@ class ErrorViewHelper @Inject() () {
 
     val listItemsHtml = (1 to listCount)
       .map {
-        index => s"<li>$index. ${messages(s"$messageTag.li$index")}</li>"
+        index => s"<li>${messages(s"$messageTag.li$index")}</li>"
       }
       .mkString("\n")
 
