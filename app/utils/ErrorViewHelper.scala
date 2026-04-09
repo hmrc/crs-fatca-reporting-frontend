@@ -16,7 +16,7 @@
 
 package utils
 
-import models.GenericError
+import models.{GenericError, Message}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -34,6 +34,7 @@ class ErrorViewHelper @Inject() () {
           case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
           case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber)
           case "xml.elem.messageRefId.max"        => messageRefId(er.lineNumber)
+          case "xml.elem.unknown"                 => unknownElem(er.lineNumber, er.message)
           case _ =>
             Seq(
               TableRow(content = Text(er.lineNumber.toString),
@@ -51,6 +52,21 @@ class ErrorViewHelper @Inject() () {
   private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.DocRefId.max", 3)
 
   private def messageRefId(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.messageRefId.max", 7)
+
+  private def unknownElem(lineNumber: Int, m: Message)(implicit messages: Messages) = {
+    val htmlContent =
+      s"""
+                          <p class="govuk-body govuk-!-margin-bottom-1">${messages(m.messageKey, m.args: _*)}</p>
+                          <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                            <li>${messages("xml.elem.unknown.li1")}</li>
+                            <li>${messages("xml.elem.unknown.li2")}</li>
+                          </ul>
+                          """
+    Seq(
+      TableRow(content = Text(lineNumber.toString), classes = "govuk-table__cell--numeric", attributes = Map("id" -> s"lineNumber_$lineNumber")),
+      TableRow(content = HtmlContent(htmlContent), attributes = Map("id" -> s"errorMessage_$lineNumber"))
+    )
+  }
 
   private def errorRows(lineNumber: Int, messageTag: String, listCount: Int)(implicit messages: Messages): Seq[TableRow] = {
 

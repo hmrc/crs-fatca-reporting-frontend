@@ -134,6 +134,29 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
         }
       }
 
+      "xml.elem.unknown" - {
+
+        "generates an HtmlContent row" in {
+          val error  = GenericError(lineNumber = 30, message = Message("xml.elem.unknown"))
+          val result = helper.generateTable(Seq(error))(mockMessages)
+          val row    = result.head
+
+          row.head.attributes shouldBe Map("id" -> "lineNumber_30")
+          row(1).attributes shouldBe Map("id" -> "errorMessage_30")
+          row(1).content shouldBe a[HtmlContent]
+        }
+
+        "includes all expected message keys including all 2 list items in the html" in {
+          val error = GenericError(lineNumber = 30, message = Message("xml.elem.unknown"))
+          val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
+
+          html should include("xml.elem.unknown")
+          (1 to 2).foreach(
+            i => html should include(s"xml.elem.unknown.li$i")
+          )
+        }
+      }
+
       "lineNumber in element ids" - {
 
         "is set correctly across all message key branches" in {
