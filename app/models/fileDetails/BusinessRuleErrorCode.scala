@@ -21,11 +21,11 @@ import play.api.libs.json.*
 enum BusinessRuleErrorCode(val code: String):
   case InvalidMessageRefIDFormat extends BusinessRuleErrorCode("50008")
   case DocRefIDFormat extends BusinessRuleErrorCode("80001")
-  case CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
-  case FailedSchemaValidationCrs extends BusinessRuleErrorCode("Temp CRS Error Code 2")
+//  case CorrDocRefIdUnknown extends BusinessRuleErrorCode("80002")
   case FailedSchemaValidationFatca extends BusinessRuleErrorCode("Temp FATCA Error Code 2")
 
   // crs
+  case FailedSchemaValidationCrs extends BusinessRuleErrorCode("CRS Error Code 2")
   case CRSFailedThreatScan extends BusinessRuleErrorCode("CRS Error Code 1")
   case CRSEmojis extends BusinessRuleErrorCode("CRS Error Code 3")
   case CRSEmptyStringMin1Elements extends BusinessRuleErrorCode("CRS Error Code 4")
@@ -84,7 +84,16 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSOrganisationResCountryCode extends BusinessRuleErrorCode("CRS Error Code 57")
   case CRSControllingPerson extends BusinessRuleErrorCode("CRS Error Code 58")
   case CRSControllingPersonRequired extends BusinessRuleErrorCode("CRS Error Code 59")
-  case ControllingPersonIndividual extends BusinessRuleErrorCode("CRS Error Code 60")
+  case CRSControllingPersonIndividual extends BusinessRuleErrorCode("CRS Error Code 60")
+  case CRSCtrlgPersonType extends BusinessRuleErrorCode("CRS Error Code 61")
+  case CRSControllingPersonSelfCert extends BusinessRuleErrorCode("CRS Error Code 62")
+  case CRSAccountBalance extends BusinessRuleErrorCode("CRS Error Code 63")
+  case CRSDepositoryAccount extends BusinessRuleErrorCode("CRS Error Code 64")
+  case CRSDebtOrEquityInterestinInvestmentEntity extends BusinessRuleErrorCode("CRS Error Code 65")
+  case CRSCashValueInsuranceContractOrAnnuityContract2 extends BusinessRuleErrorCode("CRS Error Code 66")
+  case CRSDDProcedure extends BusinessRuleErrorCode("CRS Error Code 67")
+  case CRSAccountType extends BusinessRuleErrorCode("CRS Error Code 68")
+  case CRSPoolReport extends BusinessRuleErrorCode("CRS Error Code 69")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -93,7 +102,7 @@ object BusinessRuleErrorCode:
   val values: Seq[BusinessRuleErrorCode] = Seq(
     InvalidMessageRefIDFormat,
     DocRefIDFormat,
-    CorrDocRefIdUnknown,
+//    CorrDocRefIdUnknown,
     FailedSchemaValidationCrs,
     FailedSchemaValidationFatca,
     CRSFailedThreatScan,
@@ -152,7 +161,16 @@ object BusinessRuleErrorCode:
     CRSOrganisationResCountryCode,
     CRSControllingPerson,
     CRSControllingPersonRequired,
-    ControllingPersonIndividual
+    CRSControllingPersonIndividual,
+    CRSCtrlgPersonType,
+    CRSControllingPersonSelfCert,
+    CRSAccountBalance,
+    CRSDepositoryAccount,
+    CRSDebtOrEquityInterestinInvestmentEntity,
+    CRSCashValueInsuranceContractOrAnnuityContract2,
+    CRSDDProcedure,
+    CRSAccountType,
+    CRSPoolReport
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

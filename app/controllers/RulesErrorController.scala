@@ -17,11 +17,10 @@
 package controllers
 
 import controllers.actions.*
-import models.fileDetails.BusinessRuleErrorCode.{CorrDocRefIdUnknown, InvalidMessageRefIDFormat}
+import models.fileDetails.BusinessRuleErrorCode.{CRSEmojis, CRSFailedThreatScan}
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
 import models.submission.ConversationId
 import models.submission.fileDetails.Rejected
-import pages.ValidXMLPage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,7 +30,7 @@ import viewmodels.FileRejectedViewModel
 import views.html.RulesErrorView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class RulesErrorController @Inject() (
   override val messagesApi: MessagesApi,
@@ -56,8 +55,8 @@ class RulesErrorController @Inject() (
               println("File validation errors: " + fileValidationErrors)
               val fileRejectedViewModel = FileRejectedViewModel(fileValidationErrors)
 
-              val fileName = fileDetails.name
-              val regimeType = fileDetails.messageType
+              val fileName    = fileDetails.name
+              val regimeType  = fileDetails.messageType
               val errorLength = 101
               Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
             case _ =>
@@ -74,10 +73,10 @@ class RulesErrorController @Inject() (
   // Todo This will be replaced with real data from the connector when the backend is done
   // Keeping this here to allow the view to be completed
   private def createFileRejectedViewModel() = {
-    val fileErrors: Seq[FileErrors] = Seq(FileErrors(CorrDocRefIdUnknown, None))
+    val fileErrors: Seq[FileErrors] = Seq(FileErrors(CRSFailedThreatScan, None))
     val recordErrors: Seq[RecordError] = Seq(
       RecordError(
-        InvalidMessageRefIDFormat,
+        CRSEmojis,
         Some("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"),
         Some(Seq("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"))
       )

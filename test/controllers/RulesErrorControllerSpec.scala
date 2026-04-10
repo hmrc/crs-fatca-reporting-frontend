@@ -65,7 +65,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
 
     "must return OK and the correct view for a GET" in {
       val messageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
-      val userAnswers = emptyUserAnswers
+      val userAnswers     = emptyUserAnswers
 
       when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
         .thenReturn(Future.successful(Some(fileDetails)))
