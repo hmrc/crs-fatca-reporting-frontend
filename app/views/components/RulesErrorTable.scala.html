@@ -27,7 +27,7 @@
 @govukTable(Table(
     classes= "rules-error-table",
     caption = Some(messages("rulesError.tableCaption")),
-    captionClasses = "govuk-!-margin-bottom-2",
+    captionClasses = "govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-2",
     head = Some(Seq(
         HeadCell(Text(messages("rulesError.code")), attributes = Map("style" -> "width: 8%;")),
         HeadCell(Text(messages("rulesError.docRefId")), attributes = Map("style" -> "width: 46%;")),
