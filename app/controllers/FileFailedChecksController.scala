@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import pages.ValidXMLPage
+import pages.{ConversationIdPage, ValidXMLPage}
 
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,12 +38,12 @@ class FileFailedChecksController @Inject() (
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(validateFileData) =>
+      (request.userAnswers.get(ValidXMLPage), request.userAnswers.get(ConversationIdPage)) match {
+        case (Some(validateFileData), Some(conversationId)) =>
           val fileMessageRef = validateFileData.messageSpecData.messageRefId
           val summary        = FileCheckViewModel.createFileSummary(fileMessageRef, "Rejected")
-          Ok(view(summary))
-        case None =>
+          Ok(view(summary, conversationId.value))
+        case _ =>
           Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
 

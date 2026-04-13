@@ -23,22 +23,17 @@ case class FileRejectedViewModel(validationErrors: FileValidationErrors) {
   def getErrors: Seq[FileRejectedError] = {
     val fileErrors = validationErrors.fileError.map(
       _.map(
-        error => FileRejectedError(removeErrorCodeText(error.code.code), Nil)
+        error => FileRejectedError(error.code.code, Nil)
       )
     )
 
     val recordErrors = validationErrors.recordError.map(
       _.map(
-        error => FileRejectedError(removeErrorCodeText(error.code.code), error.docRefIDInError.getOrElse(Nil))
+        error => FileRejectedError(error.code.code, error.docRefIDInError.getOrElse(Nil))
       )
     )
     (fileErrors ++ recordErrors).flatten.toSeq
   }
-
-  def removeErrorCodeText(text: String) =
-    text
-      .replaceAll("CRS Error Code ", "")
-      .replaceAll("FATCA Error Code ", "")
 }
 
 case class FileRejectedError(errorCode: String, docRefIds: Seq[String])

@@ -37,11 +37,12 @@ class FileFailedChecksSpec extends SpecBase with GuiceOneAppPerSuite with Inject
   "FileFailedChecksView" - {
 
     "should render page components" in {
-      val listOfKeys   = Seq("File ID (MessageRefId)", "Result of automatic checks")
-      val listOfValues = Seq("MyFATCAReportMessageRefId1234567890", "Failed")
-      val fileSummary  = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Rejected")
+      val conversationId = "some-conversation-id"
+      val listOfKeys     = Seq("File ID (MessageRefId)", "Result of automatic checks")
+      val listOfValues   = Seq("MyFATCAReportMessageRefId1234567890", "Failed")
+      val fileSummary    = FileCheckViewModel.createFileSummary("MyFATCAReportMessageRefId1234567890", "Rejected")
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, conversationId)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) mustEqual "Your file has failed our checks - Send a CRS or FATCA report - GOV.UK"
@@ -50,7 +51,7 @@ class FileFailedChecksSpec extends SpecBase with GuiceOneAppPerSuite with Inject
       validateListValues(getAllElements(doc, ".govuk-summary-list__value"), listOfValues)
       elementText(doc, ".govuk-tag--red") mustEqual "Failed"
       elementText(doc, "#submit") mustEqual "Check errors"
-      getAllElements(doc, "#submit").first().attr("href") mustEqual "/report-for-crs-and-fatca/report/problem/rules-errors"
+      getAllElements(doc, "#submit").first().attr("href") mustEqual s"/report-for-crs-and-fatca/report/problem/rules-errors/$conversationId"
     }
   }
 }
