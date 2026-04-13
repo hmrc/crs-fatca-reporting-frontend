@@ -17,8 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import models.fileDetails.BusinessRuleErrorCode.{CRSEmojis, CRSFailedThreatScan}
-import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
+import models.fileDetails.FileValidationErrors
 import models.submission.ConversationId
 import models.submission.fileDetails.Rejected
 import play.api.Logging
@@ -52,12 +51,10 @@ class RulesErrorController @Inject() (
           fileDetails.status match {
             case r: Rejected =>
               val fileValidationErrors: FileValidationErrors = r.error
-              println("File validation errors: " + fileValidationErrors)
-              val fileRejectedViewModel = FileRejectedViewModel(fileValidationErrors)
-
-              val fileName    = fileDetails.name
-              val regimeType  = fileDetails.messageType
-              val errorLength = 101
+              val fileRejectedViewModel                      = FileRejectedViewModel(fileValidationErrors)
+              val fileName                                   = fileDetails.name
+              val regimeType                                 = fileDetails.messageType
+              val errorLength                                = 101
               Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
             case _ =>
               logger.warn("File details found for conversation ID: " + conversationId + " but status is not Rejected")
@@ -70,22 +67,4 @@ class RulesErrorController @Inject() (
       }
   }
 
-  // Todo This will be replaced with real data from the connector when the backend is done
-  // Keeping this here to allow the view to be completed
-  private def createFileRejectedViewModel() = {
-    val fileErrors: Seq[FileErrors] = Seq(FileErrors(CRSFailedThreatScan, None))
-    val recordErrors: Seq[RecordError] = Seq(
-      RecordError(
-        CRSEmojis,
-        Some("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"),
-        Some(Seq("GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001"))
-      )
-    )
-    val validationErrors = FileValidationErrors(
-      fileError = Some(fileErrors),
-      recordError = Some(recordErrors)
-    )
-
-    FileRejectedViewModel(validationErrors)
-  }
 }

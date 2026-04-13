@@ -16,12 +16,12 @@
 
 package utils
 
-import models.fileDetails.BusinessRuleErrorCode.{CRSEmojis, CRSFailedThreatScan}
+import models.fileDetails.BusinessRuleErrorCode._
 import models.fileDetails.{FileErrors, FileValidationErrors, RecordError}
 import viewmodels.FileRejectedViewModel
 
 trait RulesErrorHelper {
-  val fileErrors: Seq[FileErrors] = Seq(FileErrors(CRSFailedThreatScan, None))
+  val fileErrors: Seq[FileErrors] = Seq(FileErrors(FailedSchemaValidationCrs, None))
 
   val recordErrors: Seq[RecordError] = Seq(
     RecordError(
