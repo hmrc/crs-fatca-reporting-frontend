@@ -20,3 +20,4 @@ import java.time.LocalDate
 
 object ReportingConstants:
   val ThresholdDate: LocalDate = LocalDate.of(2026, 1, 1)
+  val MAX_DATA_ERRORS: Int     = 100

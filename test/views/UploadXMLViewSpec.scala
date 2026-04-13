@@ -49,6 +49,9 @@ class UploadXMLViewSpec extends SpecBase with GuiceOneAppPerSuite with Injecting
       getPageHeading(doc) mustEqual "Upload an XML file for CRS or FATCA"
       getAllParagraph(doc).text() must include("We will automatically check the formatting of the file and send you to another page once completed.")
       elementText(doc, "#submit") mustEqual "Continue"
+      val elems = getAllElements(doc, "a[href*='/manage-your-crs-and-fatca-financial-institutions']")
+      elems.size() mustBe 1
+      elems.text().trim mustBe "Send a CRS or FATCA report"
     }
 
     "should render page components with error" in {
