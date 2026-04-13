@@ -60,6 +60,7 @@ class ErrorViewHelper @Inject() () {
                           <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
                             <li>${messages("xml.elem.unknown.li1")}</li>
                             <li>${messages("xml.elem.unknown.li2")}</li>
+                            <li>${messages("xml.elem.unknown.li3")}</li>
                           </ul>
                           """
     Seq(
