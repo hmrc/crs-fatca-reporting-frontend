@@ -151,7 +151,7 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
           val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
 
           html should include("xml.elem.unknown")
-          (1 to 2).foreach(
+          (1 to 3).foreach(
             i => html should include(s"xml.elem.unknown.li$i")
           )
         }
