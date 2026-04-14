@@ -54,7 +54,7 @@ class RulesErrorController @Inject() (
               val fileRejectedViewModel                      = FileRejectedViewModel(fileValidationErrors)
               val fileName                                   = fileDetails.name
               val regimeType                                 = fileDetails.messageType
-              val errorLength                                = 101
+              val errorLength = Seq(fileValidationErrors.fileError, fileValidationErrors.recordError).flatMap(_.map(_.length)).sum
               Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
             case _ =>
               logger.warn("File details found for conversation ID: " + conversationId + " but status is not Rejected")
