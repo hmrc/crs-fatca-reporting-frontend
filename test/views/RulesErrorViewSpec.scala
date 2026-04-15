@@ -158,8 +158,6 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
           RecordError(BusinessRuleErrorCode.CRSEmojis, Some("DocRefId1"), Some(Seq("DocRefId1"))),
           RecordError(BusinessRuleErrorCode.CRSBody, Some("DocRefId2"), Some(Seq("DocRefId2")))
         )
-        val validationErrors = FileValidationErrors(None, Some(recordErrors))
-        val viewModel        = FileRejectedViewModel(validationErrors)
 
         val expectedRows = Seq(
           Seq("CRS 3", "DocRefId1", "The file must not contain emoji Unicode characters."),

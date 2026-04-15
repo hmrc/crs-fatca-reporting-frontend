@@ -83,7 +83,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
         val view = application.injector.instanceOf[RulesErrorView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("name.xml", "CRS", errorLength = 1200, createFileRejectedViewModel())(request, messages(application)).toString
+        contentAsString(result) mustEqual view("name.xml", "CRS", errorLength = 2, createFileRejectedViewModel())(request, messages(application)).toString
       }
     }
 
