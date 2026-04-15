@@ -52,5 +52,12 @@ class FileRejectedViewModelSpec extends SpecBase {
       val viewModel        = FileRejectedViewModel(validationErrors)
       viewModel.getErrors mustBe empty
     }
+
+    "must return only the first 100 errors when there are over 100 errors given" in {
+      val manyErrors       = Seq.fill(150)(RecordError(BusinessRuleErrorCode.DocRefIDFormat, None, None))
+      val validationErrors = FileValidationErrors(None, Some(manyErrors))
+      val viewModel        = FileRejectedViewModel(validationErrors)
+      viewModel.getErrors.size mustBe 100
+    }
   }
 }

@@ -16,9 +16,10 @@
 
 package viewmodels
 
-import models.fileDetails._
+import models.fileDetails.*
 
 case class FileRejectedViewModel(validationErrors: FileValidationErrors) {
+  private val maximumDisplayedErrors = 100
 
   def getErrors: Seq[FileRejectedError] = {
     val fileErrors = validationErrors.fileError.map(
@@ -32,7 +33,7 @@ case class FileRejectedViewModel(validationErrors: FileValidationErrors) {
         error => FileRejectedError(error.code.code, error.docRefIDInError.getOrElse(Nil))
       )
     )
-    (fileErrors ++ recordErrors).flatten.toSeq
+    (fileErrors ++ recordErrors).flatten.take(maximumDisplayedErrors).toSeq
   }
 }
 

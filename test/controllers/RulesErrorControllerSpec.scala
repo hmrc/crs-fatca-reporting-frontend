@@ -23,7 +23,7 @@ import models.submission.fileDetails.{Pending, Rejected}
 import models.{CRS, CRSReportType}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import pages.{ConversationIdPage, ValidXMLPage}
+import pages.ValidXMLPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -83,7 +83,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
         val view = application.injector.instanceOf[RulesErrorView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("name.xml", "CRS", errorLength = 1200, createFileRejectedViewModel())(request, messages(application)).toString
+        contentAsString(result) mustEqual view("name.xml", "CRS", errorLength = 2, createFileRejectedViewModel())(request, messages(application)).toString
       }
     }
 
