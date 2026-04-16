@@ -16,6 +16,8 @@
 
 package controllers
 
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.FileValidationErrors
 import connectors.FileDetailsConnector
 import controllers.actions.*
 import models.GiinUpdateState.GinUpDateRequired
@@ -137,7 +139,7 @@ class SendYourFileController @Inject() (
             case Some(Pending) =>
               Future.successful(NoContent)
             case Some(Rejected(error)) =>
-              Future.successful(Ok(Json.toJson(URL(routes.RulesErrorController.onPageLoad(conversationId.value).url))))
+              handleRejectedWithErrors(error, conversationId)
             case Some(RejectedSDESVirus) =>
               Future.successful(Ok(Json.toJson(URL(routes.VirusFoundController.onPageLoad().url))))
             case Some(RejectedSDES) =>
@@ -164,5 +166,20 @@ class SendYourFileController @Inject() (
               Future.successful(InternalServerError)
           }
       }
+  }
+
+  private def handleRejectedWithErrors(errors: FileValidationErrors, conversationId: ConversationId): Future[Result] = {
+    val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
+    val isNotAccepted = errors.fileError
+      .getOrElse(Nil)
+      .exists(
+        e => notAcceptedErrorCodes(e.code)
+      )
+
+    if (isNotAccepted) {
+      Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
+    } else {
+      Future.successful(Ok(Json.toJson(URL(routes.RulesErrorController.onPageLoad(conversationId.value).url))))
+    }
   }
 }
