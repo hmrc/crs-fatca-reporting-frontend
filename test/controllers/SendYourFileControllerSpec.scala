@@ -19,12 +19,13 @@ package controllers
 import base.SpecBase
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
-import models.fileDetails.FileValidationErrors
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.{FileErrors, FileValidationErrors}
 import models.requests.DataRequest
 import models.submission.*
 import models.submission.fileDetails.*
 import models.upscan.{Reference, UploadId}
-import models.{CRS, CRSReportType, FATCA, FATCAReportType, SendYourFileAdditionalText, UserAnswers}
+import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
@@ -47,7 +48,10 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
   val hardcodedFiName                                = "testFiName"
   val exampleGiin                                    = "8Q298C.00000.LE.340"
   val conversationId: ConversationId                 = ConversationId("conversationId")
-  val messageSpecData                                = getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
+  val messageSpecData: MessageSpecData               = getMessageSpecData(CRS, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
+
+  val messageSpecDataFatca: MessageSpecData =
+    getMessageSpecData(giin = None, messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData)
 
   val ua: UserAnswers =
     emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecData))
@@ -155,7 +159,6 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      val messageSpecDataFatca = getMessageSpecData(giin = None, messageType = FATCA, fiNameFromFim = hardcodedFiName, reportType = FATCAReportType.TestData)
       "must return OK and the correct view for a GET for FATCA and election required and giin needs to be updated" in {
         val ua: UserAnswers = emptyUserAnswers
           .withPage(
@@ -248,7 +251,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      "must redirect to election  not sent when the election submission fails" in {
+      "must redirect to election not sent when the election submission fails" in {
         val application = applicationBuilder(userAnswers = Some(ua))
           .overrides(
             bind[SubmissionService].toInstance(mockSubmissionService)
@@ -443,30 +446,83 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/there-is-a-problem\"}"
         }
       }
-      "must return OK and FileNotAccepted url when status is NotAccepted" in {
 
-        val userAnswers = ua
-          .withPage(ConversationIdPage, conversationId)
+      "must return OK and FileNotAccepted url" - {
+        "when status is NotAccepted" in {
 
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
-          )
-          .build()
+          val userAnswers = ua
+            .withPage(ConversationIdPage, conversationId)
 
-        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(Some(NotAccepted)))
+          val application = applicationBuilder(userAnswers = Some(userAnswers))
+            .overrides(
+              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+            )
+            .build()
 
-        running(application) {
-          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+          when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+            .thenReturn(Future.successful(Some(NotAccepted)))
 
-          val result = route(application, request).value
+          running(application) {
+            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
 
-          status(result) mustEqual OK
-          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+            val result = route(application, request).value
+
+            status(result) mustEqual OK
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+          }
         }
-      }
 
+        "when file status is Rejected with CRS Error Code 2" in {
+          val errors = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
+
+          val validationErrors = FileValidationErrors(Some(errors), None)
+
+          val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+          val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+            .overrides(
+              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+            )
+            .build()
+
+          when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+            .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+          running(application) {
+            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+            val result  = route(application, request).value
+
+            status(result) mustEqual OK
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+          }
+        }
+        "file status is Rejected with Temp FATCA Error Code 2" in {
+
+          val ua: UserAnswers =
+            emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
+
+          val errors           = Seq(FileErrors(FailedSchemaValidationFatca, Some("Failed Schema Validation")))
+          val validationErrors = FileValidationErrors(Some(errors), None)
+
+          val application = applicationBuilder(userAnswers = Some(ua))
+            .overrides(
+              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+            )
+            .build()
+
+          when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+            .thenReturn(Future.successful(Some(Rejected(validationErrors))))
+
+          running(application) {
+            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+            val result  = route(application, request).value
+
+            status(result) mustEqual OK
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+          }
+        }
+
+      }
       "must return OK and return file failed checks url when status is Rejected" in {
         val validationErrors = FileValidationErrors(None, None)
         val userAnswers = ua
@@ -532,24 +588,23 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
 
-      "must return json pointing to election not sent to url when missing a conversation Id and contains GiinAndElectionStatusPage with value has giinstatus true " +
-        "and election status false" in {
-          val giinAndElectionStatus = GiinAndElectionDBStatus(true, false)
+      "must return json pointing to election not sent to url when missing a conversation Id and contains GiinAndElectionStatusPage with value has giinstatus true and election status false" in {
+        val giinAndElectionStatus = GiinAndElectionDBStatus(true, false)
 
-          val userAnswers = ua
-            .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
+        val userAnswers = ua
+          .withPage(GiinAndElectionStatusPage, giinAndElectionStatus)
 
-          val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
-          running(application) {
-            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+        running(application) {
+          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
 
-            val result = route(application, request).value
+          val result = route(application, request).value
 
-            status(result) mustEqual OK
-            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/elections-not-sent\"}"
-          }
+          status(result) mustEqual OK
+          contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/elections-not-sent\"}"
         }
+      }
 
       "must return internal server error when conversation Id is missing" in {
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
@@ -563,5 +618,6 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
     }
+
   }
 }
