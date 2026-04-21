@@ -17,7 +17,7 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsResult}
 import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
 import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
@@ -85,6 +85,39 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
           Future failed NoResultFound
         case responseMessage =>
           logger.error(s"FileDetailsConnector: Failed to get fileDetails for conversationId: ${conversationId.value} with status ${responseMessage.status}")
+          Future failed IntenalIssueError
+      }
+  }
+
+  def getAllFileDetails(subscriptionId: String, page: Int = 1)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetailsResult] = {
+    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/details/$subscriptionId?page=$page"
+
+    httpClient
+      .get(url)
+      .execute[HttpResponse]
+      .flatMap {
+        case responseMessage if responseMessage.status == OK =>
+          responseMessage.json.validate[FileDetailsResult] match {
+            case JsSuccess(fileDetailsResult, _) => Future.successful(fileDetailsResult)
+            case JsError(errors) =>
+              val errorMsg = errors
+                .map {
+                  case (path, validationErrors) => s"$path: ${validationErrors.map(_.message).mkString(",")}"
+                }
+                .mkString("; ")
+              logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON for subscriptionId=$subscriptionId. Errors: $errorMsg")
+              Future failed UnexpectedJsResult
+          }
+        case responseMessage if unExpected2xxStatus(responseMessage.status) =>
+          logger.error(
+            s"FileDetailsConnector: Failed to get fileDetails for subscription ud: $subscriptionId of unexpected status ${responseMessage.status}"
+          )
+          Future failed UnExpectedResponse
+        case responseMessage if responseMessage.status == NOT_FOUND =>
+          logger.warn(s"FileDetailsConnector: No file details found for subscriptionId=$subscriptionId")
+          Future failed NoResultFound
+        case responseMessage =>
+          logger.error(s"FileDetailsConnector: Failed to get file details for subscriptionId: $subscriptionId with status ${responseMessage.status}")
           Future failed IntenalIssueError
       }
   }

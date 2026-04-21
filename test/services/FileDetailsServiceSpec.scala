@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.FileDetailsConnector
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsResult}
 import models.{CRS, CRSReportType, IntenalIssueError, NoResultFound, UnexpectedJsResult}
 import models.submission.ConversationId
 import models.submission.fileDetails.Pending
@@ -77,6 +77,28 @@ class FileDetailsServiceSpec extends SpecBase {
           result mustBe None
       }
 
+    }
+  }
+
+  "get all file details" - {
+    val subscriptionId = "XACBC0000123456"
+    "return a FileDetailsResult with a list of files and expected pages when the connector call is successful" in {
+      val fileDetailsResult = FileDetailsResult(Seq(fileDetails), 1, 1)
+      val service           = new FileDetailsService(mockFileDetailsConnector)
+      when(mockFileDetailsConnector.getAllFileDetails(any[String], any[Int]())(any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(fileDetailsResult))
+
+      val result = service.getAllFileDetails(subscriptionId).futureValue
+      result mustBe fileDetailsResult
+    }
+
+    "return an empty FileDetailsResult when the connector call fails" in {
+      val service = new FileDetailsService(mockFileDetailsConnector)
+      when(mockFileDetailsConnector.getAllFileDetails(any[String], any[Int]())(any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.failed(new Exception("Connector failure")))
+
+      val result = service.getAllFileDetails(subscriptionId).futureValue
+      result mustBe FileDetailsResult(Seq.empty, 0, 0)
     }
   }
 }
