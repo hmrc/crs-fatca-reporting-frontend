@@ -1,0 +1,82 @@
+@*
+ * Copyright 2025 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.SubmissionChecksTableViewModel
+
+@this(link: components.Link)
+
+@(submissionChecksTableViewModel: SubmissionChecksTableViewModel)(implicit request: Request[_], messages: Messages)
+
+<table class="govuk-table">
+   <caption class="govuk-table__caption govuk-visually-hidden">messages("submissionsChecks.p1"))</caption>
+   <thead class="govuk-table__head">
+     <tr class="govuk-table__row">
+
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-fi">@messages("submissionsChecks.fiName.header"))</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-period">@messages("submissionsChecks.reportingPeriod.header"))</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-regime">@messages("submissionsChecks.regime.header"))</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.messageRefId.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-sent">@messages("submissionsChecks.sent.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-result">@messages("submissionsChecks.result.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-next">@messages("submissionsChecks.nextStep.header")</th>
+
+     </tr>
+   </thead>
+   <tbody class="govuk-table__body">
+   @for(fileDetail <- submissionChecksTableViewModel.fileDetailsResults.fileDetailsList) {
+     <tr class="govuk-table__row">
+      <th scope="row" class="govuk-table__header">@{fileDetail.fiNameFromFim} ABC1234567890</th>
+      <td class="govuk-table__cell">@{submissionChecksTableViewModel.reportingPeriod(fileDetail.reportingPeriod)}</td>
+      <td class="govuk-table__cell">@{fileDetail.messageType.toString()}</td>
+      <td class="govuk-table__cell" style="word-break: break-all;">@{fileDetail.messageRefId}</td>
+      <td class="govuk-table__cell">@{submissionChecksTableViewModel.sent(fileDetail.submitted)}</td>
+      <td class="govuk-table__cell">
+          <strong class="@{statusClass(submissionChecksTableViewModel.status(fileDetail.status))}">
+              @{submissionChecksTableViewModel.status(fileDetail.status)}
+          </strong></td>
+      <td class="govuk-table__cell">@{
+            val status = submissionChecksTableViewModel.status(fileDetail.status)
+            if(status == "Pending") {
+              <span class='govuk-visually-hidden'>None</span>
+            }
+            else {
+               statusLinks(status, fileDetail._id.value)
+            }
+          }
+      </td>
+     </tr>
+   }
+   </tbody>
+</table>
+@statusClass(status: String) = @{
+    status match {
+        case "Passed"  => "govuk-tag govuk-tag--green"
+        case "Failed"  => "govuk-tag govuk-tag--red"
+        case "Pending" => "govuk-tag govuk-tag--yellow"
+        case  _        => "govuk-tag govuk-tag--purple"
+    }
+}
+
+@statusLinks(status: String, conversationId: String) = @{
+    status match {
+        case "Passed"  =>
+           link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation")
+        case "Failed"  =>
+           link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error")
+        case "Problem" =>
+           link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
+    }
+}
