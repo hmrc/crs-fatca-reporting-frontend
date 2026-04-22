@@ -34,7 +34,7 @@ import play.api.libs.json.Json
 import play.api.mvc.*
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import repositories.SessionRepository
-import services.SubmissionService
+import services.{FileDetailsService, SubmissionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendYourFileView
 
@@ -50,7 +50,8 @@ class SendYourFileController @Inject() (
   view: SendYourFileView,
   submissionService: SubmissionService,
   sessionRepository: SessionRepository,
-  fileDetailsConnector: FileDetailsConnector
+  fileDetailsConnector: FileDetailsConnector,
+  fileDetailsService: FileDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -138,8 +139,11 @@ class SendYourFileController @Inject() (
               Future.successful(Ok(Json.toJson(URL(routes.FileConfirmationController.onPageLoad(conversationId.value).url))))
             case Some(Pending) =>
               Future.successful(NoContent)
-            case Some(Rejected(error)) =>
-              handleRejectedWithErrors(error, conversationId)
+            case Some(Rejected) =>
+              fileDetailsService.getFileDetails(conversationId) flatMap {
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors.get, conversationId) // todo DAC6-4236 don't do a get
+                case None              => Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
+              }
             case Some(RejectedSDESVirus) =>
               Future.successful(Ok(Json.toJson(URL(routes.VirusFoundController.onPageLoad().url))))
             case Some(RejectedSDES) =>

@@ -49,8 +49,8 @@ class RulesErrorController @Inject() (
       fileDetailsService.getFileDetails(ConversationId(conversationId)).map {
         case Some(fileDetails) =>
           fileDetails.status match {
-            case r: Rejected =>
-              val fileValidationErrors: FileValidationErrors = r.error
+            case Rejected =>
+              val fileValidationErrors: FileValidationErrors = fileDetails.errors.get // todo DAC6-4236 dont do a get
               val fileRejectedViewModel                      = FileRejectedViewModel(fileValidationErrors)
               val fileName                                   = fileDetails.name
               val regimeType                                 = fileDetails.messageType

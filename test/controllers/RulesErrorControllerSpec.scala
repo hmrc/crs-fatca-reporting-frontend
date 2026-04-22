@@ -36,17 +36,17 @@ import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.{ExecutionContext, Future}
 
 class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
-  val mockFileDetailsService = mock[FileDetailsService]
-  val conversationId         = ConversationId("some-conversation-id")
-  val submittedTime          = LocalDateTime.parse("2025-09-12T12:01:00")
-  val reportingDate          = LocalDate.of(2026, 1, 1)
+  private val mockFileDetailsService = mock[FileDetailsService]
+  private val conversationId         = ConversationId("some-conversation-id")
+  private val submittedTime          = LocalDateTime.parse("2025-09-12T12:01:00")
+  private val reportingDate          = LocalDate.of(2026, 1, 1)
 
   val fileDetails = FileDetails(
     _id = conversationId,
     enrolmentId = "XACBC0000123456",
     messageRefId = "c-8-new-f-va",
     reportingEntityName = Some("Some-fi-name"),
-    status = Rejected(validationErrors),
+    status = Rejected,
     name = "name.xml",
     submitted = submittedTime,
     lastUpdated = submittedTime,
@@ -58,7 +58,8 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
     fiPrimaryContactEmail = None,
     fiSecondaryContactEmail = None,
     subscriptionPrimaryContactEmail = "test@email.com",
-    subscriptionSecondaryContactEmail = None
+    subscriptionSecondaryContactEmail = None,
+    errors = Some(validationErrors)
   )
 
   "RulesError Controller" - {

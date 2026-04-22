@@ -40,7 +40,8 @@ case class FileDetails(
   fiPrimaryContactEmail: Option[String] = None,
   fiSecondaryContactEmail: Option[String] = None,
   subscriptionPrimaryContactEmail: String,
-  subscriptionSecondaryContactEmail: Option[String] = None
+  subscriptionSecondaryContactEmail: Option[String] = None,
+  errors: Option[FileValidationErrors] = None
 )
 
 object FileDetails {
@@ -66,6 +67,7 @@ object FileDetails {
           fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
+          errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -87,7 +89,8 @@ object FileDetails {
           fiPrimaryContactEmail = fiPrimaryContactEmail,
           fiSecondaryContactEmail = fiSecondaryContactEmail,
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
-          subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail
+          subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
+          errors = errors
         )
     }
 
@@ -111,6 +114,7 @@ object FileDetails {
           "fiSecondaryContactEmail"           -> fd.fiSecondaryContactEmail,
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
+          "errors"                            -> fd.errors,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)
