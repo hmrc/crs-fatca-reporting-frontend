@@ -19,31 +19,42 @@ package controllers
 import controllers.actions.*
 import models.fileDetails.{FileDetails, FileDetailsResult, FileValidationErrors}
 import models.submission.ConversationId
-import models.submission.fileDetails.{Accepted, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import models.submission.fileDetails.*
 import models.{CRS, CRSReportType}
-
-import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.SubmissionChecksTableViewModel
 import views.html.SubmissionsChecksView
 
 import java.time.{LocalDate, LocalDateTime}
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class SubmissionsChecksController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
+  fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: SubmissionsChecksView
-) extends FrontendBaseController
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-      Ok(view(SubmissionChecksTableViewModel(result)))
+      fileDetailsService.getAllFileDetails(request.fatcaId, page) map {
+        fileDetailsResult =>
+          fileDetailsResult.fileDetailsList match {
+            case Nil =>
+              Redirect(controllers.routes.PageUnavailableController.onPageLoad().url)
+            case _ =>
+              Ok(view(SubmissionChecksTableViewModel(fileDetailsResult)))
+          }
+      }
   }
 
   def result = {
@@ -174,5 +185,3 @@ class SubmissionsChecksController @Inject() (
   }
 
 }
-
-//Rejected(error: FileValidationErrors)

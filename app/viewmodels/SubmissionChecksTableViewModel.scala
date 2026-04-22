@@ -16,12 +16,17 @@
 
 package viewmodels
 
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
 import models.fileDetails.FileDetailsResult
-import models.submission.fileDetails.{Accepted, FileStatus, Pending, Rejected, RejectedSDES}
+import models.submission.fileDetails.{Accepted, FileStatus, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
+import viewmodels.NextStepLink.GotoConfirmation
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
 import java.util.Locale
+
+enum NextStepLink:
+  case GotoConfirmation, CheckErrors, ContactUs, UploadFileAgain, NoLink
 
 case class SubmissionChecksTableViewModel(fileDetailsResults: FileDetailsResult) {
 
@@ -37,12 +42,22 @@ case class SubmissionChecksTableViewModel(fileDetailsResults: FileDetailsResult)
     case Accepted    => "Passed"
     case Rejected(_) => "Failed"
     case _           => "Problem"
+  }
 
+  def nextStepLink(fileStatus: FileStatus): NextStepLink = fileStatus match {
+    case Accepted => GotoConfirmation
+    case Rejected(validationError) =>
+      val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
+      val isNotAccepted = validationError.fileError
+        .getOrElse(Nil)
+        .exists(
+          e => notAcceptedErrorCodes(e.code)
+        )
+
+      if (isNotAccepted) NextStepLink.ContactUs else NextStepLink.CheckErrors
+
+    case RejectedSDES | RejectedSDESVirus => NextStepLink.UploadFileAgain
+    case NotAccepted                      => NextStepLink.ContactUs
+    case Pending                          => NextStepLink.NoLink
   }
 }
-
-//case object RejectedSDES extends FileStatus
-//case object RejectedSDESVirus extends FileStatus
-//case object NotAccepted extends FileStatus
-//
-//case class Rejected

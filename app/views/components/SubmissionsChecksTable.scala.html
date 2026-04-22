@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.SubmissionChecksTableViewModel
+@import viewmodels.NextStepLink
 
 @this(link: components.Link)
 
@@ -48,13 +49,8 @@
               @{submissionChecksTableViewModel.status(fileDetail.status)}
           </strong></td>
       <td class="govuk-table__cell">@{
-            val status = submissionChecksTableViewModel.status(fileDetail.status)
-            if(status == "Pending") {
-              <span class='govuk-visually-hidden'>None</span>
-            }
-            else {
-               statusLinks(status, fileDetail._id.value)
-            }
+            val nextLink =  submissionChecksTableViewModel.nextStepLink(fileDetail.status)
+            statusLinks(nextLink, fileDetail._id.value)
           }
       </td>
      </tr>
@@ -70,13 +66,17 @@
     }
 }
 
-@statusLinks(status: String, conversationId: String) = @{
-    status match {
-        case "Passed"  =>
+@statusLinks(nextStepLink: NextStepLink, conversationId: String) = @{
+   nextStepLink match {
+        case NextStepLink.GotoConfirmation  =>
            link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation")
-        case "Failed"  =>
+        case NextStepLink.CheckErrors  =>
            link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error")
-        case "Problem" =>
+        case NextStepLink.UploadFileAgain =>
            link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
-    }
+        case NextStepLink.ContactUs =>
+            link(routes.FileNotAcceptedController.onPageLoad().url, "submissionsChecks.contactus")
+        case NextStepLink.NoLink =>
+           <span class='govuk-visually-hidden'>None</span>
+}
 }

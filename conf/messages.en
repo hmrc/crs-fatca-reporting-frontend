@@ -550,6 +550,7 @@ submissionsChecks.p1 = We keep this information for 28 days from when you sent t
 submissionsChecks.uploadFile = Upload file again
 submissionsChecks.rules.error = Check errors
 submissionsChecks.confirmation = Go to confirmation
+submissionsChecks.contactus = Contact us
 
 submissionsChecks.fiName.header = Financial institution name and FI ID
 submissionsChecks.reportingPeriod.header = Reporting period
