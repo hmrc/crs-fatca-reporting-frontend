@@ -108,7 +108,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           fiPrimaryContactEmail = Some("fiPrimary@email.com"),
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          sendCompanyIn = "some-company-in"
         )
 
       }
@@ -187,7 +188,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           fiPrimaryContactEmail = Some("fiPrimary@email.com"),
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          sendCompanyIn = "some-company-in"
         ),
           FileDetails(
             _id = conversationId,
@@ -206,7 +208,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
             fiPrimaryContactEmail = Some("fiPrimary@email.com"),
             fiSecondaryContactEmail = Some("fiSecondary@email.com"),
             subscriptionPrimaryContactEmail = "test@email.com",
-            subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+            subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+            sendCompanyIn = "some-company-in"
           )
         ), totalSize = 2, pages = 1)
       }
@@ -265,7 +268,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiPrimaryContactEmail":"fiPrimary@email.com",
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com"
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendCompanyIn":"some-company-in"
       |}
       |""".stripMargin
   }
@@ -292,7 +296,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiPrimaryContactEmail":"fiPrimary@email.com",
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com"
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendCompanyIn":"some-company-in"
       |},
       |{
       |  "_id": "conversation-123",
@@ -312,7 +317,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiPrimaryContactEmail":"fiPrimary@email.com",
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com"
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendCompanyIn":"some-company-in"
       |}
       |],
       |"totalSize": 2,

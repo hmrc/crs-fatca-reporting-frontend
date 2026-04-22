@@ -62,7 +62,7 @@ class SubmissionsChecksViewSpec extends SpecBase with GuiceOneAppPerSuite with I
       )
 
       val tableCellValueFirstRow = Seq(
-        "Test FI Name ABC1234567890",
+        "Test FI Name some-company-in",
         "2027",
         "CRS",
         "GBXACBC12345678",
@@ -110,7 +110,8 @@ class SubmissionsChecksViewSpec extends SpecBase with GuiceOneAppPerSuite with I
             fiPrimaryContactEmail = Some("fiPrimary@email.com"),
             fiSecondaryContactEmail = Some("fiSecondary@email.com"),
             subscriptionPrimaryContactEmail = "test@email.com",
-            subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+            subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+            sendCompanyIn = "some-company-in"
           )
         ),
         totalSize = 1,

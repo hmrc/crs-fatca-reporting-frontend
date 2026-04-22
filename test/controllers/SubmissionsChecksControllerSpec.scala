@@ -107,7 +107,8 @@ trait TestContext {
           fiPrimaryContactEmail = Some("fiPrimary@email.com"),
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          sendCompanyIn = "some-company-in"
         )
       ),
       totalSize = 1,

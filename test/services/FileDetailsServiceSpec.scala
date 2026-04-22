@@ -53,7 +53,8 @@ class FileDetailsServiceSpec extends SpecBase {
     reportType = CRSReportType.TestData,
     isFiUser = true,
     fiNameFromFim = "Test FI Name",
-    subscriptionPrimaryContactEmail = "some@email.com"
+    subscriptionPrimaryContactEmail = "some@email.com",
+    sendCompanyIn = "some-company-in"
   )
 
   "getFileDetails" - {
