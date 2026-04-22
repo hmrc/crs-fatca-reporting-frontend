@@ -40,16 +40,16 @@
    @for(fileDetail <- submissionChecksTableViewModel.fileDetailsResults.fileDetailsList) {
      <tr class="govuk-table__row">
       <th scope="row" class="govuk-table__header">@{fileDetail.fiNameFromFim} ABC1234567890</th>
-      <td class="govuk-table__cell">@{submissionChecksTableViewModel.reportingPeriod(fileDetail.reportingPeriod)}</td>
+      <td class="govuk-table__cell">@{SubmissionChecksTableViewModel.reportingPeriod(fileDetail.reportingPeriod)}</td>
       <td class="govuk-table__cell">@{fileDetail.messageType.toString()}</td>
       <td class="govuk-table__cell" style="word-break: break-all;">@{fileDetail.messageRefId}</td>
-      <td class="govuk-table__cell">@{submissionChecksTableViewModel.sent(fileDetail.submitted)}</td>
+      <td class="govuk-table__cell">@{SubmissionChecksTableViewModel.sent(fileDetail.submitted)}</td>
       <td class="govuk-table__cell">
-          <strong class="@{statusClass(submissionChecksTableViewModel.status(fileDetail.status))}">
-              @{submissionChecksTableViewModel.status(fileDetail.status)}
+          <strong class="@{statusClass(SubmissionChecksTableViewModel.status(fileDetail.status))}">
+              @{SubmissionChecksTableViewModel.status(fileDetail.status)}
           </strong></td>
       <td class="govuk-table__cell">@{
-            val nextLink =  submissionChecksTableViewModel.nextStepLink(fileDetail.status)
+            val nextLink =  SubmissionChecksTableViewModel.nextStepLink(fileDetail.status)
             statusLinks(nextLink, fileDetail._id.value)
           }
       </td>
@@ -78,5 +78,5 @@
             link(routes.FileNotAcceptedController.onPageLoad().url, "submissionsChecks.contactus")
         case NextStepLink.NoLink =>
            <span class='govuk-visually-hidden'>None</span>
-}
+   }
 }

@@ -28,7 +28,9 @@ import java.util.Locale
 enum NextStepLink:
   case GotoConfirmation, CheckErrors, ContactUs, UploadFileAgain, NoLink
 
-case class SubmissionChecksTableViewModel(fileDetailsResults: FileDetailsResult) {
+case class SubmissionChecksTableViewModel(fileDetailsResults: FileDetailsResult)
+
+object SubmissionChecksTableViewModel {
 
   def sent(ldt: LocalDateTime): String = {
     val formatter = DateTimeFormatter.ofPattern("d MMM yyyy h:mma", Locale.ENGLISH)
