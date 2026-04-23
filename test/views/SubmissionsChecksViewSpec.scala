@@ -114,7 +114,6 @@ class SubmissionsChecksViewSpec extends SpecBase with GuiceOneAppPerSuite with I
             sendCompanyIn = "some-company-in"
           )
         ),
-        totalSize = 1,
         pages = 1
       )
     }

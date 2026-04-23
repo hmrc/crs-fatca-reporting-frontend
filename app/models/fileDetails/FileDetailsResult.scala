@@ -18,7 +18,7 @@ package models.fileDetails
 
 import play.api.libs.json.{Json, OFormat}
 
-case class FileDetailsResult(fileDetailsList: Seq[FileDetails], totalSize: Long, pages: Int)
+case class FileDetailsResult(fileDetailsList: Seq[FileDetails], pages: Int)
 
 object FileDetailsResult {
   implicit val format: OFormat[FileDetailsResult] = Json.format[FileDetailsResult]

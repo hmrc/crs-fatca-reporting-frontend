@@ -43,7 +43,7 @@ class FileDetailsService @Inject() (val connector: FileDetailsConnector) extends
       .recover {
         case _ =>
           logger.warn(s"FileDetailsService: Failed to get all FileDetails for subscriptionId: $subscriptionId")
-          FileDetailsResult(Seq.empty, 0, 0)
+          FileDetailsResult(Seq.empty, 0)
       }
 
 }

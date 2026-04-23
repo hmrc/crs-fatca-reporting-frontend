@@ -84,7 +84,7 @@ class FileDetailsServiceSpec extends SpecBase {
   "get all file details" - {
     val subscriptionId = "XACBC0000123456"
     "return a FileDetailsResult with a list of files and expected pages when the connector call is successful" in {
-      val fileDetailsResult = FileDetailsResult(Seq(fileDetails), 1, 1)
+      val fileDetailsResult = FileDetailsResult(Seq(fileDetails), 1)
       val service           = new FileDetailsService(mockFileDetailsConnector)
       when(mockFileDetailsConnector.getAllFileDetails(any[String], any[Int]())(any[HeaderCarrier], any[ExecutionContext]))
         .thenReturn(Future.successful(fileDetailsResult))
@@ -99,7 +99,7 @@ class FileDetailsServiceSpec extends SpecBase {
         .thenReturn(Future.failed(new Exception("Connector failure")))
 
       val result = service.getAllFileDetails(subscriptionId).futureValue
-      result mustBe FileDetailsResult(Seq.empty, 0, 0)
+      result mustBe FileDetailsResult(Seq.empty, 0)
     }
   }
 }

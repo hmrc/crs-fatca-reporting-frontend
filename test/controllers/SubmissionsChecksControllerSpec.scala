@@ -67,7 +67,7 @@ class SubmissionsChecksControllerSpec extends SpecBase {
         .build()
 
       when(mockFileDetailsService.getAllFileDetails(any[String](), any[Int]())(any(), any()))
-        .thenReturn(Future.successful(FileDetailsResult(Seq.empty, totalSize = 0, pages = 0)))
+        .thenReturn(Future.successful(FileDetailsResult(Seq.empty, pages = 0)))
 
       running(application) {
         val request = FakeRequest(GET, routes.SubmissionsChecksController.onPageLoad().url)
@@ -111,7 +111,6 @@ trait TestContext {
           sendCompanyIn = "some-company-in"
         )
       ),
-      totalSize = 1,
       pages = 1
     )
   }

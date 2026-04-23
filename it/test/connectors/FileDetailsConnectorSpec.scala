@@ -211,7 +211,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
             subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
             sendCompanyIn = "some-company-in"
           )
-        ), totalSize = 2, pages = 1)
+        ), pages = 1)
       }
       "return a UnexpectedJsResult exception when 200 response returns an invalid body" in {
         stubGetResponse(url, OK, """{"invalid": "response"}""")
@@ -321,7 +321,6 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "sendCompanyIn":"some-company-in"
       |}
       |],
-      |"totalSize": 2,
       |"pages": 1
       |}
       |""".stripMargin
