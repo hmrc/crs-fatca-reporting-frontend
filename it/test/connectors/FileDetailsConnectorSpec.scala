@@ -40,15 +40,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
         val conversationId = ConversationId("test-conversation-id")
         val url            = s"/crs-fatca-reporting/files/$conversationId/status"
 
-        val responseBody =
-          """
-                |{
-                |  "RejectedSDES": "{}}"
-                |}
-                |""".stripMargin
 
-        stubGetResponse(url, OK, responseBody)
-
+        stubGetResponse(url, OK, """"RejectedSDES"""")
         val result = Await.result(connector.getStatus(conversationId), 2.seconds)
 
         result.get mustBe RejectedSDES
@@ -189,7 +182,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "enrolmentId": "XACBC0000123456",
       |  "messageRefId": "GBXACBC12345678",
       |  "reportingEntityName": "Test Entity",
-      |  "status": {"Pending":{}},
+      |  "status": "Pending",
       |  "name": "test-file.xml",
       |  "submitted": "2026-01-06T12:00:00",
       |  "lastUpdated": "2026-01-06T12:00:00",

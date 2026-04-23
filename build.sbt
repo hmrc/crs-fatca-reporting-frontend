@@ -79,3 +79,4 @@ lazy val it =
   (project in file("it"))
     .enablePlugins(PlayScala)
     .dependsOn(microservice % "test->test")
+    .settings(testSettings)
