@@ -599,7 +599,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual OK
             contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
@@ -607,7 +607,8 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "when file status is Rejected with FailedSchemaValidationFatca" in {
-          val validUserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
+          val validUserAnswers =
+            emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
           val fileDetails = getTestFileDetails(
             status = Rejected,
             errors = Some(FileValidationErrors(fileError = Some(Seq(FileErrors(FailedSchemaValidationFatca, None))), recordError = None))
@@ -627,7 +628,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
           running(application) {
             val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
-            val result = route(application, request).value
+            val result  = route(application, request).value
 
             status(result) mustEqual OK
             contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"

@@ -192,7 +192,9 @@ class SendYourFileController @Inject() (
     val isNotAccepted = errors
       .flatMap(_.fileError)
       .getOrElse(Nil)
-      .exists(e => notAcceptedErrorCodes(e.code))
+      .exists(
+        e => notAcceptedErrorCodes(e.code)
+      )
 
     if (isNotAccepted)
       Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
