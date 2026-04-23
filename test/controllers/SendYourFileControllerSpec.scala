@@ -24,8 +24,9 @@ import models.submission.*
 import models.submission.fileDetails.*
 import models.upscan.{Reference, UploadId}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, SendYourFileAdditionalText, UserAnswers}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.{verify, when}
 import org.scalatest.BeforeAndAfterEach
 import pages.*
 import play.api.inject.bind
@@ -347,6 +348,110 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           redirectLocation(result).value mustEqual controllers.routes.StillCheckingYourFileController.onPageLoad().url
         }
       }
+
+      "must save giin and election status when giin update fails and conversationId is present" in {
+        val userAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val dbStatus = GiinAndElectionDBStatus(false, true)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService),
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinUpdateFailed(false, true)))
+
+        when(
+          mockFileDetailsConnector.updateGiinAndElectionStatus(any[ConversationId], any[GiinAndElectionDBStatus])(using
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        )
+          .thenReturn(Future.unit)
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.GiinNotSentController.onPageLoad().url
+
+          verify(mockFileDetailsConnector).updateGiinAndElectionStatus(ArgumentMatchers.eq(conversationId), ArgumentMatchers.eq(dbStatus))(using
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        }
+      }
+
+      "must save giin and election status when election submission fails and conversationId is present" in {
+        val userAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val dbStatus = GiinAndElectionDBStatus(true, false)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService),
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(ElectionsSubmitFailed(true, false)))
+
+        when(
+          mockFileDetailsConnector.updateGiinAndElectionStatus(any[ConversationId], any[GiinAndElectionDBStatus])(using
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        )
+          .thenReturn(Future.unit)
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.ElectionsNotSentController.onPageLoad().url
+
+          verify(mockFileDetailsConnector).updateGiinAndElectionStatus(ArgumentMatchers.eq(conversationId), ArgumentMatchers.eq(dbStatus))(using
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        }
+      }
+
+      "must still redirect correctly when connector fails to save giin and election status" in {
+        val userAnswers = ua.withPage(ConversationIdPage, conversationId)
+
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[SubmissionService].toInstance(mockSubmissionService),
+            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+          )
+          .build()
+
+        when(mockSubmissionService.submitElectionsAndGiin(any[UserAnswers])(using any[DataRequest[_]], any[HeaderCarrier], any[ExecutionContext]))
+          .thenReturn(Future.successful(GiinUpdateFailed(false, true)))
+
+        when(
+          mockFileDetailsConnector.updateGiinAndElectionStatus(any[ConversationId], any[GiinAndElectionDBStatus])(using
+            any[HeaderCarrier],
+            any[ExecutionContext]
+          )
+        )
+          .thenReturn(Future.failed(new RuntimeException("connector error")))
+
+        running(application) {
+          val request = FakeRequest(POST, routes.SendYourFileController.onSubmit().url)
+          val result  = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual controllers.routes.GiinNotSentController.onPageLoad().url
+        }
+      }
     }
 
     "getStatus" - {
@@ -471,7 +576,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
 
         "when file status is Rejected with CRS Error Code 2" ignore { // TODO NEEDS ERRORS
-//          val errors = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
+          //          val errors = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
 
           val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
 
@@ -497,7 +602,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           val ua: UserAnswers =
             emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
 
-//          val errors           = Seq(FileErrors(FailedSchemaValidationFatca, Some("Failed Schema Validation")))
+          //          val errors           = Seq(FileErrors(FailedSchemaValidationFatca, Some("Failed Schema Validation")))
 
           val application = applicationBuilder(userAnswers = Some(ua))
             .overrides(
@@ -612,6 +717,5 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
         }
       }
     }
-
   }
 }

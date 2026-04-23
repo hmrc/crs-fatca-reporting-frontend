@@ -107,7 +107,6 @@ object FileDetails {
           "lastUpdated"                       -> fd.lastUpdated,
           "reportingPeriod"                   -> fd.reportingPeriod,
           "messageType"                       -> fd.messageType,
-          "messageType"                       -> fd.messageType,
           "isFiUser"                          -> fd.isFiUser,
           "fiNameFromFim"                     -> fd.fiNameFromFim,
           "fiPrimaryContactEmail"             -> fd.fiPrimaryContactEmail,

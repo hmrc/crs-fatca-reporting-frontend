@@ -16,14 +16,14 @@
 
 package connectors
 
-import models.{CRS, CRSReportType}
-import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
 import models.fileDetails.FileDetails
-import models.submission.ConversationId
 import models.submission.fileDetails.{Pending, RejectedSDES}
+import models.submission.{ConversationId, GiinAndElectionDBStatus}
+import models.{CRS, CRSReportType, IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{an, mustBe}
-import play.api.http.Status.{CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, REQUEST_TIMEOUT}
+import org.scalatest.matchers.should.Matchers.should
+import play.api.http.Status.*
 import utils.ISpecBase
 
 import java.time.{LocalDate, LocalDateTime}
@@ -77,11 +77,11 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       }
 
     }
-    
+
     "get file details" - {
       "get file details for a valid conversation id " in {
         val conversationId = ConversationId("conversation-123")
-        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+        val url            = s"/crs-fatca-reporting/files/$conversationId/details"
 
         stubGetResponse(url, OK, getFileDetailsStubResponse)
 
@@ -89,7 +89,6 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
         val submittedTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0)
         val reportingDate = LocalDate.of(2026, 1, 1)
-
 
         result.futureValue mustBe FileDetails(
           _id = conversationId,
@@ -115,7 +114,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
       "return a UnexpectedJsResult exception when 200 response returns an invalid body" in {
         val conversationId = ConversationId("conversation-123")
-        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+        val url            = s"/crs-fatca-reporting/files/$conversationId/details"
 
         stubGetResponse(url, OK, """{"invalid": "response"}""")
 
@@ -126,7 +125,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
       "return a UnExpectedResponse when an expected success status code is returned" in {
         val conversationId = ConversationId("conversation-123")
-        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+        val url            = s"/crs-fatca-reporting/files/$conversationId/details"
 
         stubGetResponse(url, CREATED, getFileDetailsStubResponse)
 
@@ -137,7 +136,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
       "return a NoResultFound  when 404 response is returned" in {
         val conversationId = ConversationId("conversation-123")
-        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+        val url            = s"/crs-fatca-reporting/files/$conversationId/details"
 
         stubGetResponse(url, NOT_FOUND, "")
 
@@ -148,13 +147,37 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
       "return a IntenalIssueError when 500 response is returned" in {
         val conversationId = ConversationId("conversation-123")
-        val url = s"/crs-fatca-reporting/files/$conversationId/details"
+        val url            = s"/crs-fatca-reporting/files/$conversationId/details"
 
         stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
 
         val result = connector.getFileDetails(conversationId)
 
         result.failed.futureValue mustBe an[IntenalIssueError.type]
+      }
+    }
+    "updateGiinAndElectionStatus" - {
+      val conversationId        = ConversationId("test-conversation-id")
+      val url                   = s"/crs-fatca-reporting/files/${conversationId.value}/giin-election-status"
+      val giinAndElectionStatus = GiinAndElectionDBStatus(giinStatus = true, electionStatus = false)
+      val requestBody           = """{"giinStatus":true,"electionStatus":false}"""
+
+      "completes successfully when backend returns OK" in {
+        stubPut(url, OK, requestBody, "")
+
+        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
+      }
+
+      "completes successfully when backend returns non-2xx" in {
+        stubPut(url, INTERNAL_SERVER_ERROR, requestBody, "")
+
+        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
+      }
+
+      "completes successfully when request times out" in {
+        stubPut(url, REQUEST_TIMEOUT, requestBody, "")
+
+        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
       }
     }
   }
