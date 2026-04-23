@@ -19,6 +19,8 @@ package controllers
 import base.SpecBase
 import connectors.FileDetailsConnector
 import models.CRSReportType.NewInformation
+import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
+import models.fileDetails.{FileErrors, FileValidationErrors}
 import models.requests.DataRequest
 import models.submission.*
 import models.submission.fileDetails.*
@@ -32,7 +34,7 @@ import pages.*
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import services.SubmissionService
+import services.{FileDetailsService, SubmissionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.SendYourFileView
 
@@ -42,6 +44,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
 
   val mockSubmissionService: SubmissionService       = mock[SubmissionService]
   val mockFileDetailsConnector: FileDetailsConnector = mock[FileDetailsConnector]
+  val mockFileDetailsService: FileDetailsService     = mock[FileDetailsService]
   lazy val pageUnavailableUrl: String                = controllers.routes.PageUnavailableController.onPageLoad().url
   lazy val sendYourFileUrl: String                   = routes.SendYourFileController.onPageLoad().url
   val hardcodedFiName                                = "testFiName"
@@ -575,75 +578,62 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
           }
         }
 
-        "when file status is Rejected with CRS Error Code 2" ignore { // TODO NEEDS ERRORS
-          //          val errors = Seq(FileErrors(FailedSchemaValidationCrs, Some("Failed Schema Validation")))
-
+        "when file status is Rejected with FailedSchemaValidationCrs" in {
           val validUserAnswers = ua.withPage(ConversationIdPage, conversationId)
+          val fileDetails = getTestFileDetails(
+            status = Rejected,
+            errors = Some(FileValidationErrors(fileError = Some(Seq(FileErrors(FailedSchemaValidationCrs, None))), recordError = None))
+          )
 
           val application = applicationBuilder(userAnswers = Some(validUserAnswers))
             .overrides(
-              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector),
+              bind[FileDetailsService].toInstance(mockFileDetailsService)
             )
             .build()
 
           when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
             .thenReturn(Future.successful(Some(Rejected)))
+          when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
+            .thenReturn(Future.successful(Some(fileDetails)))
 
           running(application) {
             val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
-            val result  = route(application, request).value
-
-            status(result) mustEqual OK
-            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
-          }
-        }
-        "file status is Rejected with Temp FATCA Error Code 2" ignore { // TODO NEEDS ERRORS
-
-          val ua: UserAnswers =
-            emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
-
-          //          val errors           = Seq(FileErrors(FailedSchemaValidationFatca, Some("Failed Schema Validation")))
-
-          val application = applicationBuilder(userAnswers = Some(ua))
-            .overrides(
-              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
-            )
-            .build()
-
-          when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
-            .thenReturn(Future.successful(Some(Rejected)))
-
-          running(application) {
-            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
-            val result  = route(application, request).value
+            val result = route(application, request).value
 
             status(result) mustEqual OK
             contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
           }
         }
 
-      }
-      "must return OK and return file failed checks url when status is Rejected" ignore { // TODO NEEDS ERRORS?
-        val userAnswers = ua
-          .withPage(ConversationIdPage, conversationId)
-
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[FileDetailsConnector].toInstance(mockFileDetailsConnector)
+        "when file status is Rejected with FailedSchemaValidationFatca" in {
+          val validUserAnswers = emptyUserAnswers.withPage(ValidXMLPage, getValidatedFileData(messageSpecDataFatca)).withPage(ConversationIdPage, conversationId)
+          val fileDetails = getTestFileDetails(
+            status = Rejected,
+            errors = Some(FileValidationErrors(fileError = Some(Seq(FileErrors(FailedSchemaValidationFatca, None))), recordError = None))
           )
-          .build()
 
-        when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
-          .thenReturn(Future.successful(Some(Rejected)))
+          val application = applicationBuilder(userAnswers = Some(validUserAnswers))
+            .overrides(
+              bind[FileDetailsConnector].toInstance(mockFileDetailsConnector),
+              bind[FileDetailsService].toInstance(mockFileDetailsService)
+            )
+            .build()
 
-        running(application) {
-          val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+          when(mockFileDetailsConnector.getStatus(any[ConversationId]())(using any[HeaderCarrier], any[ExecutionContext]))
+            .thenReturn(Future.successful(Some(Rejected)))
+          when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
+            .thenReturn(Future.successful(Some(fileDetails)))
 
-          val result = route(application, request).value
+          running(application) {
+            val request = FakeRequest(GET, routes.SendYourFileController.getStatus().url)
+            val result = route(application, request).value
 
-          status(result) mustEqual OK
-          contentAsJson(result).toString mustEqual s"{\"url\":\"/report-for-crs-and-fatca/report/problem/rules-errors/${conversationId.value}\"}"
+            status(result) mustEqual OK
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+          }
         }
+
       }
 
       "must return internal server error when status is None" in {

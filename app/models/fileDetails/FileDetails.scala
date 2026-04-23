@@ -16,8 +16,8 @@
 
 package models.fileDetails
 
-import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
+import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageType, ReportType}
 import play.api.libs.json.*
 
@@ -41,7 +41,8 @@ case class FileDetails(
   fiSecondaryContactEmail: Option[String] = None,
   subscriptionPrimaryContactEmail: String,
   subscriptionSecondaryContactEmail: Option[String] = None,
-  errors: Option[FileValidationErrors] = None
+  errors: Option[FileValidationErrors] = None,
+  giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None
 )
 
 object FileDetails {
@@ -68,6 +69,7 @@ object FileDetails {
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
           errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
+          giinAndElectionDBStatus           <- (json \ "giinAndElectionDBStatus").validateOpt[GiinAndElectionDBStatus]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -90,7 +92,8 @@ object FileDetails {
           fiSecondaryContactEmail = fiSecondaryContactEmail,
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
           subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
-          errors = errors
+          errors = errors,
+          giinAndElectionDBStatus = giinAndElectionDBStatus
         )
     }
 
@@ -114,6 +117,7 @@ object FileDetails {
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
           "errors"                            -> fd.errors,
+          "giinAndElectionDBStatus"           -> fd.giinAndElectionDBStatus,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)

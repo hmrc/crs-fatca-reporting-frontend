@@ -48,24 +48,19 @@ class RulesErrorController @Inject() (
     implicit request =>
       fileDetailsService.getFileDetails(ConversationId(conversationId)).map {
         case Some(fileDetails) =>
-          fileDetails.status match {
-            case Rejected =>
-              val fileValidationErrors: FileValidationErrors = fileDetails.errors.get // todo DAC6-4236 dont do a get
-              val fileRejectedViewModel                      = FileRejectedViewModel(fileValidationErrors)
-              val fileName                                   = fileDetails.name
-              val regimeType                                 = fileDetails.messageType
+          (fileDetails.status, fileDetails.errors) match {
+            case (Rejected, Some(fileValidationErrors)) =>
               val errorLength = fileValidationErrors.fileError.fold(0)(_.length) + fileValidationErrors.recordError.fold(0)(_.length)
+              Ok(view(fileDetails.name, fileDetails.messageType.toString, errorLength, FileRejectedViewModel(fileValidationErrors)))
 
-              Ok(view(fileName, regimeType.toString, errorLength, fileRejectedViewModel))
             case _ =>
-              logger.warn("File details found for conversation ID: " + conversationId + " but status is not Rejected")
+              logger.warn(s"Unexpected state for conversationId: $conversationId - status: ${fileDetails.status}, errors: ${fileDetails.errors}")
               Redirect(controllers.routes.PageUnavailableController.onPageLoad())
           }
 
         case None =>
-          logger.warn("No file details (for Business rule errors) found for conversation ID: " + conversationId)
+          logger.warn(s"No file details found for conversationId: $conversationId")
           Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
   }
-
 }

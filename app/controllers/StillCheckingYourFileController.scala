@@ -73,7 +73,7 @@ class StillCheckingYourFileController @Inject() (
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
             case Some(Rejected) =>
               fileDetailsService.getFileDetails(conversationId) flatMap {
-                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors.get) // todo DAC6-4236 don't do a get
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors)
                 case None              => Future.successful(InternalServerError(errorView()))
               }
             case Some(NotAccepted) =>
@@ -88,19 +88,19 @@ class StillCheckingYourFileController @Inject() (
 
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors): Future[Result] = {
+  private def handleRejectedWithErrors(errors: Option[FileValidationErrors]): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val isNotAccepted = errors.fileError
+    val isNotAccepted = errors
+      .flatMap(_.fileError)
       .getOrElse(Nil)
       .exists(
         e => notAcceptedErrorCodes(e.code)
       )
 
-    if (isNotAccepted) {
+    if (isNotAccepted)
       Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad()))
-    } else {
+    else
       Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
-    }
   }
 
 }

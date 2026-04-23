@@ -18,7 +18,10 @@ package base
 
 import controllers.actions.*
 import generators.Generators
-import models.{FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
+import models.fileDetails.{FileDetails, FileValidationErrors}
+import models.submission.{ConversationId, GiinAndElectionDBStatus}
+import models.submission.fileDetails.{FileStatus, Pending}
+import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -35,7 +38,7 @@ import play.api.test.{FakeRequest, Injecting}
 import queries.Settable
 import repositories.SessionRepository
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 
 trait SpecBase
     extends AnyFreeSpec
@@ -81,6 +84,49 @@ trait SpecBase
       electionsRequired,
       isFiUser,
       subscriptionPrimaryContactEmail = "test@email.com"
+    )
+
+  def getTestFileDetails(
+    conversationId: ConversationId = ConversationId("test-conversation-id"),
+    enrolmentId: String = "someenrolmentId",
+    messageRefId: String = "somemessageRefId",
+    reportingEntityName: Option[String] = Some("Test Entity"),
+    status: FileStatus = Pending,
+    name: String = "test-file.xml",
+    submitted: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+    lastUpdated: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+    reportingPeriod: LocalDate = LocalDate.of(2026, 1, 1),
+    messageType: MessageType = CRS,
+    reportType: ReportType = CRSReportType.NewInformation,
+    fiNameFromFim: String = "fi-name",
+    isFiUser: Boolean = true,
+    fiPrimaryContactEmail: Option[String] = None,
+    fiSecondaryContactEmail: Option[String] = None,
+    subscriptionPrimaryContactEmail: String = "test@email.com",
+    subscriptionSecondaryContactEmail: Option[String] = None,
+    errors: Option[FileValidationErrors] = None,
+    giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None
+  ): FileDetails =
+    FileDetails(
+      _id = conversationId,
+      enrolmentId = enrolmentId,
+      messageRefId = messageRefId,
+      reportingEntityName = reportingEntityName,
+      status = status,
+      name = name,
+      submitted = submitted,
+      lastUpdated = lastUpdated,
+      reportingPeriod = reportingPeriod,
+      messageType = messageType,
+      reportType = reportType,
+      fiNameFromFim = fiNameFromFim,
+      isFiUser = isFiUser,
+      fiPrimaryContactEmail = fiPrimaryContactEmail,
+      fiSecondaryContactEmail = fiSecondaryContactEmail,
+      subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
+      subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
+      errors = errors,
+      giinAndElectionDBStatus = giinAndElectionDBStatus
     )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())

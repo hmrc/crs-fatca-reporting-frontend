@@ -156,7 +156,7 @@ class SendYourFileController @Inject() (
               Future.successful(NoContent)
             case Some(Rejected) =>
               fileDetailsService.getFileDetails(conversationId) flatMap {
-                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors.get, conversationId) // todo DAC6-4236 don't do a get
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors, conversationId)
                 case None              => Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
               }
             case Some(RejectedSDESVirus) =>
@@ -187,18 +187,16 @@ class SendYourFileController @Inject() (
       }
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors, conversationId: ConversationId): Future[Result] = {
+  private def handleRejectedWithErrors(errors: Option[FileValidationErrors], conversationId: ConversationId): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val isNotAccepted = errors.fileError
+    val isNotAccepted = errors
+      .flatMap(_.fileError)
       .getOrElse(Nil)
-      .exists(
-        e => notAcceptedErrorCodes(e.code)
-      )
+      .exists(e => notAcceptedErrorCodes(e.code))
 
-    if (isNotAccepted) {
+    if (isNotAccepted)
       Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
-    } else {
+    else
       Future.successful(Ok(Json.toJson(URL(routes.RulesErrorController.onPageLoad(conversationId.value).url))))
-    }
   }
 }

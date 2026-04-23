@@ -136,6 +136,29 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
         redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
       }
     }
+
+    "must redirect to page unavailable when file detail service returns rejected status with no errors (this shouldn't happen anyway)" in {
+      val noErrorsFileDetails = fileDetails.copy(errors = None)
+      val userAnswers         = emptyUserAnswers
+
+      when(mockFileDetailsService.getFileDetails(any[ConversationId])(any[HeaderCarrier](), any[ExecutionContext]()))
+        .thenReturn(Future.successful(Some(noErrorsFileDetails)))
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[FileDetailsService].toInstance(mockFileDetailsService)
+        )
+        .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RulesErrorController.onPageLoad(conversationId.value).url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.PageUnavailableController.onPageLoad().url
+      }
+    }
   }
 
 }
