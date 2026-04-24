@@ -105,19 +105,19 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
                   case (path, validationErrors) => s"$path: ${validationErrors.map(_.message).mkString(",")}"
                 }
                 .mkString("; ")
-              logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON for subscriptionId=$subscriptionId. Errors: $errorMsg")
+              logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON Errors: $errorMsg")
               Future failed UnexpectedJsResult
           }
         case responseMessage if unExpected2xxStatus(responseMessage.status) =>
-          logger.error(
-            s"FileDetailsConnector: Failed to get fileDetails for subscription ud: $subscriptionId of unexpected status ${responseMessage.status}"
+          logger.warn(
+            s"FileDetailsConnector: Failed to get fileDetails due to unexpected status ${responseMessage.status}"
           )
           Future failed UnExpectedResponse
         case responseMessage if responseMessage.status == NOT_FOUND =>
-          logger.warn(s"FileDetailsConnector: No file details found for subscriptionId=$subscriptionId")
+          logger.warn(s"FileDetailsConnector: No file details found")
           Future failed NoResultFound
         case responseMessage =>
-          logger.error(s"FileDetailsConnector: Failed to get file details for subscriptionId: $subscriptionId with status ${responseMessage.status}")
+          logger.error(s"FileDetailsConnector: Failed to get file details: status ${responseMessage.status}")
           Future failed IntenalIssueError
       }
   }
