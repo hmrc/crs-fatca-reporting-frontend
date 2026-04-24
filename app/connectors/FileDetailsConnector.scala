@@ -57,29 +57,6 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
 
   }
 
-  def updateGiinAndElectionStatus(conversationId: ConversationId, status: GiinAndElectionDBStatus)(implicit
-    hc: HeaderCarrier,
-    ec: ExecutionContext
-  ): Future[Unit] = {
-    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/${conversationId.value}/giin-election-status"
-
-    httpClient
-      .put(url)
-      .withBody(Json.toJson(status))
-      .execute[HttpResponse]
-      .map {
-        case response if is2xx(response.status) => ()
-        case response =>
-          logger.error(
-            s"FileDetailsConnector: Failed to update GiinAndElectionStatus for conversationId: ${conversationId.value} with status ${response.status}"
-          )
-      }
-      .recover {
-        case NonFatal(e) =>
-          logger.error(s"FileDetailsConnector: Exception occurred while updating GiinAndElectionStatus for conversationId: ${conversationId.value}", e)
-      }
-  }
-
   def getFileDetails(conversationId: ConversationId)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetails] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/${conversationId.value}/details"
     httpClient.get(url).execute[HttpResponse].flatMap(handleResponse(conversationId, _))

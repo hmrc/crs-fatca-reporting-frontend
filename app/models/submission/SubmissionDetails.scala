@@ -28,7 +28,8 @@ final case class SubmissionDetails(
   documentUrl: String,
   checksum: String,
   messageSpecData: MessageSpecData,
-  fileReference: Reference
+  fileReference: Reference,
+  electionsSubmitted: Option[Boolean] = None
 )
 
 object SubmissionDetails {

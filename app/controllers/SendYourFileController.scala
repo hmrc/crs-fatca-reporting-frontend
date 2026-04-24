@@ -99,7 +99,6 @@ class SendYourFileController @Inject() (
         for {
           updatedAnswers <- Future.fromTry(ua.set(GiinAndElectionStatusPage, dbStatus))
           _              <- sessionRepository.set(updatedAnswers)
-          _              <- saveGiinAndElectionStatus(ua, dbStatus)
         } yield Redirect(routes.GiinNotSentController.onPageLoad())
 
       case electionFailed: ElectionsSubmitFailed =>
@@ -107,24 +106,10 @@ class SendYourFileController @Inject() (
         for {
           updatedAnswers <- Future.fromTry(ua.set(GiinAndElectionStatusPage, dbStatus))
           _              <- sessionRepository.set(updatedAnswers)
-          _              <- saveGiinAndElectionStatus(ua, dbStatus)
         } yield Redirect(routes.ElectionsNotSentController.onPageLoad())
 
       case GiinAndElectionSubmittedSuccessful =>
         handleBothSubmitted(ua)
-    }
-
-  private def saveGiinAndElectionStatus(ua: UserAnswers, dbStatus: GiinAndElectionDBStatus)(implicit request: DataRequest[_]): Future[Unit] =
-    ua.get(ConversationIdPage) match {
-      case Some(conversationId) =>
-        fileDetailsConnector
-          .updateGiinAndElectionStatus(ConversationId(conversationId.value), dbStatus)
-          .recover {
-            case e => logger.warn(s"Failed to save GiinAndElectionStatus for conversationId: ${conversationId.value} - ${e.getMessage}")
-          }
-      case None =>
-        logger.warn("Unable to save GiinAndElectionStatus - no conversationId in UserAnswers")
-        Future.unit
     }
 
   private def handleBothSubmitted(answers: UserAnswers)(implicit request: DataRequest[_]): Future[Result] =

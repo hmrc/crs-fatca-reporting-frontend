@@ -40,7 +40,6 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
         val conversationId = ConversationId("test-conversation-id")
         val url            = s"/crs-fatca-reporting/files/$conversationId/status"
 
-
         stubGetResponse(url, OK, """"RejectedSDES"""")
         val result = Await.result(connector.getStatus(conversationId), 2.seconds)
 
@@ -147,30 +146,6 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
         val result = connector.getFileDetails(conversationId)
 
         result.failed.futureValue mustBe an[IntenalIssueError.type]
-      }
-    }
-    "updateGiinAndElectionStatus" - {
-      val conversationId        = ConversationId("test-conversation-id")
-      val url                   = s"/crs-fatca-reporting/files/${conversationId.value}/giin-election-status"
-      val giinAndElectionStatus = GiinAndElectionDBStatus(giinStatus = true, electionStatus = false)
-      val requestBody           = """{"giinStatus":true,"electionStatus":false}"""
-
-      "completes successfully when backend returns OK" in {
-        stubPut(url, OK, requestBody, "")
-
-        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
-      }
-
-      "completes successfully when backend returns non-2xx" in {
-        stubPut(url, INTERNAL_SERVER_ERROR, requestBody, "")
-
-        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
-      }
-
-      "completes successfully when request times out" in {
-        stubPut(url, REQUEST_TIMEOUT, requestBody, "")
-
-        connector.updateGiinAndElectionStatus(conversationId, giinAndElectionStatus).futureValue
       }
     }
   }

@@ -19,8 +19,8 @@ package base
 import controllers.actions.*
 import generators.Generators
 import models.fileDetails.{FileDetails, FileValidationErrors}
-import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.submission.fileDetails.{FileStatus, Pending}
+import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
@@ -125,8 +125,7 @@ trait SpecBase
       fiSecondaryContactEmail = fiSecondaryContactEmail,
       subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
       subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
-      errors = errors,
-      giinAndElectionDBStatus = giinAndElectionDBStatus
+      errors = errors
     )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())

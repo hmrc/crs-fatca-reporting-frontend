@@ -42,7 +42,7 @@ case class FileDetails(
   subscriptionPrimaryContactEmail: String,
   subscriptionSecondaryContactEmail: Option[String] = None,
   errors: Option[FileValidationErrors] = None,
-  giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None
+  electionSubmitted: Option[Boolean] = None
 )
 
 object FileDetails {
@@ -69,7 +69,7 @@ object FileDetails {
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
           errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
-          giinAndElectionDBStatus           <- (json \ "giinAndElectionDBStatus").validateOpt[GiinAndElectionDBStatus]
+          electionSubmitted                 <- (json \ "electionSubmitted").validateOpt[Boolean]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -93,7 +93,7 @@ object FileDetails {
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
           subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
           errors = errors,
-          giinAndElectionDBStatus = giinAndElectionDBStatus
+          electionSubmitted = electionSubmitted
         )
     }
 
@@ -117,7 +117,7 @@ object FileDetails {
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
           "errors"                            -> fd.errors,
-          "giinAndElectionDBStatus"           -> fd.giinAndElectionDBStatus,
+          "electionSubmitted"                 -> fd.electionSubmitted,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)
