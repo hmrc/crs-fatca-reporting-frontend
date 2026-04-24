@@ -108,14 +108,9 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
               logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON Errors: $errorMsg")
               Future failed UnexpectedJsResult
           }
-        case responseMessage if unExpected2xxStatus(responseMessage.status) =>
-          logger.warn(
-            s"FileDetailsConnector: Failed to get fileDetails due to unexpected status ${responseMessage.status}"
-          )
-          Future failed UnExpectedResponse
         case responseMessage if responseMessage.status == NOT_FOUND =>
           logger.warn(s"FileDetailsConnector: No file details found")
-          Future failed NoResultFound
+          Future.successful(FileDetailsResult(Nil, 0))
         case responseMessage =>
           logger.error(s"FileDetailsConnector: Failed to get file details: status ${responseMessage.status}")
           Future failed IntenalIssueError

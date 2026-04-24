@@ -54,7 +54,7 @@ class FileDetailsServiceSpec extends SpecBase {
     isFiUser = true,
     fiNameFromFim = "Test FI Name",
     subscriptionPrimaryContactEmail = "some@email.com",
-    sendCompanyIn = "some-company-in"
+    sendingCompanyIn = "some-company-in"
   )
 
   "getFileDetails" - {

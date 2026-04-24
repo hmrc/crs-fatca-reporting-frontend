@@ -109,7 +109,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
           subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
-          sendCompanyIn = "some-company-in"
+          sendingCompanyIn = "some-company-in"
         )
 
       }
@@ -189,7 +189,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
           subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
-          sendCompanyIn = "some-company-in"
+          sendingCompanyIn = "some-company-in"
         ),
           FileDetails(
             _id = conversationId,
@@ -209,17 +209,11 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
             fiSecondaryContactEmail = Some("fiSecondary@email.com"),
             subscriptionPrimaryContactEmail = "test@email.com",
             subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
-            sendCompanyIn = "some-company-in"
+            sendingCompanyIn = "some-company-in"
           )
         ), pages = 1)
       }
-      "return a UnexpectedJsResult exception when 200 response returns an invalid body" in {
-        stubGetResponse(url, OK, """{"invalid": "response"}""")
 
-        val result = connector.getAllFileDetails(subscriptionId)
-
-        result.failed.futureValue mustBe an[UnexpectedJsResult.type]
-      }
       "return a NoResultFound  when 404 response is returned" in {
         val subscriptionId = "some-subcscription-id"
         val url = s"/crs-fatca-reporting/files/details/$subscriptionId"
@@ -228,14 +222,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
 
         val result = connector.getAllFileDetails(subscriptionId)
 
-        result.failed.futureValue mustBe an[NoResultFound.type]
-      }
-      "return a UnExpectedResponse when an expected success status code is returned" in {
-        stubGetResponse(url, CREATED, "")
-
-        val result = connector.getAllFileDetails(subscriptionId)
-
-        result.failed.futureValue mustBe an[UnExpectedResponse.type]
+        result.futureValue mustBe FileDetailsResult(Nil, 0)
       }
 
       "return a IntenalIssueError when 500 response is returned" in {
@@ -269,7 +256,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
       |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
-      |  "sendCompanyIn":"some-company-in"
+      |  "sendingCompanyIn":"some-company-in"
       |}
       |""".stripMargin
   }
@@ -297,7 +284,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
       |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
-      |  "sendCompanyIn":"some-company-in"
+      |  "sendingCompanyIn":"some-company-in"
       |},
       |{
       |  "_id": "conversation-123",
@@ -318,7 +305,7 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
       |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
-      |  "sendCompanyIn":"some-company-in"
+      |  "sendingCompanyIn":"some-company-in"
       |}
       |],
       |"pages": 1

@@ -41,7 +41,7 @@ case class FileDetails(
   fiSecondaryContactEmail: Option[String] = None,
   subscriptionPrimaryContactEmail: String,
   subscriptionSecondaryContactEmail: Option[String] = None,
-  sendCompanyIn: String
+  sendingCompanyIn: String
 )
 
 object FileDetails {
@@ -67,7 +67,7 @@ object FileDetails {
           fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
-          sendCompanyIn                     <- (json \ "sendCompanyIn").validate[String]
+          sendingCompanyIn                  <- (json \ "sendingCompanyIn").validate[String]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -90,7 +90,7 @@ object FileDetails {
           fiSecondaryContactEmail = fiSecondaryContactEmail,
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
           subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
-          sendCompanyIn = sendCompanyIn
+          sendingCompanyIn = sendingCompanyIn
         )
     }
 
@@ -114,7 +114,7 @@ object FileDetails {
           "fiSecondaryContactEmail"           -> fd.fiSecondaryContactEmail,
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
-          "sendCompanyIn"                     -> fd.sendCompanyIn,
+          "sendingCompanyIn"                  -> fd.sendingCompanyIn,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)

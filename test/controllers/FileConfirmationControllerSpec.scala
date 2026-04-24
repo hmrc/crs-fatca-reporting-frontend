@@ -67,7 +67,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       fiSecondaryContactEmail = None,
       subscriptionPrimaryContactEmail = "test@email.com",
       subscriptionSecondaryContactEmail = None,
-      sendCompanyIn = "Some-company-in"
+      sendingCompanyIn = "Some-company-in"
     )
 
     "must return OK and the correct view for a GET" in {
