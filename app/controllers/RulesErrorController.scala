@@ -54,12 +54,12 @@ class RulesErrorController @Inject() (
               Ok(view(fileDetails.name, fileDetails.messageType.toString, errorLength, FileRejectedViewModel(fileValidationErrors)))
 
             case _ =>
-              logger.warn(s"Unexpected state for conversationId: $conversationId - status: ${fileDetails.status}, errors: ${fileDetails.errors}")
+              logger.error(s"Unexpected state for conversationId: $conversationId - status: ${fileDetails.status}, errors: ${fileDetails.errors}")
               Redirect(controllers.routes.PageUnavailableController.onPageLoad())
           }
 
         case None =>
-          logger.warn(s"No file details found for conversationId: $conversationId")
+          logger.error(s"No file details found for conversationId: $conversationId")
           Redirect(controllers.routes.PageUnavailableController.onPageLoad())
       }
   }
