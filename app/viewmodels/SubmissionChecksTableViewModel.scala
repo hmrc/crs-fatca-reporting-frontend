@@ -17,7 +17,7 @@
 package viewmodels
 
 import models.fileDetails.BusinessRuleErrorCode.{FailedSchemaValidationCrs, FailedSchemaValidationFatca}
-import models.fileDetails.FileDetailsResult
+import models.fileDetails.{FileDetailsResult, FileValidationErrors}
 import models.submission.fileDetails.{Accepted, FileStatus, NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import viewmodels.NextStepLink.GotoConfirmation
 
@@ -40,26 +40,29 @@ object SubmissionChecksTableViewModel {
   def reportingPeriod(ld: LocalDate): Int = ld.getYear
 
   def status(fileStatus: FileStatus): String = fileStatus match {
-    case Pending     => "Pending"
-    case Accepted    => "Passed"
-    case Rejected(_) => "Failed"
-    case _           => "Problem"
+    case Pending  => "Pending"
+    case Accepted => "Passed"
+    case Rejected(validationError) =>
+      if (isNotAccepted(validationError)) "Problem" else "Failed"
+    case _ => "Problem"
   }
 
   def nextStepLink(fileStatus: FileStatus): NextStepLink = fileStatus match {
     case Accepted => GotoConfirmation
     case Rejected(validationError) =>
-      val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-      val isNotAccepted = validationError.fileError
-        .getOrElse(Nil)
-        .exists(
-          e => notAcceptedErrorCodes(e.code)
-        )
-
-      if (isNotAccepted) NextStepLink.ContactUs else NextStepLink.CheckErrors
+      if (isNotAccepted(validationError)) NextStepLink.ContactUs else NextStepLink.CheckErrors
 
     case RejectedSDES | RejectedSDESVirus => NextStepLink.UploadFileAgain
     case NotAccepted                      => NextStepLink.ContactUs
     case Pending                          => NextStepLink.NoLink
+  }
+
+  private def isNotAccepted(validationError: FileValidationErrors): Boolean = {
+    val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
+    validationError.fileError
+      .getOrElse(Nil)
+      .exists(
+        e => notAcceptedErrorCodes(e.code)
+      )
   }
 }

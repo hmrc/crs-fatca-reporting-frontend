@@ -31,6 +31,9 @@ class SubmissionChecksTableViewModelSpec extends SpecBase {
       SubmissionChecksTableViewModel.status(NotAccepted) mustBe "Problem"
       SubmissionChecksTableViewModel.status(RejectedSDES) mustBe "Problem"
       SubmissionChecksTableViewModel.status(RejectedSDESVirus) mustBe "Problem"
+      val validationErrorWithNotAcceptedCodeFatca =
+        FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationFatca, None))), None)
+      SubmissionChecksTableViewModel.status(Rejected(validationErrorWithNotAcceptedCodeFatca)) mustBe "Problem"
       SubmissionChecksTableViewModel.status(Rejected(FileValidationErrors(None, None))) mustBe "Failed"
     }
 
