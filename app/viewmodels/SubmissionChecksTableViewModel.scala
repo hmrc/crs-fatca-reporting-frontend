@@ -26,7 +26,7 @@ import java.time.{LocalDate, LocalDateTime}
 import java.util.Locale
 
 enum NextStepLink:
-  case GotoConfirmation, CheckErrors, ContactUs, UploadFileAgain, NoLink
+  case GotoConfirmation, CheckErrors, ContactUs, UploadFileAgain, VirusFound, NoLink
 
 case class SubmissionChecksTableViewModel(fileDetailsResults: FileDetailsResult)
 
@@ -44,17 +44,18 @@ object SubmissionChecksTableViewModel {
     case Accepted => "Passed"
     case Rejected(validationError) =>
       if (isNotAccepted(validationError)) "Problem" else "Failed"
-    case _ => "Problem"
+    case RejectedSDESVirus => "Failed"
+    case _                 => "Problem"
   }
 
   def nextStepLink(fileStatus: FileStatus): NextStepLink = fileStatus match {
     case Accepted => GotoConfirmation
     case Rejected(validationError) =>
       if (isNotAccepted(validationError)) NextStepLink.ContactUs else NextStepLink.CheckErrors
-
-    case RejectedSDES | RejectedSDESVirus => NextStepLink.UploadFileAgain
-    case NotAccepted                      => NextStepLink.ContactUs
-    case Pending                          => NextStepLink.NoLink
+    case RejectedSDES      => NextStepLink.UploadFileAgain
+    case RejectedSDESVirus => NextStepLink.VirusFound
+    case NotAccepted       => NextStepLink.ContactUs
+    case Pending           => NextStepLink.NoLink
   }
 
   private def isNotAccepted(validationError: FileValidationErrors): Boolean = {

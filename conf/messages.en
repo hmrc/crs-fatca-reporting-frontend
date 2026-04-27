@@ -551,6 +551,7 @@ submissionsChecks.uploadFile = Upload file again
 submissionsChecks.rules.error = Check errors
 submissionsChecks.confirmation = Go to confirmation
 submissionsChecks.contactus = Contact us
+submissionsChecks.virus.found = Check problem
 
 submissionsChecks.fiName.header = Financial institution name and FI ID
 submissionsChecks.reportingPeriod.header = Reporting period

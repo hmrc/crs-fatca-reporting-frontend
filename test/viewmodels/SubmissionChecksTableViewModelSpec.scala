@@ -25,24 +25,24 @@ import java.time.LocalDateTime
 class SubmissionChecksTableViewModelSpec extends SpecBase {
   "SubmissionChecksTableViewModel" - {
 
-    "return correct status text" - {
+    "return correct status text" in {
       SubmissionChecksTableViewModel.status(Pending) mustBe "Pending"
       SubmissionChecksTableViewModel.status(Accepted) mustBe "Passed"
       SubmissionChecksTableViewModel.status(NotAccepted) mustBe "Problem"
       SubmissionChecksTableViewModel.status(RejectedSDES) mustBe "Problem"
-      SubmissionChecksTableViewModel.status(RejectedSDESVirus) mustBe "Problem"
+      SubmissionChecksTableViewModel.status(RejectedSDESVirus) mustBe "Failed"
       val validationErrorWithNotAcceptedCodeFatca =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationFatca, None))), None)
       SubmissionChecksTableViewModel.status(Rejected(validationErrorWithNotAcceptedCodeFatca)) mustBe "Problem"
       SubmissionChecksTableViewModel.status(Rejected(FileValidationErrors(None, None))) mustBe "Failed"
     }
 
-    "return correct next step link" - {
+    "return correct next step link" in {
       SubmissionChecksTableViewModel.nextStepLink(Pending) mustBe NextStepLink.NoLink
       SubmissionChecksTableViewModel.nextStepLink(Accepted) mustBe NextStepLink.GotoConfirmation
       SubmissionChecksTableViewModel.nextStepLink(NotAccepted) mustBe NextStepLink.ContactUs
       SubmissionChecksTableViewModel.nextStepLink(RejectedSDES) mustBe NextStepLink.UploadFileAgain
-      SubmissionChecksTableViewModel.nextStepLink(RejectedSDESVirus) mustBe NextStepLink.UploadFileAgain
+      SubmissionChecksTableViewModel.nextStepLink(RejectedSDESVirus) mustBe NextStepLink.VirusFound
 
       val validationErrorWithNotAcceptedCodeCRS =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationCrs, None))), None)

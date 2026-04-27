@@ -76,6 +76,8 @@
            link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
         case NextStepLink.ContactUs =>
             link(routes.FileNotAcceptedController.onPageLoad().url, "submissionsChecks.contactus")
+        case NextStepLink.VirusFound =>
+             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found")
         case NextStepLink.NoLink =>
            <span class='govuk-visually-hidden'>None</span>
    }
