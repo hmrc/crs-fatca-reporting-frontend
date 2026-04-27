@@ -17,7 +17,7 @@
 package services
 
 import connectors.FileDetailsConnector
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsResult}
 import models.submission.ConversationId
 import play.api.Logging
 import uk.gov.hmrc.http.HeaderCarrier
@@ -35,6 +35,15 @@ class FileDetailsService @Inject() (val connector: FileDetailsConnector) extends
         case _ =>
           logger.warn(s"FileDetailsService: Failed to get FileDetails for conversationId: ${conversationId.value}")
           None
+      }
+
+  def getAllFileDetails(subscriptionId: String, page: Int = 1)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetailsResult] =
+    connector
+      .getAllFileDetails(subscriptionId, page)
+      .recover {
+        case _ =>
+          logger.warn(s"FileDetailsService: Failed to get all FileDetails for subscriptionId: $subscriptionId")
+          FileDetailsResult(Seq.empty, 0)
       }
 
 }

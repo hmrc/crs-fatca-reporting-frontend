@@ -543,3 +543,21 @@ xml.elem.timestamp.invalid = Timestamp element must be in the format YYYY-MM-DDT
 xml.elem.crs.countryinfo.invalid = Optional CountryInfo element must include CountryCode or FormerCountryName
 xml.elem.crs.addressfix.missing = Address must contain AddressFix
 xml.elem.crs.accountHolder.missing = AccountHolder must contain either Individual or Organisation and AcctHolderType
+
+submissionsChecks.title = Results of submission checks
+submissionsChecks.heading = Results of submission checks
+submissionsChecks.p1 = We keep this information for 28 days from when you sent the report.
+submissionsChecks.uploadFile = Upload file again
+submissionsChecks.rules.error = Check errors
+submissionsChecks.confirmation = Go to confirmation
+submissionsChecks.contactus = Contact us
+submissionsChecks.virus.found = Check problem
+
+submissionsChecks.fiName.header = Financial institution name and FI ID
+submissionsChecks.reportingPeriod.header = Reporting period
+submissionsChecks.regime.header = Regime
+submissionsChecks.messageRefId.header = MessageRefId
+submissionsChecks.sent.header = Sent
+submissionsChecks.result.header = Result
+submissionsChecks.nextStep.header = Next step
+

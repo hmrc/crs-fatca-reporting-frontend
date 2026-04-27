@@ -58,7 +58,8 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
     fiPrimaryContactEmail = None,
     fiSecondaryContactEmail = None,
     subscriptionPrimaryContactEmail = "test@email.com",
-    subscriptionSecondaryContactEmail = None
+    subscriptionSecondaryContactEmail = None,
+    sendingCompanyIn = "some-company-in"
   )
 
   "RulesError Controller" - {

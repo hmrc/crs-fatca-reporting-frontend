@@ -18,7 +18,7 @@ package connectors
 
 import models.{CRS, CRSReportType}
 import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsResult}
 import models.submission.ConversationId
 import models.submission.fileDetails.{Pending, RejectedSDES}
 import org.scalatest.freespec.AnyFreeSpec
@@ -108,7 +108,8 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           fiPrimaryContactEmail = Some("fiPrimary@email.com"),
           fiSecondaryContactEmail = Some("fiSecondary@email.com"),
           subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          sendingCompanyIn = "some-company-in"
         )
 
       }
@@ -157,9 +158,84 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
         result.failed.futureValue mustBe an[IntenalIssueError.type]
       }
     }
+
+    "get all file details" - {
+      val subscriptionId = "some-subcscription-id"
+      val url = s"/crs-fatca-reporting/files/details/$subscriptionId?page=1"
+      "get all file details for a valid subscription id " in {
+        val submittedTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0)
+        val reportingDate = LocalDate.of(2026, 1, 1)
+        val conversationId = ConversationId("conversation-123")
+
+
+        stubGetResponse(url, OK, getAllFileDetailsStubResponse)
+
+        val result = connector.getAllFileDetails(subscriptionId)
+        result.futureValue mustBe FileDetailsResult(Seq(FileDetails(
+          _id = conversationId,
+          enrolmentId = "XACBC0000123456",
+          messageRefId = "GBXACBC12345678",
+          reportingEntityName = Some("Test Entity"),
+          status = Pending,
+          name = "test-file.xml",
+          submitted = submittedTime,
+          lastUpdated = submittedTime,
+          reportingPeriod = reportingDate,
+          messageType = CRS,
+          reportType = CRSReportType.TestData,
+          isFiUser = true,
+          fiNameFromFim = "Test FI Name",
+          fiPrimaryContactEmail = Some("fiPrimary@email.com"),
+          fiSecondaryContactEmail = Some("fiSecondary@email.com"),
+          subscriptionPrimaryContactEmail = "test@email.com",
+          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          sendingCompanyIn = "some-company-in"
+        ),
+          FileDetails(
+            _id = conversationId,
+            enrolmentId = "XACBC0000123456",
+            messageRefId = "GBXACBC12345678",
+            reportingEntityName = Some("Test Entity"),
+            status = Pending,
+            name = "test-file.xml",
+            submitted = submittedTime,
+            lastUpdated = submittedTime,
+            reportingPeriod = reportingDate,
+            messageType = CRS,
+            reportType = CRSReportType.TestData,
+            isFiUser = true,
+            fiNameFromFim = "Test FI Name",
+            fiPrimaryContactEmail = Some("fiPrimary@email.com"),
+            fiSecondaryContactEmail = Some("fiSecondary@email.com"),
+            subscriptionPrimaryContactEmail = "test@email.com",
+            subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+            sendingCompanyIn = "some-company-in"
+          )
+        ), pages = 1)
+      }
+
+      "return a NoResultFound  when 404 response is returned" in {
+        val subscriptionId = "some-subcscription-id"
+        val url = s"/crs-fatca-reporting/files/details/$subscriptionId"
+
+        stubGetResponse(url, NOT_FOUND, "")
+
+        val result = connector.getAllFileDetails(subscriptionId)
+
+        result.futureValue mustBe FileDetailsResult(Nil, 0)
+      }
+
+      "return a IntenalIssueError when 500 response is returned" in {
+        stubGetResponse(url, INTERNAL_SERVER_ERROR, "")
+
+        val result = connector.getAllFileDetails(subscriptionId)
+
+        result.failed.futureValue mustBe an[IntenalIssueError.type]
+      }
+    }
   }
 
-  private def getFileDetailsStubResponse: String =
+  private def getFileDetailsStubResponse: String = {
     """
       |{
       |  "_id": "conversation-123",
@@ -179,7 +255,60 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiPrimaryContactEmail":"fiPrimary@email.com",
       |  "fiSecondaryContactEmail":"fiSecondary@email.com",
       |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com"
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendingCompanyIn":"some-company-in"
+      |}
+      |""".stripMargin
+  }
+
+  private def getAllFileDetailsStubResponse: String =
+    """
+      |{
+      |"fileDetailsList": [
+      |{
+      |  "_id": "conversation-123",
+      |  "enrolmentId": "XACBC0000123456",
+      |  "messageRefId": "GBXACBC12345678",
+      |  "reportingEntityName": "Test Entity",
+      |  "status": {"Pending":{}},
+      |  "name": "test-file.xml",
+      |  "submitted": "2026-01-06T12:00:00",
+      |  "lastUpdated": "2026-01-06T12:00:00",
+      |  "reportingPeriod": "2026-01-01",
+      |  "messageType": "CRS",
+      |  "reportType": "TEST_DATA",
+      |  "fiNameFromFim": "Test FI Name",
+      |  "isFiUser": true,
+      |  "fileType":"NormalFile",
+      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
+      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
+      |  "subscriptionPrimaryContactEmail":"test@email.com",
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendingCompanyIn":"some-company-in"
+      |},
+      |{
+      |  "_id": "conversation-123",
+      |  "enrolmentId": "XACBC0000123456",
+      |  "messageRefId": "GBXACBC12345678",
+      |  "reportingEntityName": "Test Entity",
+      |  "status": {"Pending":{}},
+      |  "name": "test-file.xml",
+      |  "submitted": "2026-01-06T12:00:00",
+      |  "lastUpdated": "2026-01-06T12:00:00",
+      |  "reportingPeriod": "2026-01-01",
+      |  "messageType": "CRS",
+      |  "reportType": "TEST_DATA",
+      |  "fiNameFromFim": "Test FI Name",
+      |  "isFiUser": true,
+      |  "fileType":"NormalFile",
+      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
+      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
+      |  "subscriptionPrimaryContactEmail":"test@email.com",
+      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "sendingCompanyIn":"some-company-in"
+      |}
+      |],
+      |"pages": 1
       |}
       |""".stripMargin
 }
