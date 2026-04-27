@@ -26,6 +26,7 @@ import pages.{ConversationIdPage, ValidXMLPage}
 import play.api.i18n.Lang.logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.FileCheckViewModel.createFileSummary
 import views.html.{StillCheckingYourFileView, ThereIsAProblemView}
@@ -42,7 +43,8 @@ class StillCheckingYourFileController @Inject() (
   view: StillCheckingYourFileView,
   errorView: ThereIsAProblemView,
   frontendAppConfig: FrontendAppConfig,
-  fileDetailsConnector: FileDetailsConnector
+  fileDetailsConnector: FileDetailsConnector,
+  fileDetailsService: FileDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -69,8 +71,11 @@ class StillCheckingYourFileController @Inject() (
               Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))
             case Some(RejectedSDESVirus) =>
               Future.successful(Redirect(routes.VirusFoundController.onPageLoad()))
-            case Some(Rejected(errors)) =>
-              handleRejectedWithErrors(errors)
+            case Some(Rejected) =>
+              fileDetailsService.getFileDetails(conversationId) flatMap {
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors)
+                case None              => Future.successful(InternalServerError(errorView()))
+              }
             case Some(NotAccepted) =>
               Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad()))
             case None =>
@@ -83,19 +88,19 @@ class StillCheckingYourFileController @Inject() (
 
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors): Future[Result] = {
+  private def handleRejectedWithErrors(errors: Option[FileValidationErrors]): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val isNotAccepted = errors.fileError
+    val isNotAccepted = errors
+      .flatMap(_.fileError)
       .getOrElse(Nil)
       .exists(
         e => notAcceptedErrorCodes(e.code)
       )
 
-    if (isNotAccepted) {
+    if (isNotAccepted)
       Future.successful(Redirect(routes.FileNotAcceptedController.onPageLoad()))
-    } else {
+    else
       Future.successful(Redirect(routes.FileFailedChecksController.onPageLoad()))
-    }
   }
 
 }

@@ -65,7 +65,17 @@ class ElectionsNotSentController @Inject() (
 
       (answers.get(ValidXMLPage), answers.get(URLPage), answers.get(UploadIDPage), answers.get(FileReferencePage)) match {
         case (Some(ValidatedFileData(fileName, messageSpecData, fileSize, checksum)), Some(fileUrl), Some(uploadId), Some(fileReference)) =>
-          val submissionDetails = SubmissionDetails(fileName, uploadId, request.fatcaId, fileSize, fileUrl, checksum, messageSpecData, fileReference)
+          val submissionDetails =
+            SubmissionDetails(fileName,
+                              uploadId,
+                              request.fatcaId,
+                              fileSize,
+                              fileUrl,
+                              checksum,
+                              messageSpecData,
+                              fileReference,
+                              electionsSubmitted = Some(false)
+            )
 
           submissionService.submitDocument(submissionDetails) flatMap {
             case Some(conversationId: ConversationId) =>

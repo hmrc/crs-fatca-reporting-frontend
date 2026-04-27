@@ -34,7 +34,7 @@ import play.api.libs.json.Json
 import play.api.mvc.*
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import repositories.SessionRepository
-import services.SubmissionService
+import services.{FileDetailsService, SubmissionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.SendYourFileView
 
@@ -50,7 +50,8 @@ class SendYourFileController @Inject() (
   view: SendYourFileView,
   submissionService: SubmissionService,
   sessionRepository: SessionRepository,
-  fileDetailsConnector: FileDetailsConnector
+  fileDetailsConnector: FileDetailsConnector,
+  fileDetailsService: FileDetailsService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -138,8 +139,11 @@ class SendYourFileController @Inject() (
               Future.successful(Ok(Json.toJson(URL(routes.FileConfirmationController.onPageLoad(conversationId.value).url))))
             case Some(Pending) =>
               Future.successful(NoContent)
-            case Some(Rejected(error)) =>
-              handleRejectedWithErrors(error, conversationId)
+            case Some(Rejected) =>
+              fileDetailsService.getFileDetails(conversationId) flatMap {
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors, conversationId)
+                case None              => Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
+              }
             case Some(RejectedSDESVirus) =>
               Future.successful(Ok(Json.toJson(URL(routes.VirusFoundController.onPageLoad().url))))
             case Some(RejectedSDES) =>
@@ -168,18 +172,18 @@ class SendYourFileController @Inject() (
       }
   }
 
-  private def handleRejectedWithErrors(errors: FileValidationErrors, conversationId: ConversationId): Future[Result] = {
+  private def handleRejectedWithErrors(errors: Option[FileValidationErrors], conversationId: ConversationId): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    val isNotAccepted = errors.fileError
+    val isNotAccepted = errors
+      .flatMap(_.fileError)
       .getOrElse(Nil)
       .exists(
         e => notAcceptedErrorCodes(e.code)
       )
 
-    if (isNotAccepted) {
+    if (isNotAccepted)
       Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
-    } else {
+    else
       Future.successful(Ok(Json.toJson(URL(routes.RulesErrorController.onPageLoad(conversationId.value).url))))
-    }
   }
 }
