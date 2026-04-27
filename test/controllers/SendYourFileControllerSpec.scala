@@ -28,7 +28,7 @@ import models.upscan.{Reference, UploadId}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, SendYourFileAdditionalText, UserAnswers}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import pages.*
 import play.api.inject.bind
