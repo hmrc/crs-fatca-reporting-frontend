@@ -39,28 +39,29 @@ object SubmissionChecksTableViewModel {
 
   def reportingPeriod(ld: LocalDate): Int = ld.getYear
 
-  def status(fileStatus: FileStatus): String = fileStatus match {
+  def status(fileStatus: FileStatus, fileValidationErrors: Option[FileValidationErrors]): String = fileStatus match {
     case Pending  => "Pending"
     case Accepted => "Passed"
-    case Rejected(validationError) =>
-      if (isNotAccepted(validationError)) "Problem" else "Failed"
+    case Rejected =>
+      if (isNotAccepted(fileValidationErrors)) "Problem" else "Failed"
     case RejectedSDESVirus => "Failed"
     case _                 => "Problem"
   }
 
-  def nextStepLink(fileStatus: FileStatus): NextStepLink = fileStatus match {
+  def nextStepLink(fileStatus: FileStatus, fileValidationErrors: Option[FileValidationErrors]): NextStepLink = fileStatus match {
     case Accepted => GotoConfirmation
-    case Rejected(validationError) =>
-      if (isNotAccepted(validationError)) NextStepLink.ContactUs else NextStepLink.CheckErrors
+    case Rejected =>
+      if (isNotAccepted(fileValidationErrors)) NextStepLink.ContactUs else NextStepLink.CheckErrors
     case RejectedSDES      => NextStepLink.UploadFileAgain
     case RejectedSDESVirus => NextStepLink.VirusFound
     case NotAccepted       => NextStepLink.ContactUs
     case Pending           => NextStepLink.NoLink
   }
 
-  private def isNotAccepted(validationError: FileValidationErrors): Boolean = {
+  private def isNotAccepted(errors: Option[FileValidationErrors]): Boolean = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
-    validationError.fileError
+    errors
+      .flatMap(_.fileError)
       .getOrElse(Nil)
       .exists(
         e => notAcceptedErrorCodes(e.code)

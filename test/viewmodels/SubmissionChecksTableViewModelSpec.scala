@@ -26,35 +26,35 @@ class SubmissionChecksTableViewModelSpec extends SpecBase {
   "SubmissionChecksTableViewModel" - {
 
     "return correct status text" in {
-      SubmissionChecksTableViewModel.status(Pending) mustBe "Pending"
-      SubmissionChecksTableViewModel.status(Accepted) mustBe "Passed"
-      SubmissionChecksTableViewModel.status(NotAccepted) mustBe "Problem"
-      SubmissionChecksTableViewModel.status(RejectedSDES) mustBe "Problem"
-      SubmissionChecksTableViewModel.status(RejectedSDESVirus) mustBe "Failed"
+      SubmissionChecksTableViewModel.status(Pending, None) mustBe "Pending"
+      SubmissionChecksTableViewModel.status(Accepted, None) mustBe "Passed"
+      SubmissionChecksTableViewModel.status(NotAccepted, None) mustBe "Problem"
+      SubmissionChecksTableViewModel.status(RejectedSDES, None) mustBe "Problem"
+      SubmissionChecksTableViewModel.status(RejectedSDESVirus, None) mustBe "Failed"
       val validationErrorWithNotAcceptedCodeFatca =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationFatca, None))), None)
-      SubmissionChecksTableViewModel.status(Rejected(validationErrorWithNotAcceptedCodeFatca)) mustBe "Problem"
-      SubmissionChecksTableViewModel.status(Rejected(FileValidationErrors(None, None))) mustBe "Failed"
+      SubmissionChecksTableViewModel.status(Rejected, Some(validationErrorWithNotAcceptedCodeFatca)) mustBe "Problem"
+      SubmissionChecksTableViewModel.status(Rejected, Some(FileValidationErrors(None, None))) mustBe "Failed"
     }
 
     "return correct next step link" in {
-      SubmissionChecksTableViewModel.nextStepLink(Pending) mustBe NextStepLink.NoLink
-      SubmissionChecksTableViewModel.nextStepLink(Accepted) mustBe NextStepLink.GotoConfirmation
-      SubmissionChecksTableViewModel.nextStepLink(NotAccepted) mustBe NextStepLink.ContactUs
-      SubmissionChecksTableViewModel.nextStepLink(RejectedSDES) mustBe NextStepLink.UploadFileAgain
-      SubmissionChecksTableViewModel.nextStepLink(RejectedSDESVirus) mustBe NextStepLink.VirusFound
+      SubmissionChecksTableViewModel.nextStepLink(Pending, None) mustBe NextStepLink.NoLink
+      SubmissionChecksTableViewModel.nextStepLink(Accepted, None) mustBe NextStepLink.GotoConfirmation
+      SubmissionChecksTableViewModel.nextStepLink(NotAccepted, None) mustBe NextStepLink.ContactUs
+      SubmissionChecksTableViewModel.nextStepLink(RejectedSDES, None) mustBe NextStepLink.UploadFileAgain
+      SubmissionChecksTableViewModel.nextStepLink(RejectedSDESVirus, None) mustBe NextStepLink.VirusFound
 
       val validationErrorWithNotAcceptedCodeCRS =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationCrs, None))), None)
-      SubmissionChecksTableViewModel.nextStepLink(Rejected(validationErrorWithNotAcceptedCodeCRS)) mustBe NextStepLink.ContactUs
+      SubmissionChecksTableViewModel.nextStepLink(Rejected, Some(validationErrorWithNotAcceptedCodeCRS)) mustBe NextStepLink.ContactUs
 
       val validationErrorWithNotAcceptedCodeFatca =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.FailedSchemaValidationFatca, None))), None)
-      SubmissionChecksTableViewModel.nextStepLink(Rejected(validationErrorWithNotAcceptedCodeFatca)) mustBe NextStepLink.ContactUs
+      SubmissionChecksTableViewModel.nextStepLink(Rejected, Some(validationErrorWithNotAcceptedCodeFatca)) mustBe NextStepLink.ContactUs
 
       val validationErrorWithoutNotAcceptedCode =
         FileValidationErrors(Some(List(FileErrors(models.fileDetails.BusinessRuleErrorCode.CRSFailedThreatScan, None))), None)
-      SubmissionChecksTableViewModel.nextStepLink(Rejected(validationErrorWithoutNotAcceptedCode)) mustBe NextStepLink.CheckErrors
+      SubmissionChecksTableViewModel.nextStepLink(Rejected, Some(validationErrorWithoutNotAcceptedCode)) mustBe NextStepLink.CheckErrors
     }
 
     "return correctly formatted sent date" in {

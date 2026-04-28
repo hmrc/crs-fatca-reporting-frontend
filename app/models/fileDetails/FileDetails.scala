@@ -16,8 +16,8 @@
 
 package models.fileDetails
 
-import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
+import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageType, ReportType}
 import play.api.libs.json.*
 
@@ -41,6 +41,8 @@ case class FileDetails(
   fiSecondaryContactEmail: Option[String] = None,
   subscriptionPrimaryContactEmail: String,
   subscriptionSecondaryContactEmail: Option[String] = None,
+  errors: Option[FileValidationErrors] = None,
+  electionSubmitted: Option[Boolean] = None,
   sendingCompanyIn: String
 )
 
@@ -67,6 +69,8 @@ object FileDetails {
           fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
           subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
+          errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
+          electionSubmitted                 <- (json \ "electionSubmitted").validateOpt[Boolean]
           sendingCompanyIn                  <- (json \ "sendingCompanyIn").validate[String]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
@@ -90,6 +94,8 @@ object FileDetails {
           fiSecondaryContactEmail = fiSecondaryContactEmail,
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
           subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
+          errors = errors,
+          electionSubmitted = electionSubmitted,
           sendingCompanyIn = sendingCompanyIn
         )
     }
@@ -107,13 +113,14 @@ object FileDetails {
           "lastUpdated"                       -> fd.lastUpdated,
           "reportingPeriod"                   -> fd.reportingPeriod,
           "messageType"                       -> fd.messageType,
-          "messageType"                       -> fd.messageType,
           "isFiUser"                          -> fd.isFiUser,
           "fiNameFromFim"                     -> fd.fiNameFromFim,
           "fiPrimaryContactEmail"             -> fd.fiPrimaryContactEmail,
           "fiSecondaryContactEmail"           -> fd.fiSecondaryContactEmail,
           "subscriptionPrimaryContactEmail"   -> fd.subscriptionPrimaryContactEmail,
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
+          "errors"                            -> fd.errors,
+          "electionSubmitted"                 -> fd.electionSubmitted,
           "sendingCompanyIn"                  -> fd.sendingCompanyIn,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)

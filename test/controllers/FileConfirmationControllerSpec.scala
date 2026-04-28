@@ -67,6 +67,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       fiSecondaryContactEmail = None,
       subscriptionPrimaryContactEmail = "test@email.com",
       subscriptionSecondaryContactEmail = None,
+      electionSubmitted = Some(false),
       sendingCompanyIn = "Some-company-in"
     )
 

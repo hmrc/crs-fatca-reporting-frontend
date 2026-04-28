@@ -26,9 +26,9 @@
    <thead class="govuk-table__head">
      <tr class="govuk-table__row">
 
-      <th scope="col" class="govuk-table__header app-custom-class cbc-width-fi">@messages("submissionsChecks.fiName.header"))</th>
-      <th scope="col" class="govuk-table__header app-custom-class cbc-width-period">@messages("submissionsChecks.reportingPeriod.header"))</th>
-      <th scope="col" class="govuk-table__header app-custom-class cbc-width-regime">@messages("submissionsChecks.regime.header"))</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-fi">@messages("submissionsChecks.fiName.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-period">@messages("submissionsChecks.reportingPeriod.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-regime">@messages("submissionsChecks.regime.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.messageRefId.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-sent">@messages("submissionsChecks.sent.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-result">@messages("submissionsChecks.result.header")</th>
@@ -45,11 +45,11 @@
       <td class="govuk-table__cell" style="word-break: break-all;">@{fileDetail.messageRefId}</td>
       <td class="govuk-table__cell">@{SubmissionChecksTableViewModel.sent(fileDetail.submitted)}</td>
       <td class="govuk-table__cell">
-          <strong class="@{statusClass(SubmissionChecksTableViewModel.status(fileDetail.status))}">
-              @{SubmissionChecksTableViewModel.status(fileDetail.status)}
+          <strong class="@{statusClass(SubmissionChecksTableViewModel.status(fileDetail.status, fileDetail.errors))}">
+              @{SubmissionChecksTableViewModel.status(fileDetail.status, fileDetail.errors)}
           </strong></td>
       <td class="govuk-table__cell">@{
-            val nextLink =  SubmissionChecksTableViewModel.nextStepLink(fileDetail.status)
+            val nextLink =  SubmissionChecksTableViewModel.nextStepLink(fileDetail.status, fileDetail.errors)
             statusLinks(nextLink, fileDetail._id.value)
           }
       </td>

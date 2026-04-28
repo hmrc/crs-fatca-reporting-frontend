@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,68 +16,37 @@
 
 package models.submission.fileDetails
 
-import models.fileDetails.FileValidationErrors
-import models.submission._
+import models.submission.*
 import play.api.libs.json.*
 
 sealed trait FileStatus
 
 case object Pending extends FileStatus
 case object Accepted extends FileStatus
-
 case object RejectedSDES extends FileStatus
 case object RejectedSDESVirus extends FileStatus
 case object NotAccepted extends FileStatus
-
-case class Rejected(error: FileValidationErrors) extends FileStatus {
-  override def toString: String = "Rejected"
-}
+case object Rejected extends FileStatus
 
 object FileStatus {
 
   given Format[FileStatus] = Format(
     Reads {
-      case obj: JsObject if obj.keys == Set("Pending") =>
-        JsSuccess(Pending)
-
-      case obj: JsObject if obj.keys == Set("Accepted") =>
-        JsSuccess(Accepted)
-
-      case obj: JsObject if obj.keys == Set("RejectedSDES") =>
-        JsSuccess(RejectedSDES)
-
-      case obj: JsObject if obj.keys == Set("RejectedSDESVirus") =>
-        JsSuccess(RejectedSDESVirus)
-
-      case obj: JsObject if obj.keys == Set("NotAccepted") =>
-        JsSuccess(NotAccepted)
-
-      case obj: JsObject if obj.keys == Set("Rejected") =>
-        (obj("Rejected") \ "error")
-          .validate[FileValidationErrors]
-          .map(Rejected.apply)
-
-      case other =>
-        JsError(s"Invalid FileStatus JSON: $other")
+      case JsString("Pending")           => JsSuccess(Pending)
+      case JsString("Accepted")          => JsSuccess(Accepted)
+      case JsString("RejectedSDES")      => JsSuccess(RejectedSDES)
+      case JsString("RejectedSDESVirus") => JsSuccess(RejectedSDESVirus)
+      case JsString("NotAccepted")       => JsSuccess(NotAccepted)
+      case JsString("Rejected")          => JsSuccess(Rejected)
+      case other                         => JsError(s"Invalid FileStatus JSON: $other")
     },
     Writes {
-      case Pending =>
-        Json.obj("Pending" -> Json.obj())
-
-      case Accepted =>
-        Json.obj("Accepted" -> Json.obj())
-
-      case RejectedSDES =>
-        Json.obj("RejectedSDES" -> Json.obj())
-
-      case RejectedSDESVirus =>
-        Json.obj("RejectedSDESVirus" -> Json.obj())
-
-      case NotAccepted =>
-        Json.obj("NotAccepted" -> Json.obj())
-
-      case Rejected(err) =>
-        Json.obj("Rejected" -> Json.obj("error" -> Json.toJson(err)))
+      case Pending           => JsString("Pending")
+      case Accepted          => JsString("Accepted")
+      case RejectedSDES      => JsString("RejectedSDES")
+      case RejectedSDESVirus => JsString("RejectedSDESVirus")
+      case NotAccepted       => JsString("NotAccepted")
+      case Rejected          => JsString("Rejected")
     }
   )
 }
