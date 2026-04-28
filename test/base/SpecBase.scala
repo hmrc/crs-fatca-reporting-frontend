@@ -105,7 +105,8 @@ trait SpecBase
     subscriptionPrimaryContactEmail: String = "test@email.com",
     subscriptionSecondaryContactEmail: Option[String] = None,
     errors: Option[FileValidationErrors] = None,
-    giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None
+    giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
+    sendingCompanyIN: String = "Some-company-in"
   ): FileDetails =
     FileDetails(
       _id = conversationId,
@@ -125,7 +126,8 @@ trait SpecBase
       fiSecondaryContactEmail = fiSecondaryContactEmail,
       subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
       subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
-      errors = errors
+      errors = errors,
+      sendingCompanyIn = sendingCompanyIN
     )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())

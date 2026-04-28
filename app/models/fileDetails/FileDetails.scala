@@ -42,7 +42,8 @@ case class FileDetails(
   subscriptionPrimaryContactEmail: String,
   subscriptionSecondaryContactEmail: Option[String] = None,
   errors: Option[FileValidationErrors] = None,
-  electionSubmitted: Option[Boolean] = None
+  electionSubmitted: Option[Boolean] = None,
+  sendingCompanyIn: String
 )
 
 object FileDetails {
@@ -70,6 +71,7 @@ object FileDetails {
           subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
           errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
           electionSubmitted                 <- (json \ "electionSubmitted").validateOpt[Boolean]
+          sendingCompanyIn                  <- (json \ "sendingCompanyIn").validate[String]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -93,7 +95,8 @@ object FileDetails {
           subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
           subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
           errors = errors,
-          electionSubmitted = electionSubmitted
+          electionSubmitted = electionSubmitted,
+          sendingCompanyIn = sendingCompanyIn
         )
     }
 
@@ -118,6 +121,7 @@ object FileDetails {
           "subscriptionSecondaryContactEmail" -> fd.subscriptionSecondaryContactEmail,
           "errors"                            -> fd.errors,
           "electionSubmitted"                 -> fd.electionSubmitted,
+          "sendingCompanyIn"                  -> fd.sendingCompanyIn,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)

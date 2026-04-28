@@ -17,14 +17,13 @@
 package connectors
 
 import config.FrontendAppConfig
-import models.fileDetails.FileDetails
+import models.fileDetails.{FileDetails, FileDetailsResult}
+import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
-import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
 import play.api.Logging
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.json.*
-import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpErrorFunctions.is2xx
 import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -60,6 +59,34 @@ class FileDetailsConnector @Inject() (httpClient: HttpClientV2, config: Frontend
   def getFileDetails(conversationId: ConversationId)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetails] = {
     val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/${conversationId.value}/details"
     httpClient.get(url).execute[HttpResponse].flatMap(handleResponse(conversationId, _))
+  }
+
+  def getAllFileDetails(subscriptionId: String, page: Int = 1)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FileDetailsResult] = {
+    val url = url"${config.crsFatcaBackendUrl}/crs-fatca-reporting/files/details/$subscriptionId?page=$page"
+
+    httpClient
+      .get(url)
+      .execute[HttpResponse]
+      .flatMap {
+        case responseMessage if responseMessage.status == OK =>
+          responseMessage.json.validate[FileDetailsResult] match {
+            case JsSuccess(fileDetailsResult, _) => Future.successful(fileDetailsResult)
+            case JsError(errors) =>
+              val errorMsg = errors
+                .map {
+                  case (path, validationErrors) => s"$path: ${validationErrors.map(_.message).mkString(",")}"
+                }
+                .mkString("; ")
+              logger.error(s"FileDetailsConnector: Failed to parse FileDetails JSON Errors: $errorMsg")
+              Future failed UnexpectedJsResult
+          }
+        case responseMessage if responseMessage.status == NOT_FOUND =>
+          logger.warn(s"FileDetailsConnector: No file details found")
+          Future.successful(FileDetailsResult(Nil, 0))
+        case responseMessage =>
+          logger.error(s"FileDetailsConnector: Failed to get file details: status ${responseMessage.status}")
+          Future failed IntenalIssueError
+      }
   }
 
   private def handleResponse(conversationId: ConversationId, response: HttpResponse): Future[FileDetails] =
