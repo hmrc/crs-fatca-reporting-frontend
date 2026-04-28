@@ -154,11 +154,6 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
         lazy val doc = Jsoup.parse(renderedHtml.body)
 
-        val recordErrors = Seq(
-          RecordError(BusinessRuleErrorCode.CRSEmojis, Some("DocRefId1"), Some(Seq("DocRefId1"))),
-          RecordError(BusinessRuleErrorCode.CRSBody, Some("DocRefId2"), Some(Seq("DocRefId2")))
-        )
-
         val expectedRows = Seq(
           Seq("CRS 3", "DocRefId1", "The file must not contain emoji Unicode characters."),
           Seq("CRS 6", "DocRefId2", "If the MessageTypeIndic is CRS703, the file must not contain a CrsBody.")

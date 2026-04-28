@@ -18,6 +18,9 @@ package utils
 
 import generators.Generators
 import models.{CRS, CRSReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
+import org.mongodb.scala.SingleObservableFuture
+import org.mongodb.scala.bson.collection.immutable.Document
+import org.scalatest.TestSuite
 import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Seconds, Span}
@@ -26,28 +29,33 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import queries.Settable
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mongo.test.DefaultPlayMongoRepositorySupport
 
 import java.time.LocalDate
 
-trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySupport[UserAnswers] with ScalaFutures with WireMockHelper with Generators {
-
-  val userAnswersId: String = "internalId"
+trait ISpecBase extends GuiceOneServerPerSuite with ScalaFutures with WireMockHelper with Generators {
+  this: TestSuite =>
+  val userAnswersId: String         = "internalId"
   def emptyUserAnswers: UserAnswers = UserAnswers(userAnswersId)
 
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   implicit val hc: HeaderCarrier    = HeaderCarrier()
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    await(repository.collection.deleteMany(Document()).toFuture())
+  }
+
   def config: Map[String, String] = Map(
-    "microservice.services.upscan.port" -> WireMockConstants.stubPort.toString,
-    "microservice.services.crs-fatca-reporting.port" -> WireMockConstants.stubPort.toString,
-    "microservice.services.auth.host" -> WireMockConstants.stubHost,
-    "microservice.services.auth.port" -> WireMockConstants.stubPort.toString,
-    "mongodb.uri"                     -> mongoUri,
-    "play.filters.csrf.header.bypassHeaders.Csrf-Token"       -> "nocheck"
+    "microservice.services.upscan.port"                 -> WireMockConstants.stubPort.toString,
+    "microservice.services.crs-fatca-reporting.port"    -> WireMockConstants.stubPort.toString,
+    "microservice.services.auth.host"                   -> WireMockConstants.stubHost,
+    "microservice.services.auth.port"                   -> WireMockConstants.stubPort.toString,
+    "mongodb.uri"                                       -> "mongodb://localhost:27017/crs-fatca-reporting-frontend",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck"
     //    "logger.root"                                             -> "INFO",
     //    "logger.controllers"                                      -> "DEBUG"
   )
@@ -69,8 +77,8 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
   }
 
   def getValidatedFileData(
-                            msd: MessageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
-                          ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
+    msd: MessageSpecData = getMessageSpecData(CRS, CRSReportType.TestData)
+  ): ValidatedFileData = ValidatedFileData(fileName = "testFile", messageSpecData = msd, fileSize = 100L, checksum = "testCheckSum")
 
   def getMessageSpecData(messageType: MessageType,
                          reportType: ReportType,
@@ -83,7 +91,19 @@ trait ISpecBase extends GuiceOneServerPerSuite with DefaultPlayMongoRepositorySu
                          electionsRequired: Boolean = true,
                          isFiUser: Boolean = true,
                          subscriptionPrimaryContactEmail: String = "some@email.com"
-                        ): MessageSpecData =
-    MessageSpecData(messageType, reportType, sendingCompanyIN, messageRefId, Some(reportingFIName), reportingPeriod, giin, fiNameFromFim, electionsRequired, isFiUser, subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail)
+  ): MessageSpecData =
+    MessageSpecData(
+      messageType,
+      reportType,
+      sendingCompanyIN,
+      messageRefId,
+      Some(reportingFIName),
+      reportingPeriod,
+      giin,
+      fiNameFromFim,
+      electionsRequired,
+      isFiUser,
+      subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail
+    )
 
 }
