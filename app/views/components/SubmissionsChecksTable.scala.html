@@ -22,11 +22,11 @@
 @(submissionChecksTableViewModel: SubmissionChecksTableViewModel)(implicit request: Request[_], messages: Messages)
 
 <table class="govuk-table">
-   <caption class="govuk-table__caption govuk-visually-hidden">messages("submissionsChecks.p1"))</caption>
+   <caption class="govuk-table__caption govuk-visually-hidden">@messages("submissionsChecks.heading")</caption>
    <thead class="govuk-table__head">
      <tr class="govuk-table__row">
 
-      <th scope="col" class="govuk-table__header app-custom-class cbc-width-fi">@messages("submissionsChecks.fiName.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.fiName.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-period">@messages("submissionsChecks.reportingPeriod.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-regime">@messages("submissionsChecks.regime.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.messageRefId.header")</th>
