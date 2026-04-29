@@ -30,8 +30,6 @@ import scala.concurrent.ExecutionContext
 class SubmissionsChecksController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: SubmissionsChecksView
@@ -39,7 +37,7 @@ class SubmissionsChecksController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(page: Int): Action[AnyContent] = identify.async {
     implicit request =>
       fileDetailsService.getAllFileDetails(request.fatcaId, page) map {
         fileDetailsResult =>
