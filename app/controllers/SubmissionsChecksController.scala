@@ -39,7 +39,7 @@ class SubmissionsChecksController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(page: Int): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
       fileDetailsService.getAllFileDetails(request.fatcaId, page) map {
         fileDetailsResult =>
