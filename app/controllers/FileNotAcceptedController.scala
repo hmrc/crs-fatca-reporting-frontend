@@ -28,20 +28,13 @@ import javax.inject.Inject
 class FileNotAcceptedController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: FileNotAcceptedView
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(regimeOption: Option[String] = None): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(regime: String): Action[AnyContent] = identify {
     implicit request =>
-      (request.userAnswers.get(ValidXMLPage), regimeOption) match {
-        case (Some(xmlDetails), _) => Ok(view(xmlDetails.messageSpecData.messageType.toString))
-        case (None, Some(regime)) => Ok(view(regime))
-        case _             => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
-
-      }
+      Ok(view(regime))
   }
 }

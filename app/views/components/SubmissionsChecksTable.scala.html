@@ -75,7 +75,7 @@
         case NextStepLink.UploadFileAgain =>
            link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile", Some("upload-file-again"))
         case NextStepLink.ContactUs =>
-            link(routes.FileNotAcceptedController.onPageLoad(Some(regime)).url, "submissionsChecks.contactus", Some("contact-us"))
+            link(routes.FileNotAcceptedController.onPageLoad(regime).url, "submissionsChecks.contactus", Some("contact-us"))
         case NextStepLink.VirusFound =>
              link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found", Some("check-problem"))
         case NextStepLink.NoLink =>
