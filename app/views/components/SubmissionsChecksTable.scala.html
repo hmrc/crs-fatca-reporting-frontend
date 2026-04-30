@@ -77,7 +77,7 @@
         case NextStepLink.ContactUs =>
             link(routes.FileNotAcceptedController.onPageLoad(Some(regime)).url, "submissionsChecks.contactus", Some("contact-us"))
         case NextStepLink.VirusFound =>
-             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found", Some("check-problem")
+             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found", Some("check-problem"))
         case NextStepLink.NoLink =>
            <span class='govuk-visually-hidden'>None</span>
    }
