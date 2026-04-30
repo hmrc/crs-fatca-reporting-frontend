@@ -69,15 +69,15 @@
 @statusLinks(nextStepLink: NextStepLink, conversationId: String, regime: String) = @{
    nextStepLink match {
         case NextStepLink.GotoConfirmation  =>
-           link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation")
+           link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation", Some("go-to-confirmation"))
         case NextStepLink.CheckErrors  =>
-           link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error")
+           link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error", Some("check-errors"))
         case NextStepLink.UploadFileAgain =>
-           link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
+           link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile", Some("upload-file-again"))
         case NextStepLink.ContactUs =>
-            link(routes.FileNotAcceptedController.onPageLoad(Some(regime)).url, "submissionsChecks.contactus")
+            link(routes.FileNotAcceptedController.onPageLoad(Some(regime)).url, "submissionsChecks.contactus", Some("contact-us"))
         case NextStepLink.VirusFound =>
-             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found")
+             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found", Some("check-problem")
         case NextStepLink.NoLink =>
            <span class='govuk-visually-hidden'>None</span>
    }
