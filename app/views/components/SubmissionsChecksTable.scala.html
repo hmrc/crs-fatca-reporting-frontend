@@ -50,7 +50,7 @@
           </strong></td>
       <td class="govuk-table__cell">@{
             val nextLink =  SubmissionChecksTableViewModel.nextStepLink(fileDetail.status, fileDetail.errors)
-            statusLinks(nextLink, fileDetail._id.value)
+            statusLinks(nextLink, fileDetail._id.value, fileDetail.messageType.toString())
           }
       </td>
      </tr>
@@ -66,7 +66,7 @@
     }
 }
 
-@statusLinks(nextStepLink: NextStepLink, conversationId: String) = @{
+@statusLinks(nextStepLink: NextStepLink, conversationId: String, regime: String) = @{
    nextStepLink match {
         case NextStepLink.GotoConfirmation  =>
            link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation")
@@ -75,7 +75,7 @@
         case NextStepLink.UploadFileAgain =>
            link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
         case NextStepLink.ContactUs =>
-            link(routes.FileNotAcceptedController.onPageLoad().url, "submissionsChecks.contactus")
+            link(routes.FileNotAcceptedController.onPageLoad(Some(regime)).url, "submissionsChecks.contactus")
         case NextStepLink.VirusFound =>
              link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found")
         case NextStepLink.NoLink =>

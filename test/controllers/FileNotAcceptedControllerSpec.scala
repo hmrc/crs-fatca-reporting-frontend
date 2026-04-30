@@ -60,5 +60,37 @@ class FileNotAcceptedControllerSpec extends SpecBase {
         contentAsString(result) mustEqual view(FATCA.toString)(request, messages(application)).toString
       }
     }
+
+    "must return OK and the correct FATCA view for a GET when a regime is specified in url and validxml page is missing" in {
+        val ua = emptyUserAnswers
+        val application = applicationBuilder(userAnswers = Some(ua)).build()
+
+        running(application) {
+            val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad(Some(FATCA.toString)).url)
+
+            val result = route(application, request).value
+
+            val view = application.injector.instanceOf[FileNotAcceptedView]
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual view(FATCA.toString)(request, messages(application)).toString
+        }
+    }
+
+    "must return redirect to journey recovery when validXml page and regime are not present" in {
+      val ua = emptyUserAnswers
+      val application = applicationBuilder(userAnswers = Some(ua)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.FileNotAcceptedController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[FileNotAcceptedView]
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.JourneyRecoveryController.onPageLoad().url)
+      }
+    }
   }
 }

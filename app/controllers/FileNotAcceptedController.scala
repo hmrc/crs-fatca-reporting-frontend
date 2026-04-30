@@ -35,11 +35,12 @@ class FileNotAcceptedController @Inject() (
 ) extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(regimeOption: Option[String] = None): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers.get(ValidXMLPage) match {
-        case Some(xmlDetails) => Ok(view(xmlDetails.messageSpecData.messageType.toString))
-        case None             => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      (request.userAnswers.get(ValidXMLPage), regimeOption) match {
+        case (Some(xmlDetails), _) => Ok(view(xmlDetails.messageSpecData.messageType.toString))
+        case (None, Some(regime)) => Ok(view(regime))
+        case _             => Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
 
       }
   }

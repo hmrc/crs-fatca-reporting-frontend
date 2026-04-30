@@ -91,7 +91,7 @@ GET        /report/file-passed-checks                      controllers.FilePasse
 
 GET        /report/file-failed-checks                      controllers.FileFailedChecksController.onPageLoad()
 
-GET        /report/problem/file-not-accepted               controllers.FileNotAcceptedController.onPageLoad()
+GET        /report/problem/file-not-accepted               controllers.FileNotAcceptedController.onPageLoad(regime: Option[String] ?= None)
 
 GET        /report/file-confirmation/:conversationId                       controllers.FileConfirmationController.onPageLoad(conversationId: String)
 
