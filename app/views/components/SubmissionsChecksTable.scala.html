@@ -26,7 +26,7 @@
    <thead class="govuk-table__head">
      <tr class="govuk-table__row">
 
-      <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.fiName.header")</th>
+      <th scope="col" class="govuk-table__header app-custom-class cbc-width-fi">@messages("submissionsChecks.fiName.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-period">@messages("submissionsChecks.reportingPeriod.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-regime">@messages("submissionsChecks.regime.header")</th>
       <th scope="col" class="govuk-table__header app-custom-class cbc-width-message">@messages("submissionsChecks.messageRefId.header")</th>
@@ -39,7 +39,7 @@
    <tbody class="govuk-table__body">
    @for(fileDetail <- submissionChecksTableViewModel.fileDetailsResults.fileDetailsList) {
      <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">@{fileDetail.fiNameFromFim} @{fileDetail.sendingCompanyIn}</th>
+      <th scope="row" class="govuk-table__header" style="word-break: break-all;">@{fileDetail.fiNameFromFim} @{fileDetail.sendingCompanyIn}</th>
       <td class="govuk-table__cell">@{SubmissionChecksTableViewModel.reportingPeriod(fileDetail.reportingPeriod)}</td>
       <td class="govuk-table__cell">@{fileDetail.messageType.toString()}</td>
       <td class="govuk-table__cell" style="word-break: break-all;">@{fileDetail.messageRefId}</td>
