@@ -141,7 +141,7 @@ class SendYourFileController @Inject() (
               Future.successful(NoContent)
             case Some(Rejected) =>
               fileDetailsService.getFileDetails(conversationId) flatMap {
-                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors, conversationId)
+                case Some(fileDetails) => handleRejectedWithErrors(fileDetails.errors, conversationId, xmlDetails.messageSpecData.messageType.toString)
                 case None              => Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
               }
             case Some(RejectedSDESVirus) =>
@@ -149,7 +149,7 @@ class SendYourFileController @Inject() (
             case Some(RejectedSDES) =>
               Future.successful(Ok(Json.toJson(URL(routes.JourneyRecoveryController.onPageLoad().url))))
             case Some(NotAccepted) =>
-              Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
+              Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad(xmlDetails.messageSpecData.messageType.toString).url))))
             case None =>
               logger.warn("getStatus: no status returned")
               Future.successful(InternalServerError)
@@ -172,7 +172,7 @@ class SendYourFileController @Inject() (
       }
   }
 
-  private def handleRejectedWithErrors(errors: Option[FileValidationErrors], conversationId: ConversationId): Future[Result] = {
+  private def handleRejectedWithErrors(errors: Option[FileValidationErrors], conversationId: ConversationId, regime: String): Future[Result] = {
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca)
     val isNotAccepted = errors
       .flatMap(_.fileError)
@@ -182,7 +182,7 @@ class SendYourFileController @Inject() (
       )
 
     if (isNotAccepted)
-      Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad().url))))
+      Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad(regime).url))))
     else
       Future.successful(Ok(Json.toJson(URL(routes.RulesErrorController.onPageLoad(conversationId.value).url))))
   }

@@ -231,7 +231,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(CRS.toString).url
         }
       }
       "when file status is Rejected with CRS schema validation error" in {
@@ -258,7 +258,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(CRS.toString).url
         }
       }
 
@@ -287,7 +287,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           val result  = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad().url
+          redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(FATCA.toString).url
         }
       }
     }

@@ -22,7 +22,7 @@
 @(submissionChecksTableViewModel: SubmissionChecksTableViewModel)(implicit request: Request[_], messages: Messages)
 
 <table class="govuk-table">
-   <caption class="govuk-table__caption govuk-visually-hidden">messages("submissionsChecks.p1"))</caption>
+   <caption class="govuk-table__caption govuk-visually-hidden">@messages("submissionsChecks.heading")</caption>
    <thead class="govuk-table__head">
      <tr class="govuk-table__row">
 
@@ -39,7 +39,7 @@
    <tbody class="govuk-table__body">
    @for(fileDetail <- submissionChecksTableViewModel.fileDetailsResults.fileDetailsList) {
      <tr class="govuk-table__row">
-      <th scope="row" class="govuk-table__header">@{fileDetail.fiNameFromFim} @{fileDetail.sendingCompanyIn}</th>
+      <th scope="row" class="govuk-table__header" style="word-break: break-all;">@{fileDetail.fiNameFromFim} @{fileDetail.sendingCompanyIn}</th>
       <td class="govuk-table__cell">@{SubmissionChecksTableViewModel.reportingPeriod(fileDetail.reportingPeriod)}</td>
       <td class="govuk-table__cell">@{fileDetail.messageType.toString()}</td>
       <td class="govuk-table__cell" style="word-break: break-all;">@{fileDetail.messageRefId}</td>
@@ -50,7 +50,7 @@
           </strong></td>
       <td class="govuk-table__cell">@{
             val nextLink =  SubmissionChecksTableViewModel.nextStepLink(fileDetail.status, fileDetail.errors)
-            statusLinks(nextLink, fileDetail._id.value)
+            statusLinks(nextLink, fileDetail._id.value, fileDetail.messageType.toString())
           }
       </td>
      </tr>
@@ -66,18 +66,18 @@
     }
 }
 
-@statusLinks(nextStepLink: NextStepLink, conversationId: String) = @{
+@statusLinks(nextStepLink: NextStepLink, conversationId: String, regime: String) = @{
    nextStepLink match {
         case NextStepLink.GotoConfirmation  =>
-           link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation")
+           link(routes.FileConfirmationController.onPageLoad(conversationId).url, "submissionsChecks.confirmation", Some("go-to-confirmation"))
         case NextStepLink.CheckErrors  =>
-           link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error")
+           link(routes.RulesErrorController.onPageLoad(conversationId).url, "submissionsChecks.rules.error", Some("check-errors"))
         case NextStepLink.UploadFileAgain =>
-           link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile")
+           link(routes.IndexController.onPageLoad().url, "submissionsChecks.uploadFile", Some("upload-file-again"))
         case NextStepLink.ContactUs =>
-            link(routes.FileNotAcceptedController.onPageLoad().url, "submissionsChecks.contactus")
+            link(routes.FileNotAcceptedController.onPageLoad(regime).url, "submissionsChecks.contactus", Some("contact-us"))
         case NextStepLink.VirusFound =>
-             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found")
+             link(routes.VirusFoundController.onPageLoad().url, "submissionsChecks.virus.found", Some("check-problem"))
         case NextStepLink.NoLink =>
            <span class='govuk-visually-hidden'>None</span>
    }

@@ -470,7 +470,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
             val result = route(application, request).value
 
             status(result) mustEqual OK
-            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted?regime=CRS\"}"
           }
         }
 
@@ -498,7 +498,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
             val result  = route(application, request).value
 
             status(result) mustEqual OK
-            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted?regime=CRS\"}"
           }
         }
 
@@ -527,7 +527,7 @@ class SendYourFileControllerSpec extends SpecBase with BeforeAndAfterEach {
             val result  = route(application, request).value
 
             status(result) mustEqual OK
-            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted\"}"
+            contentAsJson(result).toString mustEqual "{\"url\":\"/report-for-crs-and-fatca/report/problem/file-not-accepted?regime=FATCA\"}"
           }
         }
 
