@@ -44,7 +44,7 @@ class RulesErrorController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(conversationId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad(conversationId: String): Action[AnyContent] = identify.async {
     implicit request =>
       fileDetailsService.getFileDetails(ConversationId(conversationId)).map {
         case Some(fileDetails) =>
