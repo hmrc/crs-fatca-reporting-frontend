@@ -44,7 +44,7 @@ class FileConfirmationController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(conversationId: String): Action[AnyContent] = (identify).async {
+  def onPageLoad(conversationId: String): Action[AnyContent] = identify.async {
     implicit request =>
       fileDetailsService.getFileDetails(ConversationId(conversationId)) flatMap {
         case Some(fileDetails) =>
