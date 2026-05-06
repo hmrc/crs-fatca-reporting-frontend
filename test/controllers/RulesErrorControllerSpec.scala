@@ -57,7 +57,7 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
     fiNameFromFim = "Some-fi-name",
     fiPrimaryContact = None,
     fiSecondaryContact = None,
-    subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+    subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
     subscriptionSecondaryContact = None,
     errors = Some(validationErrors),
     sendingCompanyIn = "some-company-in"

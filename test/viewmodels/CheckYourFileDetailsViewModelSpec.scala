@@ -111,7 +111,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             "fiNameFromFim",
             true,
             true,
-            subscriptionPrimaryContact = ContactInfo("testUser","some@email.com")
+            subscriptionPrimaryContact = ContactInfo("testUser", "some@email.com")
           )
         val validatedData = getValidatedFileData(messageSpecData)
         val userAnswers   = emptyUserAnswers.withPage(ValidXMLPage, validatedData)

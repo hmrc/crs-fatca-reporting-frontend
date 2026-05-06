@@ -63,7 +63,7 @@ class UploadValidationResultSpec extends SpecBase {
           fiNameFromFim = "fi-name",
           electionsRequired = true,
           isFiUser = false,
-          subscriptionPrimaryContact = ContactInfo("testUser","some@email.com")
+          subscriptionPrimaryContact = ContactInfo("testUser", "some@email.com")
         )
       )
     }

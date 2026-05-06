@@ -49,14 +49,14 @@ class FileConfirmationController @Inject() (
           val date             = fileDetailsModel.submitted.format(dateFormatterForFileConfirmation())
           val time             = DateTimeFormats.formatTimeForFileConfirmation(fileDetailsModel.submitted)
 
-          val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetailsModel)
-          val primaryContactEmail = fileDetails.subscriptionPrimaryContact.email
+          val fileSummary                = FileConfirmationViewModel.getSummaryRows(fileDetailsModel)
+          val primaryContactEmail        = fileDetails.subscriptionPrimaryContact.email
           val mayBeSecondaryContactEmail = fileDetails.subscriptionSecondaryContact.map(_.email)
           val paraContent =
             if (fileDetails.isFiUser) {
               FileConfirmationViewModel.getEmailParagraphForFI(primaryContactEmail, mayBeSecondaryContactEmail)
             } else {
-              val maybeFIPrimaryContactEmail = fileDetails.fiPrimaryContact.map(_.email)
+              val maybeFIPrimaryContactEmail   = fileDetails.fiPrimaryContact.map(_.email)
               val maybeFISecondaryContactEmail = fileDetails.fiSecondaryContact.map(_.email)
               FileConfirmationViewModel.getEmailParagraphForNonFI(
                 primaryContactEmail,

@@ -83,30 +83,30 @@ trait SpecBase
       fiNameFromFim,
       electionsRequired,
       isFiUser,
-      subscriptionPrimaryContact = ContactInfo("testUser","test@email.com")
+      subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com")
     )
 
   def getTestFileDetails(
-                          conversationId: ConversationId = ConversationId("test-conversation-id"),
-                          enrolmentId: String = "someenrolmentId",
-                          messageRefId: String = "somemessageRefId",
-                          reportingEntityName: Option[String] = Some("Test Entity"),
-                          status: FileStatus = Pending,
-                          name: String = "test-file.xml",
-                          submitted: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
-                          lastUpdated: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
-                          reportingPeriod: LocalDate = LocalDate.of(2026, 1, 1),
-                          messageType: MessageType = CRS,
-                          reportType: ReportType = CRSReportType.NewInformation,
-                          fiNameFromFim: String = "fi-name",
-                          isFiUser: Boolean = true,
-                          fiPrimaryContact: Option[ContactInfo] = None,
-                          fiSecondaryContact: Option[ContactInfo] = None,
-                          subscriptionPrimaryContact: ContactInfo = ContactInfo("testuser","test@email.com"),
-                          subscriptionSecondaryContact: Option[ContactInfo] = None,
-                          errors: Option[FileValidationErrors] = None,
-                          giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
-                          sendingCompanyIN: String = "Some-company-in"
+    conversationId: ConversationId = ConversationId("test-conversation-id"),
+    enrolmentId: String = "someenrolmentId",
+    messageRefId: String = "somemessageRefId",
+    reportingEntityName: Option[String] = Some("Test Entity"),
+    status: FileStatus = Pending,
+    name: String = "test-file.xml",
+    submitted: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+    lastUpdated: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+    reportingPeriod: LocalDate = LocalDate.of(2026, 1, 1),
+    messageType: MessageType = CRS,
+    reportType: ReportType = CRSReportType.NewInformation,
+    fiNameFromFim: String = "fi-name",
+    isFiUser: Boolean = true,
+    fiPrimaryContact: Option[ContactInfo] = None,
+    fiSecondaryContact: Option[ContactInfo] = None,
+    subscriptionPrimaryContact: ContactInfo = ContactInfo("testuser", "test@email.com"),
+    subscriptionSecondaryContact: Option[ContactInfo] = None,
+    errors: Option[FileValidationErrors] = None,
+    giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
+    sendingCompanyIN: String = "Some-company-in"
   ): FileDetails =
     FileDetails(
       _id = conversationId,

@@ -24,26 +24,26 @@ import play.api.libs.json.*
 import java.time.{LocalDate, LocalDateTime}
 
 case class FileDetails(
-                        _id: ConversationId,
-                        enrolmentId: String,
-                        messageRefId: String,
-                        reportingEntityName: Option[String],
-                        status: FileStatus,
-                        name: String,
-                        submitted: LocalDateTime,
-                        lastUpdated: LocalDateTime,
-                        reportingPeriod: LocalDate,
-                        messageType: MessageType,
-                        reportType: ReportType,
-                        fiNameFromFim: String,
-                        isFiUser: Boolean,
-                        fiPrimaryContact: Option[ContactInfo] = None,
-                        fiSecondaryContact: Option[ContactInfo] = None,
-                        subscriptionPrimaryContact: ContactInfo,
-                        subscriptionSecondaryContact: Option[ContactInfo] = None,
-                        errors: Option[FileValidationErrors] = None,
-                        electionSubmitted: Option[Boolean] = None,
-                        sendingCompanyIn: String
+  _id: ConversationId,
+  enrolmentId: String,
+  messageRefId: String,
+  reportingEntityName: Option[String],
+  status: FileStatus,
+  name: String,
+  submitted: LocalDateTime,
+  lastUpdated: LocalDateTime,
+  reportingPeriod: LocalDate,
+  messageType: MessageType,
+  reportType: ReportType,
+  fiNameFromFim: String,
+  isFiUser: Boolean,
+  fiPrimaryContact: Option[ContactInfo] = None,
+  fiSecondaryContact: Option[ContactInfo] = None,
+  subscriptionPrimaryContact: ContactInfo,
+  subscriptionSecondaryContact: Option[ContactInfo] = None,
+  errors: Option[FileValidationErrors] = None,
+  electionSubmitted: Option[Boolean] = None,
+  sendingCompanyIn: String
 )
 
 object FileDetails {
@@ -52,26 +52,26 @@ object FileDetails {
     given reads: Reads[FileDetails] = Reads {
       json =>
         for {
-          id                                <- (json \ "_id").validate[ConversationId]
-          enrolmentId                       <- (json \ "enrolmentId").validate[String]
-          messageRefId                      <- (json \ "messageRefId").validate[String]
-          reportingEntityName               <- (json \ "reportingEntityName").validateOpt[String]
-          status                            <- (json \ "status").validate[FileStatus]
-          name                              <- (json \ "name").validate[String]
-          submitted                         <- (json \ "submitted").validate[LocalDateTime]
-          lastUpdated                       <- (json \ "lastUpdated").validate[LocalDateTime]
-          reportingPeriod                   <- (json \ "reportingPeriod").validate[LocalDate]
-          messageType                       <- (json \ "messageType").validate[MessageType]
-          reportType                        <- (json \ "reportType").validate[String]
-          fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
-          isFiUser                          <- (json \ "isFiUser").validate[Boolean]
+          id                           <- (json \ "_id").validate[ConversationId]
+          enrolmentId                  <- (json \ "enrolmentId").validate[String]
+          messageRefId                 <- (json \ "messageRefId").validate[String]
+          reportingEntityName          <- (json \ "reportingEntityName").validateOpt[String]
+          status                       <- (json \ "status").validate[FileStatus]
+          name                         <- (json \ "name").validate[String]
+          submitted                    <- (json \ "submitted").validate[LocalDateTime]
+          lastUpdated                  <- (json \ "lastUpdated").validate[LocalDateTime]
+          reportingPeriod              <- (json \ "reportingPeriod").validate[LocalDate]
+          messageType                  <- (json \ "messageType").validate[MessageType]
+          reportType                   <- (json \ "reportType").validate[String]
+          fiNameFromFim                <- (json \ "fiNameFromFim").validate[String]
+          isFiUser                     <- (json \ "isFiUser").validate[Boolean]
           fiPrimaryContact             <- (json \ "fiPrimaryContact").validateOpt[ContactInfo]
           fiSecondaryContact           <- (json \ "fiSecondaryContact").validateOpt[ContactInfo]
           subscriptionPrimaryContact   <- (json \ "subscriptionPrimaryContact").validate[ContactInfo]
           subscriptionSecondaryContact <- (json \ "subscriptionSecondaryContact").validateOpt[ContactInfo]
-          errors                            <- (json \ "errors").validateOpt[FileValidationErrors]
-          electionSubmitted                 <- (json \ "electionSubmitted").validateOpt[Boolean]
-          sendingCompanyIn                  <- (json \ "sendingCompanyIn").validate[String]
+          errors                       <- (json \ "errors").validateOpt[FileValidationErrors]
+          electionSubmitted            <- (json \ "electionSubmitted").validateOpt[Boolean]
+          sendingCompanyIn             <- (json \ "sendingCompanyIn").validate[String]
           reportTypeValue <- messageType match {
             case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
             case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -103,25 +103,25 @@ object FileDetails {
     given writes: OWrites[FileDetails] = OWrites {
       fd =>
         Json.obj(
-          "_id"                               -> fd._id,
-          "enrolmentId"                       -> fd.enrolmentId,
-          "messageRefId"                      -> fd.messageRefId,
-          "reportingEntityName"               -> fd.reportingEntityName,
-          "status"                            -> fd.status,
-          "name"                              -> fd.name,
-          "submitted"                         -> fd.submitted,
-          "lastUpdated"                       -> fd.lastUpdated,
-          "reportingPeriod"                   -> fd.reportingPeriod,
-          "messageType"                       -> fd.messageType,
-          "isFiUser"                          -> fd.isFiUser,
-          "fiNameFromFim"                     -> fd.fiNameFromFim,
+          "_id"                          -> fd._id,
+          "enrolmentId"                  -> fd.enrolmentId,
+          "messageRefId"                 -> fd.messageRefId,
+          "reportingEntityName"          -> fd.reportingEntityName,
+          "status"                       -> fd.status,
+          "name"                         -> fd.name,
+          "submitted"                    -> fd.submitted,
+          "lastUpdated"                  -> fd.lastUpdated,
+          "reportingPeriod"              -> fd.reportingPeriod,
+          "messageType"                  -> fd.messageType,
+          "isFiUser"                     -> fd.isFiUser,
+          "fiNameFromFim"                -> fd.fiNameFromFim,
           "fiPrimaryContact"             -> fd.fiPrimaryContact,
           "fiSecondaryContact"           -> fd.fiSecondaryContact,
           "subscriptionPrimaryContact"   -> fd.subscriptionPrimaryContact,
           "subscriptionSecondaryContact" -> fd.subscriptionSecondaryContact,
-          "errors"                            -> fd.errors,
-          "electionSubmitted"                 -> fd.electionSubmitted,
-          "sendingCompanyIn"                  -> fd.sendingCompanyIn,
+          "errors"                       -> fd.errors,
+          "electionSubmitted"            -> fd.electionSubmitted,
+          "sendingCompanyIn"             -> fd.sendingCompanyIn,
           "reportType" -> (fd.reportType match {
             case crsReportType: CRSReportType     => summon[Writes[CRSReportType]].writes(crsReportType)
             case fatcaReportType: FATCAReportType => summon[Writes[FATCAReportType]].writes(fatcaReportType)

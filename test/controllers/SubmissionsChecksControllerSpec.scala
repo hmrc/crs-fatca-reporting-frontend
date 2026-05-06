@@ -104,10 +104,10 @@ trait TestContext {
           reportType = CRSReportType.TestData,
           isFiUser = true,
           fiNameFromFim = "Test FI Name",
-          fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
-          fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
-          subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
-          subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
+          fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser", "fiPrimary@email.com")),
+          fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser", "fiSecondary@email.com")),
+          subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
+          subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser", "secondarySub@email.com")),
           sendingCompanyIn = "some-company-in"
         )
       ),

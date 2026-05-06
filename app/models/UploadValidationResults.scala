@@ -84,16 +84,16 @@ object MessageSpecData {
 
     override def reads(json: JsValue): JsResult[MessageSpecData] =
       for {
-        messageType                       <- (json \ "messageType").validate[MessageType]
-        reportType                        <- (json \ "reportType").validate[String]
-        sendingCompanyIN                  <- (json \ "sendingCompanyIN").validate[String]
-        messageRefId                      <- (json \ "messageRefId").validate[String]
-        reportingFIName                   <- (json \ "reportingFIName").validateOpt[String]
-        reportingPeriod                   <- (json \ "reportingPeriod").validate[LocalDate]
-        giin                              <- (json \ "giin").validateOpt[String]
-        fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
-        electionsRequired                 <- (json \ "electionsRequired").validate[Boolean]
-        isFiUser                          <- (json \ "isFiUser").validate[Boolean]
+        messageType                  <- (json \ "messageType").validate[MessageType]
+        reportType                   <- (json \ "reportType").validate[String]
+        sendingCompanyIN             <- (json \ "sendingCompanyIN").validate[String]
+        messageRefId                 <- (json \ "messageRefId").validate[String]
+        reportingFIName              <- (json \ "reportingFIName").validateOpt[String]
+        reportingPeriod              <- (json \ "reportingPeriod").validate[LocalDate]
+        giin                         <- (json \ "giin").validateOpt[String]
+        fiNameFromFim                <- (json \ "fiNameFromFim").validate[String]
+        electionsRequired            <- (json \ "electionsRequired").validate[Boolean]
+        isFiUser                     <- (json \ "isFiUser").validate[Boolean]
         fiPrimaryContact             <- (json \ "fiPrimaryContact").validateOpt[ContactInfo]
         fiSecondaryContact           <- (json \ "fiSecondaryContact").validateOpt[ContactInfo]
         subscriptionPrimaryContact   <- (json \ "subscriptionPrimaryContact").validate[ContactInfo]
@@ -126,16 +126,16 @@ object MessageSpecData {
       }
 
       Json.obj(
-        "messageType"                       -> messageSpecData.messageType,
-        "reportType"                        -> reportType,
-        "sendingCompanyIN"                  -> messageSpecData.sendingCompanyIN,
-        "messageRefId"                      -> messageSpecData.messageRefId,
-        "reportingFIName"                   -> messageSpecData.reportingFIName,
-        "reportingPeriod"                   -> messageSpecData.reportingPeriod,
-        "giin"                              -> messageSpecData.giin,
-        "fiNameFromFim"                     -> messageSpecData.fiNameFromFim,
-        "electionsRequired"                 -> messageSpecData.electionsRequired,
-        "isFiUser"                          -> messageSpecData.isFiUser,
+        "messageType"                  -> messageSpecData.messageType,
+        "reportType"                   -> reportType,
+        "sendingCompanyIN"             -> messageSpecData.sendingCompanyIN,
+        "messageRefId"                 -> messageSpecData.messageRefId,
+        "reportingFIName"              -> messageSpecData.reportingFIName,
+        "reportingPeriod"              -> messageSpecData.reportingPeriod,
+        "giin"                         -> messageSpecData.giin,
+        "fiNameFromFim"                -> messageSpecData.fiNameFromFim,
+        "electionsRequired"            -> messageSpecData.electionsRequired,
+        "isFiUser"                     -> messageSpecData.isFiUser,
         "fiPrimaryContact"             -> messageSpecData.fiPrimaryContact,
         "fiSecondaryContact"           -> messageSpecData.fiSecondaryContact,
         "subscriptionPrimaryContact"   -> messageSpecData.subscriptionPrimaryContact,

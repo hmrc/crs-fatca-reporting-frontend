@@ -21,7 +21,7 @@ import models.CRSReportType.NewInformation
 import models.fileDetails.{ContactInfo, FileDetails}
 import models.submission.*
 import models.submission.fileDetails.Accepted
-import models.{CRS, CRSReportType, UserAnswers, submission}
+import models.{submission, CRS, CRSReportType, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
 import org.mockito.Mockito.*
@@ -65,7 +65,7 @@ class FileConfirmationControllerSpec extends SpecBase {
       fiNameFromFim = "Some-fi-name",
       fiPrimaryContact = None,
       fiSecondaryContact = None,
-      subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+      subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
       subscriptionSecondaryContact = None,
       electionSubmitted = Some(false),
       sendingCompanyIn = "Some-company-in"
