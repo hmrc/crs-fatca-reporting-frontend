@@ -16,6 +16,7 @@
 
 package models
 
+import models.fileDetails.ContactInfo
 import play.api.libs.json.*
 import play.api.mvc.QueryStringBindable
 
@@ -66,10 +67,10 @@ case class MessageSpecData(messageType: MessageType,
                            fiNameFromFim: String,
                            electionsRequired: Boolean,
                            isFiUser: Boolean,
-                           fiPrimaryContactEmail: Option[String] = None,
-                           fiSecondaryContactEmail: Option[String] = None,
-                           subscriptionPrimaryContactEmail: String,
-                           subscriptionSecondaryContactEmail: Option[String] = None
+                           fiPrimaryContact: Option[ContactInfo] = None,
+                           fiSecondaryContact: Option[ContactInfo] = None,
+                           subscriptionPrimaryContact: ContactInfo,
+                           subscriptionSecondaryContact: Option[ContactInfo] = None
 )
 
 object MessageSpecData {
@@ -93,10 +94,10 @@ object MessageSpecData {
         fiNameFromFim                     <- (json \ "fiNameFromFim").validate[String]
         electionsRequired                 <- (json \ "electionsRequired").validate[Boolean]
         isFiUser                          <- (json \ "isFiUser").validate[Boolean]
-        fiPrimaryContactEmail             <- (json \ "fiPrimaryContactEmail").validateOpt[String]
-        fiSecondaryContactEmail           <- (json \ "fiSecondaryContactEmail").validateOpt[String]
-        subscriptionPrimaryContactEmail   <- (json \ "subscriptionPrimaryContactEmail").validate[String]
-        subscriptionSecondaryContactEmail <- (json \ "subscriptionSecondaryContactEmail").validateOpt[String]
+        fiPrimaryContact             <- (json \ "fiPrimaryContact").validateOpt[ContactInfo]
+        fiSecondaryContact           <- (json \ "fiSecondaryContact").validateOpt[ContactInfo]
+        subscriptionPrimaryContact   <- (json \ "subscriptionPrimaryContact").validate[ContactInfo]
+        subscriptionSecondaryContact <- (json \ "subscriptionSecondaryContact").validateOpt[ContactInfo]
         reportTypeValue <- messageType match {
           case CRS   => summon[Reads[CRSReportType]].reads(JsString(reportType))
           case FATCA => summon[Reads[FATCAReportType]].reads(JsString(reportType))
@@ -112,10 +113,10 @@ object MessageSpecData {
         fiNameFromFim,
         electionsRequired,
         isFiUser,
-        fiPrimaryContactEmail,
-        fiSecondaryContactEmail,
-        subscriptionPrimaryContactEmail,
-        subscriptionSecondaryContactEmail
+        fiPrimaryContact,
+        fiSecondaryContact,
+        subscriptionPrimaryContact,
+        subscriptionSecondaryContact
       )
 
     override def writes(messageSpecData: MessageSpecData): JsValue = {
@@ -135,10 +136,10 @@ object MessageSpecData {
         "fiNameFromFim"                     -> messageSpecData.fiNameFromFim,
         "electionsRequired"                 -> messageSpecData.electionsRequired,
         "isFiUser"                          -> messageSpecData.isFiUser,
-        "fiPrimaryContactEmail"             -> messageSpecData.fiPrimaryContactEmail,
-        "fiSecondaryContactEmail"           -> messageSpecData.fiSecondaryContactEmail,
-        "subscriptionPrimaryContactEmail"   -> messageSpecData.subscriptionPrimaryContactEmail,
-        "subscriptionSecondaryContactEmail" -> messageSpecData.subscriptionSecondaryContactEmail
+        "fiPrimaryContact"             -> messageSpecData.fiPrimaryContact,
+        "fiSecondaryContact"           -> messageSpecData.fiSecondaryContact,
+        "subscriptionPrimaryContact"   -> messageSpecData.subscriptionPrimaryContact,
+        "subscriptionSecondaryContact" -> messageSpecData.subscriptionSecondaryContact
       )
     }
   }

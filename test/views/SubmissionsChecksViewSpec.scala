@@ -17,7 +17,7 @@
 package views
 
 import base.SpecBase
-import models.fileDetails.{FileDetails, FileDetailsResult, FileValidationErrors}
+import models.fileDetails.{ContactInfo, FileDetails, FileDetailsResult, FileValidationErrors}
 import models.submission.ConversationId
 import models.submission.fileDetails.{NotAccepted, Pending, Rejected, RejectedSDES, RejectedSDESVirus}
 import models.{CRS, CRSReportType}
@@ -107,10 +107,10 @@ class SubmissionsChecksViewSpec extends SpecBase with GuiceOneAppPerSuite with I
             reportType = CRSReportType.TestData,
             isFiUser = true,
             fiNameFromFim = "Test FI Name",
-            fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-            fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-            subscriptionPrimaryContactEmail = "test@email.com",
-            subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+            fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+            fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+            subscriptionPrimaryContact = ContactInfo("testPrimaryUser","test@email.com"),
+            subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
             sendingCompanyIn = "some-company-in"
           )
         ),

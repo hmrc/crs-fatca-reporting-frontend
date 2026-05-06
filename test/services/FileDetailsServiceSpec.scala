@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.FileDetailsConnector
-import models.fileDetails.{FileDetails, FileDetailsResult}
+import models.fileDetails.{ContactInfo, FileDetails, FileDetailsResult}
 import models.{CRS, CRSReportType, IntenalIssueError, NoResultFound, UnexpectedJsResult}
 import models.submission.ConversationId
 import models.submission.fileDetails.Pending
@@ -53,7 +53,7 @@ class FileDetailsServiceSpec extends SpecBase {
     reportType = CRSReportType.TestData,
     isFiUser = true,
     fiNameFromFim = "Test FI Name",
-    subscriptionPrimaryContactEmail = "some@email.com",
+    subscriptionPrimaryContact = ContactInfo("testUser","some@email.com"),
     sendingCompanyIn = "some-company-in"
   )
 

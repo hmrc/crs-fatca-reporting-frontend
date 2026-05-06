@@ -18,6 +18,7 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
+import models.fileDetails.ContactInfo
 import models.{CRS, CRSReportType, CheckMode, FATCA, FATCAReportType, MessageSpecData, ValidatedFileData}
 import pages.elections.crs.*
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
@@ -110,7 +111,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             "fiNameFromFim",
             true,
             true,
-            subscriptionPrimaryContactEmail = "some@email.com"
+            subscriptionPrimaryContact = ContactInfo("testUser","some@email.com")
           )
         val validatedData = getValidatedFileData(messageSpecData)
         val userAnswers   = emptyUserAnswers.withPage(ValidXMLPage, validatedData)

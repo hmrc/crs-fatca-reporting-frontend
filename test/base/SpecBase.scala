@@ -18,7 +18,7 @@ package base
 
 import controllers.actions.*
 import generators.Generators
-import models.fileDetails.{FileDetails, FileValidationErrors}
+import models.fileDetails.{ContactInfo, FileDetails, FileValidationErrors}
 import models.submission.fileDetails.{FileStatus, Pending}
 import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
@@ -83,30 +83,30 @@ trait SpecBase
       fiNameFromFim,
       electionsRequired,
       isFiUser,
-      subscriptionPrimaryContactEmail = "test@email.com"
+      subscriptionPrimaryContact = ContactInfo("testUser","test@email.com")
     )
 
   def getTestFileDetails(
-    conversationId: ConversationId = ConversationId("test-conversation-id"),
-    enrolmentId: String = "someenrolmentId",
-    messageRefId: String = "somemessageRefId",
-    reportingEntityName: Option[String] = Some("Test Entity"),
-    status: FileStatus = Pending,
-    name: String = "test-file.xml",
-    submitted: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
-    lastUpdated: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
-    reportingPeriod: LocalDate = LocalDate.of(2026, 1, 1),
-    messageType: MessageType = CRS,
-    reportType: ReportType = CRSReportType.NewInformation,
-    fiNameFromFim: String = "fi-name",
-    isFiUser: Boolean = true,
-    fiPrimaryContactEmail: Option[String] = None,
-    fiSecondaryContactEmail: Option[String] = None,
-    subscriptionPrimaryContactEmail: String = "test@email.com",
-    subscriptionSecondaryContactEmail: Option[String] = None,
-    errors: Option[FileValidationErrors] = None,
-    giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
-    sendingCompanyIN: String = "Some-company-in"
+                          conversationId: ConversationId = ConversationId("test-conversation-id"),
+                          enrolmentId: String = "someenrolmentId",
+                          messageRefId: String = "somemessageRefId",
+                          reportingEntityName: Option[String] = Some("Test Entity"),
+                          status: FileStatus = Pending,
+                          name: String = "test-file.xml",
+                          submitted: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+                          lastUpdated: LocalDateTime = LocalDateTime.of(2026, 1, 6, 12, 0, 0),
+                          reportingPeriod: LocalDate = LocalDate.of(2026, 1, 1),
+                          messageType: MessageType = CRS,
+                          reportType: ReportType = CRSReportType.NewInformation,
+                          fiNameFromFim: String = "fi-name",
+                          isFiUser: Boolean = true,
+                          fiPrimaryContact: Option[ContactInfo] = None,
+                          fiSecondaryContact: Option[ContactInfo] = None,
+                          subscriptionPrimaryContact: ContactInfo = ContactInfo("testuser","test@email.com"),
+                          subscriptionSecondaryContact: Option[ContactInfo] = None,
+                          errors: Option[FileValidationErrors] = None,
+                          giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
+                          sendingCompanyIN: String = "Some-company-in"
   ): FileDetails =
     FileDetails(
       _id = conversationId,
@@ -122,10 +122,10 @@ trait SpecBase
       reportType = reportType,
       fiNameFromFim = fiNameFromFim,
       isFiUser = isFiUser,
-      fiPrimaryContactEmail = fiPrimaryContactEmail,
-      fiSecondaryContactEmail = fiSecondaryContactEmail,
-      subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
-      subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
+      fiPrimaryContact = fiPrimaryContact,
+      fiSecondaryContact = fiSecondaryContact,
+      subscriptionPrimaryContact = subscriptionPrimaryContact,
+      subscriptionSecondaryContact = subscriptionSecondaryContact,
       errors = errors,
       sendingCompanyIn = sendingCompanyIN
     )

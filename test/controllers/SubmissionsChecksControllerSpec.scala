@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.fileDetails.{FileDetails, FileDetailsResult}
+import models.fileDetails.{ContactInfo, FileDetails, FileDetailsResult}
 import models.submission.ConversationId
 import models.{CRS, CRSReportType}
 import org.mockito.ArgumentMatchers.any
@@ -104,10 +104,10 @@ trait TestContext {
           reportType = CRSReportType.TestData,
           isFiUser = true,
           fiNameFromFim = "Test FI Name",
-          fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-          fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-          subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+          fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+          subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+          subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
           sendingCompanyIn = "some-company-in"
         )
       ),

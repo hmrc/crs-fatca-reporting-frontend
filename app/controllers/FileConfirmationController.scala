@@ -19,7 +19,6 @@ package controllers
 import controllers.actions.*
 import models.fileDetails.FileDetailsModel
 import models.submission.ConversationId
-import pages.GiinAndElectionStatusPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.FileDetailsService
@@ -35,8 +34,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class FileConfirmationController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: FileConfirmationView
@@ -53,15 +50,19 @@ class FileConfirmationController @Inject() (
           val time             = DateTimeFormats.formatTimeForFileConfirmation(fileDetailsModel.submitted)
 
           val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetailsModel)
+          val primaryContactEmail = fileDetails.subscriptionPrimaryContact.email
+          val mayBeSecondaryContactEmail = fileDetails.subscriptionSecondaryContact.map(_.email)
           val paraContent =
             if (fileDetails.isFiUser) {
-              FileConfirmationViewModel.getEmailParagraphForFI(fileDetails.subscriptionPrimaryContactEmail, fileDetails.subscriptionSecondaryContactEmail)
+              FileConfirmationViewModel.getEmailParagraphForFI(primaryContactEmail, mayBeSecondaryContactEmail)
             } else {
+              val maybeFIPrimaryContactEmail = fileDetails.fiPrimaryContact.map(_.email)
+              val maybeFISecondaryContactEmail = fileDetails.fiSecondaryContact.map(_.email)
               FileConfirmationViewModel.getEmailParagraphForNonFI(
-                fileDetails.subscriptionPrimaryContactEmail,
-                fileDetails.subscriptionSecondaryContactEmail,
-                fileDetails.fiPrimaryContactEmail,
-                fileDetails.fiSecondaryContactEmail
+                primaryContactEmail,
+                mayBeSecondaryContactEmail,
+                maybeFIPrimaryContactEmail,
+                maybeFISecondaryContactEmail
               )
             }
           val hasElectionFailed: Boolean = fileDetails.electionSubmitted.contains(false)

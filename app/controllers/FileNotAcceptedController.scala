@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions.*
-import pages.ValidXMLPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController

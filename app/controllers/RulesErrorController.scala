@@ -34,8 +34,6 @@ import scala.concurrent.ExecutionContext
 class RulesErrorController @Inject() (
   override val messagesApi: MessagesApi,
   identify: IdentifierAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
   fileDetailsService: FileDetailsService,
   val controllerComponents: MessagesControllerComponents,
   view: RulesErrorView
