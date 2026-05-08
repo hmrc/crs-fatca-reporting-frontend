@@ -20,6 +20,7 @@ import models.fileDetails.FileDetailsModel
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Text, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
+import utils.DateTimeFormats.*
 
 object FileConfirmationViewModel {
 
@@ -42,11 +43,25 @@ object FileConfirmationViewModel {
         ),
         SummaryListRow(
           key = Key(
+            content = Text(messages("fileConfirmation.fiId.key")),
+            classes = "govuk-file-confirmation__key"
+          ),
+          value = Value(content = Text(receivedFileDetails.fiId))
+        ),
+        SummaryListRow(
+          key = Key(
             content =
               Text(messages(if (receivedFileDetails.isCrsNilReport) "fileConfirmation.financialInstitute.key" else "fileConfirmation.reportingFIName.key")),
             classes = "govuk-file-confirmation__key"
           ),
           value = Value(content = Text(receivedFileDetails.reportingEntityName))
+        ),
+        SummaryListRow(
+          key = Key(
+            content = Text(messages("fileConfirmation.reportingPeriod.key")),
+            classes = "govuk-file-confirmation__key"
+          ),
+          value = Value(content = Text(receivedFileDetails.reportingPeriod.formatReportingDate))
         ),
         SummaryListRow(
           key = Key(

@@ -49,19 +49,23 @@ class FileDetailsModelSpec extends SpecBase {
     sendingCompanyIn = "some-company-in"
   )
 
+  val fdm = FileDetailsModel(
+    name = "test-file.xml",
+    messageRefId = "GBXACBC12345678",
+    messageType = "CRS",
+    reportingEntityName = "Test FI Name",
+    fileInformation = "No reportable information",
+    submitted = submittedTime,
+    lastUpdated = submittedTime,
+    isCrsNilReport = true,
+    fiId = "some-company-in",
+    reportingPeriod = reportingDate
+  )
+
   "FileDetails" - {
     "Create FileDetailsModel from FileDetails" in {
 
-      val fileDetailsModel = FileDetailsModel(
-        name = "test-file.xml",
-        messageRefId = "GBXACBC12345678",
-        messageType = "CRS",
-        reportingEntityName = "Test Entity",
-        fileInformation = "Test data",
-        submitted = submittedTime,
-        lastUpdated = submittedTime,
-        isCrsNilReport = false
-      )
+      val fileDetailsModel = fdm.copy(reportingEntityName = "Test Entity", fileInformation = "Test data", isCrsNilReport = false)
 
       FileDetailsModel(fileDetails) mustEqual fileDetailsModel
     }
@@ -69,14 +73,9 @@ class FileDetailsModelSpec extends SpecBase {
     "reportingEntityName will be taken from FileDetails#fiNameFromFim if reportyType is CRSReportType.NilReport" in {
       val nilReportFileDetails = fileDetails.copy(reportType = CRSReportType.NilReport, reportingEntityName = None)
 
-      val fileDetailsModel = FileDetailsModel(
-        name = "test-file.xml",
-        messageRefId = "GBXACBC12345678",
-        messageType = "CRS",
+      val fileDetailsModel = fdm.copy(
         reportingEntityName = "Test FI Name",
         fileInformation = "No reportable information",
-        submitted = submittedTime,
-        lastUpdated = submittedTime,
         isCrsNilReport = true
       )
 

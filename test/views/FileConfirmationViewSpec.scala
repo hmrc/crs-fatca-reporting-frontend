@@ -38,16 +38,27 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "FilePassedChecksView" - {
+    val fd = FileDetailsModel(
+      "name.xml",
+      "c-8-new-f-va",
+      "CRS",
+      "EFG Bank plc",
+      "New information",
+      LocalDateTime.parse("2025-09-12T12:01:00"),
+      LocalDateTime.now(),
+      false,
+      "fiId",
+      LocalDateTime.of(2023, 1, 1, 0, 0).toLocalDate
+    )
 
     "should render page components" in {
-      val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-      val date          = "12 September 2025"
-      val time          = "12:01am"
-      val fileDetails   = FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now(), false)
-      val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
-      val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
-      val listOfKeys    = Seq("File ID (MessageRefId)", "Reporting regime (MessageType)", "Financial institution (ReportingFI Name)", "File information")
-      val listOfValues  = Seq("c-8-new-f-va", "CRS", "EFG Bank plc", "New information")
+      val date         = "12 September 2025"
+      val time         = "12:01am"
+      val fileDetails  = fd
+      val fileSummary  = FileConfirmationViewModel.getSummaryRows(fileDetails)
+      val paraContent  = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
+      val listOfKeys   = Seq("File ID (MessageRefId)", "Reporting regime (MessageType)", "Financial institution (ReportingFI Name)", "File information")
+      val listOfValues = Seq("c-8-new-f-va", "CRS", "EFG Bank plc", "New information")
       val listOfPara = Seq(
         s"We have sent a confirmation email to $paraContent.",
         "You can make any elections for EFG Bank plc in the service.",
@@ -75,12 +86,11 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
     }
 
     "should not render election para components" in {
-      val submittedTime = LocalDateTime.parse("2025-09-12T12:01:00")
-      val date          = "12 September 2025"
-      val time          = "12:01am"
-      val fileDetails   = FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", submittedTime, LocalDateTime.now(), false)
-      val fileSummary   = FileConfirmationViewModel.getSummaryRows(fileDetails)
-      val paraContent   = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
+      val date        = "12 September 2025"
+      val time        = "12:01am"
+      val fileDetails = fd
+      val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
+      val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
 
       val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false, fileDetails.reportingEntityName)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)

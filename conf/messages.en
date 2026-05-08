@@ -161,6 +161,7 @@ checkYourFileDetails.fiName.key = ReportingFIName
 checkYourFileDetails.fileInformation.change = Change file
 checkYourFileDetails.fileInformation.key = File information
 checkYourFileDetails.fileInformation.value = New information
+checkYourFileDetails.reportingPeriod.key = Reporting period
 checkYourFileDetails.fIDetails.heading = Financial institution details
 checkYourFileDetails.crs.contracts = Are they excluding cash value insurance contracts or annuity contracts from their reporting for CRS?
 checkYourFileDetails.crs.dormantAccounts = Are they treating dormant accounts as not being reportable accounts for CRS?
@@ -292,6 +293,9 @@ fileConfirmation.messageType.key = Reporting regime (MessageType)
 fileConfirmation.reportingFIName.key = Financial institution (ReportingFI Name)
 fileConfirmation.financialInstitute.key = Financial institution
 fileConfirmation.fileInformation.key = File information
+fileConfirmation.reportingPeriod.key = Reporting period
+fileConfirmation.fiId.key = FI ID (SendingCompanyIN)
+
 fileConfirmation.p1 = We have sent a confirmation email to {0}.
 fileConfirmation.p2 = You can {0}.
 fileConfirmation.p2.link.text = make any elections for {0} in the service

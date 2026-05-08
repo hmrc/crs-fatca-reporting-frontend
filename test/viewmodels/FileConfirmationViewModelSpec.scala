@@ -21,21 +21,38 @@ import models.fileDetails.FileDetailsModel
 import uk.gov.hmrc.govukfrontend.views.Aliases.Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
+import utils.DateTimeFormats._
 
 import java.time.LocalDateTime
 
 class FileConfirmationViewModelSpec extends SpecBase {
   "FileConfirmationViewModel" - {
-
+    val testLocalDate = LocalDateTime.of(2023, 1, 1, 0, 0).toLocalDate
+    val testFileDetailsModel =
+      FileDetailsModel(
+        "name.xml",
+        "c-8-new-f-va",
+        "CRS",
+        "EFG Bank plc",
+        "New information",
+        LocalDateTime.now(),
+        LocalDateTime.now(),
+        false,
+        "fiId",
+        testLocalDate
+      )
     ".getSummaryList" - {
       "must return the getSummaryList" in {
         val fileDetails =
-          FileDetailsModel("name.xml", "c-8-new-f-va", "CRS", "EFG Bank plc", "New information", LocalDateTime.now(), LocalDateTime.now(), false)
+          testFileDetailsModel.copy(isCrsNilReport = false)
+
         val expectedSummary = SummaryList(
           List(
             SummaryListRow(Key(Text("File ID (MessageRefId)"), "govuk-file-confirmation__key"), Value(Text("c-8-new-f-va"), ""), "", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)"), "govuk-file-confirmation__key"), Value(Text("CRS"), ""), "", None),
+            SummaryListRow(Key(Text("Reporting period"), "govuk-file-confirmation__key"), Value(Text("Ending 1 January 2023"), ""), "", None),
             SummaryListRow(Key(Text("Financial institution (ReportingFI Name)"), "govuk-file-confirmation__key"), Value(Text("EFG Bank plc"), ""), "", None),
+            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)"), "govuk-file-confirmation__key"), Value(Text("fiId"), ""), "", None),
             SummaryListRow(Key(Text("File information"), "govuk-file-confirmation__key"), Value(Text("New information"), ""), "", None)
           ),
           None,
@@ -43,25 +60,19 @@ class FileConfirmationViewModelSpec extends SpecBase {
           Map()
         )
 
-        FileConfirmationViewModel.getSummaryRows(fileDetails)(messages(app)) mustBe expectedSummary
+        FileConfirmationViewModel.getSummaryRows(testFileDetailsModel)(messages(app)) mustBe expectedSummary
       }
 
       "For a FileDetailsModel with isCrsNilReport true return expected Financial institution  header" in {
-        val fileDetails =
-          FileDetailsModel("name.xml",
-                           "c-8-new-f-va",
-                           "CRS",
-                           "EFG Bank plc",
-                           "New information",
-                           LocalDateTime.now(),
-                           LocalDateTime.now(),
-                           isCrsNilReport = true
-          )
+        val fileDetails = testFileDetailsModel.copy(isCrsNilReport = true)
+
         val expectedSummary = SummaryList(
           List(
             SummaryListRow(Key(Text("File ID (MessageRefId)"), "govuk-file-confirmation__key"), Value(Text("c-8-new-f-va"), ""), "", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)"), "govuk-file-confirmation__key"), Value(Text("CRS"), ""), "", None),
+            SummaryListRow(Key(Text("FI ID (SendingCompanyIN)"), "govuk-file-confirmation__key"), Value(Text("fiId"), ""), "", None),
             SummaryListRow(Key(Text("Financial institution"), "govuk-file-confirmation__key"), Value(Text("EFG Bank plc"), ""), "", None),
+            SummaryListRow(Key(Text("Reporting period"), "govuk-file-confirmation__key"), Value(Text("Ending 1 January 2023"), ""), "", None),
             SummaryListRow(Key(Text("File information"), "govuk-file-confirmation__key"), Value(Text("New information"), ""), "", None)
           ),
           None,

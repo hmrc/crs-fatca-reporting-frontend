@@ -18,7 +18,7 @@ package utils
 
 import play.api.i18n.Lang
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -50,4 +50,13 @@ object DateTimeFormats {
       result
     }
   }
+
+  private val fileDetailsSummeryListFormat: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("'Ending' d MMMM yyyy")
+
+  extension (d: LocalDate)
+
+    def formatReportingDate: String =
+      fileDetailsSummeryListFormat.format(d)
+
 }
