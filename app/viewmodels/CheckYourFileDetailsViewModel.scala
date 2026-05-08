@@ -27,6 +27,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.*
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Key
+import utils.DateTimeFormats.formatReportingDate
 import utils.Extension.toYesNo
 import utils.ReportingConstants.*
 import viewmodels.govuk.all.ActionItemViewModel
@@ -40,6 +41,10 @@ class CheckYourFileDetailsViewModel(userAnswers: UserAnswers)(using messages: Me
           summaryListRowHelper(messages("checkYourFileDetails.fileId.key"), messageSpecData.messageRefId, rowClasses = Some("no-border-bottom")),
           summaryListRowHelper(messages("checkYourFileDetails.reportingRegime.key"), messageSpecData.messageType.name, rowClasses = Some("no-border-bottom")),
           summaryListRowHelper(messages("checkYourFileDetails.fiId.key"), messageSpecData.sendingCompanyIN, rowClasses = Some("no-border-bottom")),
+          summaryListRowHelper(messages("checkYourFileDetails.reportingPeriod.key"),
+                               messageSpecData.reportingPeriod.formatReportingDate,
+                               rowClasses = Some("no-border-bottom")
+          ),
           summaryListRowHelper(
             messages("checkYourFileDetails.fileInformation.key"),
             messages(messageKeyForReportType(messageSpecData.reportType)),

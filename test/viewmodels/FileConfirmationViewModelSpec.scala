@@ -50,9 +50,9 @@ class FileConfirmationViewModelSpec extends SpecBase {
           List(
             SummaryListRow(Key(Text("File ID (MessageRefId)"), "govuk-file-confirmation__key"), Value(Text("c-8-new-f-va"), ""), "", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)"), "govuk-file-confirmation__key"), Value(Text("CRS"), ""), "", None),
-            SummaryListRow(Key(Text("Reporting period"), "govuk-file-confirmation__key"), Value(Text("Ending 1 January 2023"), ""), "", None),
-            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)"), "govuk-file-confirmation__key"), Value(Text("EFG Bank plc"), ""), "", None),
             SummaryListRow(Key(Text("FI ID (SendingCompanyIN)"), "govuk-file-confirmation__key"), Value(Text("fiId"), ""), "", None),
+            SummaryListRow(Key(Text("Financial institution (ReportingFI Name)"), "govuk-file-confirmation__key"), Value(Text("EFG Bank plc"), ""), "", None),
+            SummaryListRow(Key(Text("Reporting period"), "govuk-file-confirmation__key"), Value(Text("Ending 1 January 2023"), ""), "", None),
             SummaryListRow(Key(Text("File information"), "govuk-file-confirmation__key"), Value(Text("New information"), ""), "", None)
           ),
           None,
@@ -62,7 +62,6 @@ class FileConfirmationViewModelSpec extends SpecBase {
 
         FileConfirmationViewModel.getSummaryRows(testFileDetailsModel)(messages(app)) mustBe expectedSummary
       }
-
       "For a FileDetailsModel with isCrsNilReport true return expected Financial institution  header" in {
         val fileDetails = testFileDetailsModel.copy(isCrsNilReport = true)
 

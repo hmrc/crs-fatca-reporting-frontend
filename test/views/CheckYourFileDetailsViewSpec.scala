@@ -27,6 +27,7 @@ import play.api.i18n.{Lang, Messages}
 import play.api.mvc.{AnyContent, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import play.twirl.api.HtmlFormat
+import utils.DateTimeFormats.formatReportingDate
 import utils.ViewHelper
 import viewmodels.CheckYourFileDetailsViewModel
 import views.html.CheckYourFileDetailsView
@@ -59,7 +60,7 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       verifyPageHeading(doc, expectedFiName)
       doc.select(".govuk-summary-list").size() mustBe 1
       val elements = doc.select(".govuk-summary-list__row")
-      elements.size() mustBe 5
+      elements.size() mustBe 6
       verifyFileDetails(elements, "CRS", "Test data")
       doc.select("#submit").text() mustBe "Continue"
 
@@ -84,10 +85,10 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       headings.get(0).text() mustBe "File details"
       headings.get(1).text() mustBe "Financial institution details"
       val elements = doc.select(".govuk-summary-list__row")
-      elements.size() mustBe 6
+      elements.size() mustBe 7
       verifyFileDetails(elements, "FATCA", "Test data")
-      assertRowValue(elements, 5, summaryKeyLocator, "Global Intermediary Identification Number")
-      assertRowValue(elements, 5, summaryValueLocator, "testGIINValue")
+      assertRowValue(elements, 6, summaryKeyLocator, "Global Intermediary Identification Number")
+      assertRowValue(elements, 6, summaryValueLocator, "testGIINValue")
     }
     "should render page components with a summary list with report election as false" in {
       val expectedFiName = "fi-name"
@@ -108,12 +109,12 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
 
       doc.select(".govuk-summary-list").size() mustBe 2
       val elements = doc.select(".govuk-summary-list__row")
-      elements.size() mustBe 6
+      elements.size() mustBe 7
 
       verifyFileDetails(elements, "CRS", "Test data")
-      val text = elements.get(5).select(summaryKeyLocator).text()
+      val text = elements.get(6).select(summaryKeyLocator).text()
       text must include("Do you want to make any elections for the CRS reporting period")
-      assertRowValue(elements, 5, summaryValueLocator, "No")
+      assertRowValue(elements, 6, summaryValueLocator, "No")
     }
 
     def verifyPageHeading(doc: Document, expectedFiName: String) =
@@ -129,8 +130,10 @@ class CheckYourFileDetailsViewSpec extends SpecBase with GuiceOneAppPerSuite wit
       assertRowValue(elements, 2, summaryValueLocator, "testFI")
       assertRowValue(elements, 3, summaryKeyLocator, "Financial institution (ReportingFI Name)")
       assertRowValue(elements, 3, summaryValueLocator, "testReportingName")
-      assertRowValue(elements, 4, summaryKeyLocator, "File information")
-      assertRowValue(elements, 4, summaryValueLocator, reportType)
+      assertRowValue(elements, 4, summaryKeyLocator, "Reporting period")
+      assertRowValue(elements, 4, summaryValueLocator, LocalDate.now().formatReportingDate)
+      assertRowValue(elements, 5, summaryKeyLocator, "File information")
+      assertRowValue(elements, 5, summaryValueLocator, reportType)
 
     def assertRowValue(elements: Elements, index: Int, key: String, value: String) = elements.get(index).select(key).text() mustBe value
   }
