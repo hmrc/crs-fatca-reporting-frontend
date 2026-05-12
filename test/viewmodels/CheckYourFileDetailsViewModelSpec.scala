@@ -46,6 +46,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("CRS")), "no-border-bottom", None),
             SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
             SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Reporting period")), Value(Text("Ending 1 January 2025")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
               Value(Text("Test data")),
@@ -77,6 +78,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("File ID (MessageRefId)")), Value(Text("testRefId")), "no-border-bottom", None),
             SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("CRS")), "no-border-bottom", None),
             SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Reporting period")), Value(Text("Ending 1 January 2025")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
               Value(Text("No reportable information")),
@@ -124,6 +126,7 @@ class CheckYourFileDetailsViewModelSpec extends SpecBase {
             SummaryListRow(Key(Text("Reporting regime (MessageType)")), Value(Text("FATCA")), "no-border-bottom", None),
             SummaryListRow(Key(Text("FI ID (SendingCompanyIN)")), Value(Text("testFI")), "no-border-bottom", None),
             SummaryListRow(Key(Text("Financial institution (ReportingFI Name)")), Value(Text("testReportingName")), "no-border-bottom", None),
+            SummaryListRow(Key(Text("Reporting period")), Value(Text("Ending 1 January 2025")), "no-border-bottom", None),
             SummaryListRow(
               Key(Text("File information")),
               Value(Text("Test data")),

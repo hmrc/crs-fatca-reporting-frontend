@@ -16,8 +16,8 @@
 
 package models.fileDetails
 
+import models.submission.ConversationId
 import models.submission.fileDetails.FileStatus
-import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageType, ReportType}
 import play.api.libs.json.*
 

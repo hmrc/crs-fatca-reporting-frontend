@@ -20,7 +20,7 @@ import models.CRSReportType.NilReport
 import models.messageKeyForReportType
 import play.api.i18n.Messages
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 case class FileDetailsModel(name: String,
                             messageRefId: String,
@@ -29,7 +29,9 @@ case class FileDetailsModel(name: String,
                             fileInformation: String,
                             submitted: LocalDateTime,
                             lastUpdated: LocalDateTime,
-                            isCrsNilReport: Boolean
+                            isCrsNilReport: Boolean,
+                            fiId: String,
+                            reportingPeriod: LocalDate
 )
 
 object FileDetailsModel {
@@ -46,6 +48,8 @@ object FileDetailsModel {
       fileInformation = messages(messageKeyForReportType(fileDetails.reportType)),
       submitted = fileDetails.submitted,
       lastUpdated = fileDetails.lastUpdated,
-      isCrsNilReport = fileDetails.reportType == NilReport
+      isCrsNilReport = fileDetails.reportType == NilReport,
+      fiId = fileDetails.sendingCompanyIn,
+      reportingPeriod = fileDetails.reportingPeriod
     )
 }

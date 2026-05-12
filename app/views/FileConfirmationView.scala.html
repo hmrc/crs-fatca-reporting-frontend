@@ -23,38 +23,37 @@
         govukSummaryList: GovukSummaryList,
         link: components.Link,
         printLink: components.PrintLink,
-        appConfig: FrontendAppConfig
+        appConfig: FrontendAppConfig,
+        heading: components.Heading,
+        para: components.Paragraph
 )
 
 @(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean, fiName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("fileConfirmation.title")), showBackLink = false) {
 
-@govukPanel(
-Panel(title = Text(messages("fileConfirmation.heading")),
-content = HtmlContent(s"${messages("fileConfirmation.ChecksCompleted.prefix")}<br><strong>${messages("fileConfirmation.ChecksCompleted.time", date, time)}</strong>")
-))
-<div class="govuk-form-group">
-    @govukSummaryList(fileSummary)
-</div>
-<p class="govuk-body">@messages("fileConfirmation.p1", paraContent)</p>
-@if(isElectionFailed){
-<p class="govuk-body">@Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text", messageArgs = Seq(fiName))))</p> <!--TODO : Add link to elections-->
-}
-<h2 class="govuk-heading-m">@messages("fileConfirmation.subheading1")</h2>
+    @govukPanel(
+        Panel(title = Text(messages("fileConfirmation.heading")),
+        content = HtmlContent(s"${messages("fileConfirmation.ChecksCompleted.prefix")}<br><strong>${messages("fileConfirmation.ChecksCompleted.time", date, time)}</strong>")
+    ))
+    <div class="govuk-form-group">
+        @govukSummaryList(fileSummary)
+    </div>
+    @para(Html(messages("fileConfirmation.p1", paraContent)))
+    @if(isElectionFailed){
+    @para(Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text", messageArgs = Seq(fiName))))) <!--TODO : Add link to elections-->
+    }
+    @heading(messages("fileConfirmation.subheading1"), size = "m",tag = "h2")
+    @para(Html(messages("fileConfirmation.p3")))
+    @heading(messages("fileConfirmation.subheading2"), size = "m",tag = "h2")
+    @para(Html(messages("fileConfirmation.p4")))
 
-<p class="govuk-body">@messages("fileConfirmation.p3")</p>
+    @para(Html(messages("fileConfirmation.p5", link(href = "#", key = "fileConfirmation.p5.link.text", classes = "govuk-link print-url")))) <!--TODO : Add link to survey-->
 
-<h2 class="govuk-heading-m">@messages("fileConfirmation.subheading2")</h2>
-
-<p class="govuk-body">@messages("fileConfirmation.p4")</p>
-
-<p class="govuk-body">@Html(messages("fileConfirmation.p5", link(href = "#", key = "fileConfirmation.p5.link.text", classes = "govuk-link print-url")))</p> <!--TODO : Add link to survey-->
-
-<ul class="govuk-!-padding-top-3 govuk-list govuk-!-display-none-print">
-    <li class="govuk-!-margin-bottom-1">@printLink("fileError.list.l8")</li>
-    <li class="govuk-!-margin-bottom-1">@link(routes.IndexController.onPageLoad().url,"fileConfirmation.list.l2")</li>
-    <li class="govuk-!-margin-bottom-1">@link(appConfig.manageFI,"fileError.list.l10")</li>
-</ul>
+    <ul class="govuk-!-padding-top-3 govuk-list govuk-!-display-none-print">
+        <li class="govuk-!-margin-bottom-1">@printLink("fileError.list.l8")</li>
+        <li class="govuk-!-margin-bottom-1">@link(routes.IndexController.onPageLoad().url,"fileConfirmation.list.l2")</li>
+        <li class="govuk-!-margin-bottom-1">@link(appConfig.manageFI,"fileError.list.l10")</li>
+    </ul>
 
 }
