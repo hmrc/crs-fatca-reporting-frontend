@@ -17,6 +17,7 @@
 package utils
 
 import generators.Generators
+import models.fileDetails.ContactInfo
 import models.{CRS, CRSReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
 import org.mongodb.scala.SingleObservableFuture
 import org.mongodb.scala.bson.collection.immutable.Document
@@ -90,7 +91,7 @@ trait ISpecBase extends GuiceOneServerPerSuite with ScalaFutures with WireMockHe
                          fiNameFromFim: String = "testFiName",
                          electionsRequired: Boolean = true,
                          isFiUser: Boolean = true,
-                         subscriptionPrimaryContactEmail: String = "some@email.com"
+                         subscriptionPrimaryContact: ContactInfo = ContactInfo("testUser","some@email.com")
   ): MessageSpecData =
     MessageSpecData(
       messageType,
@@ -103,7 +104,7 @@ trait ISpecBase extends GuiceOneServerPerSuite with ScalaFutures with WireMockHe
       fiNameFromFim,
       electionsRequired,
       isFiUser,
-      subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail
+      subscriptionPrimaryContact = subscriptionPrimaryContact
     )
 
 }

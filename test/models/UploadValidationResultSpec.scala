@@ -17,6 +17,7 @@
 package models
 
 import base.SpecBase
+import models.fileDetails.ContactInfo
 import play.api.libs.json.Json
 import org.scalatest.matchers.should.Matchers.shouldBe
 
@@ -40,7 +41,10 @@ class UploadValidationResultSpec extends SpecBase {
           |    "fiNameFromFim": "fi-name",
           |    "electionsRequired": true,
           |    "isFiUser": false,
-          |    "subscriptionPrimaryContactEmail": "some@email.com"
+          |    "subscriptionPrimaryContact": {
+          |       "name": "testUser",
+          |       "email": "some@email.com"
+          |    }
           |  }
           |}
             """.stripMargin)
@@ -59,7 +63,7 @@ class UploadValidationResultSpec extends SpecBase {
           fiNameFromFim = "fi-name",
           electionsRequired = true,
           isFiUser = false,
-          subscriptionPrimaryContactEmail = "some@email.com"
+          subscriptionPrimaryContact = ContactInfo("testUser", "some@email.com")
         )
       )
     }

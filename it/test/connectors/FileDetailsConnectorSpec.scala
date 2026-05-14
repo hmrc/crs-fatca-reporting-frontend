@@ -16,13 +16,9 @@
 
 package connectors
 
-import models.fileDetails.FileDetails
-import models.{CRS, CRSReportType}
-import models.{IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
-import models.fileDetails.{FileDetails, FileDetailsResult}
+import models.fileDetails.{ContactInfo, FileDetails, FileDetailsResult}
 import models.submission.ConversationId
 import models.submission.fileDetails.{Pending, RejectedSDES}
-import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, IntenalIssueError, NoResultFound, UnExpectedResponse, UnexpectedJsResult}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers.{an, mustBe}
@@ -100,10 +96,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           reportType = CRSReportType.TestData,
           isFiUser = true,
           fiNameFromFim = "Test FI Name",
-          fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-          fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-          subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+          fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+          subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+          subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
           sendingCompanyIn = "some-company-in"
         )
 
@@ -180,10 +176,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
           reportType = CRSReportType.TestData,
           isFiUser = true,
           fiNameFromFim = "Test FI Name",
-          fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-          fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-          subscriptionPrimaryContactEmail = "test@email.com",
-          subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+          fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+          fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+          subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+          subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
           sendingCompanyIn = "some-company-in"
         ),
           FileDetails(
@@ -200,10 +196,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
             reportType = CRSReportType.TestData,
             isFiUser = true,
             fiNameFromFim = "Test FI Name",
-            fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-            fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-            subscriptionPrimaryContactEmail = "test@email.com",
-            subscriptionSecondaryContactEmail = Some("secondarySub@email.com"),
+            fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+            fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+            subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+            subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com")),
             sendingCompanyIn = "some-company-in"
           )
         ), pages = 1)
@@ -247,10 +243,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiNameFromFim": "Test FI Name",
       |  "isFiUser": true,
       |  "fileType":"NormalFile",
-      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
-      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
-      |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "fiPrimaryContact":{"name": "testfiPrimaryUser","email":"fiPrimary@email.com"},
+      |  "fiSecondaryContact":{"name": "testfiSecondaryUser","email":"fiSecondary@email.com"},
+      |  "subscriptionPrimaryContact":{"name": "testUser","email":"test@email.com"},
+      |  "subscriptionSecondaryContact":{"name": "testSecondaryUser","email":"secondarySub@email.com"},
       |  "sendingCompanyIn":"some-company-in"
       |}
       |""".stripMargin
@@ -275,10 +271,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiNameFromFim": "Test FI Name",
       |  "isFiUser": true,
       |  "fileType":"NormalFile",
-      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
-      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
-      |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "fiPrimaryContact":{"name": "testfiPrimaryUser","email":"fiPrimary@email.com"},
+      |  "fiSecondaryContact":{"name": "testfiSecondaryUser","email":"fiSecondary@email.com"},
+      |  "subscriptionPrimaryContact":{"name": "testUser","email":"test@email.com"},
+      |  "subscriptionSecondaryContact":{"name": "testSecondaryUser","email":"secondarySub@email.com"},
       |  "sendingCompanyIn":"some-company-in"
       |},
       |{
@@ -296,10 +292,10 @@ class FileDetailsConnectorSpec extends AnyFreeSpec with ISpecBase {
       |  "fiNameFromFim": "Test FI Name",
       |  "isFiUser": true,
       |  "fileType":"NormalFile",
-      |  "fiPrimaryContactEmail":"fiPrimary@email.com",
-      |  "fiSecondaryContactEmail":"fiSecondary@email.com",
-      |  "subscriptionPrimaryContactEmail":"test@email.com",
-      |  "subscriptionSecondaryContactEmail":"secondarySub@email.com",
+      |  "fiPrimaryContact":{"name": "testfiPrimaryUser","email":"fiPrimary@email.com"},
+      |  "fiSecondaryContact":{"name": "testfiSecondaryUser","email":"fiSecondary@email.com"},
+      |  "subscriptionPrimaryContact":{"name": "testUser","email":"test@email.com"},
+      |  "subscriptionSecondaryContact":{"name": "testSecondaryUser","email":"secondarySub@email.com"},
       |  "sendingCompanyIn":"some-company-in"
       |}
       |],

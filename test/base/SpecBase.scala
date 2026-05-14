@@ -18,7 +18,7 @@ package base
 
 import controllers.actions.*
 import generators.Generators
-import models.fileDetails.{FileDetails, FileValidationErrors}
+import models.fileDetails.{ContactInfo, FileDetails, FileValidationErrors}
 import models.submission.fileDetails.{FileStatus, Pending}
 import models.submission.{ConversationId, GiinAndElectionDBStatus}
 import models.{CRS, CRSReportType, FATCA, FATCAReportType, MessageSpecData, MessageType, ReportType, UserAnswers, ValidatedFileData}
@@ -83,7 +83,7 @@ trait SpecBase
       fiNameFromFim,
       electionsRequired,
       isFiUser,
-      subscriptionPrimaryContactEmail = "test@email.com"
+      subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com")
     )
 
   def getTestFileDetails(
@@ -100,10 +100,10 @@ trait SpecBase
     reportType: ReportType = CRSReportType.NewInformation,
     fiNameFromFim: String = "fi-name",
     isFiUser: Boolean = true,
-    fiPrimaryContactEmail: Option[String] = None,
-    fiSecondaryContactEmail: Option[String] = None,
-    subscriptionPrimaryContactEmail: String = "test@email.com",
-    subscriptionSecondaryContactEmail: Option[String] = None,
+    fiPrimaryContact: Option[ContactInfo] = None,
+    fiSecondaryContact: Option[ContactInfo] = None,
+    subscriptionPrimaryContact: ContactInfo = ContactInfo("testuser", "test@email.com"),
+    subscriptionSecondaryContact: Option[ContactInfo] = None,
     errors: Option[FileValidationErrors] = None,
     giinAndElectionDBStatus: Option[GiinAndElectionDBStatus] = None,
     sendingCompanyIN: String = "Some-company-in"
@@ -122,10 +122,10 @@ trait SpecBase
       reportType = reportType,
       fiNameFromFim = fiNameFromFim,
       isFiUser = isFiUser,
-      fiPrimaryContactEmail = fiPrimaryContactEmail,
-      fiSecondaryContactEmail = fiSecondaryContactEmail,
-      subscriptionPrimaryContactEmail = subscriptionPrimaryContactEmail,
-      subscriptionSecondaryContactEmail = subscriptionSecondaryContactEmail,
+      fiPrimaryContact = fiPrimaryContact,
+      fiSecondaryContact = fiSecondaryContact,
+      subscriptionPrimaryContact = subscriptionPrimaryContact,
+      subscriptionSecondaryContact = subscriptionSecondaryContact,
       errors = errors,
       sendingCompanyIn = sendingCompanyIN
     )

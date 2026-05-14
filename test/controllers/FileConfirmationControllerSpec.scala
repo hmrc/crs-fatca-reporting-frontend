@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.CRSReportType.NewInformation
-import models.fileDetails.FileDetails
+import models.fileDetails.{ContactInfo, FileDetails}
 import models.submission.*
 import models.submission.fileDetails.Accepted
 import models.{submission, CRS, CRSReportType, UserAnswers}
@@ -63,10 +63,10 @@ class FileConfirmationControllerSpec extends SpecBase {
       reportType = CRSReportType.NewInformation,
       isFiUser = true,
       fiNameFromFim = "Some-fi-name",
-      fiPrimaryContactEmail = None,
-      fiSecondaryContactEmail = None,
-      subscriptionPrimaryContactEmail = "test@email.com",
-      subscriptionSecondaryContactEmail = None,
+      fiPrimaryContact = None,
+      fiSecondaryContact = None,
+      subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
+      subscriptionSecondaryContact = None,
       electionSubmitted = Some(false),
       sendingCompanyIn = "Some-company-in"
     )

@@ -16,6 +16,7 @@
 
 package connectors
 
+import models.fileDetails.ContactInfo
 import models.upscan.FileValidateRequest
 import models.{CRS, CRSReportType, Errors, FIIDNotMatchingError, GenericError, IncorrectMessageTypeError, InvalidXmlFileError, Message, MessageSpecData, NonFatalErrors, ReportingPeriodError, SchemaValidationErrors, ValidationErrors}
 import org.scalatest.freespec.AnyFreeSpec
@@ -55,10 +56,10 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         fiNameFromFim = "fi-name",
         electionsRequired = true,
         isFiUser = true,
-        fiPrimaryContactEmail = Some("fiPrimary@email.com"),
-        fiSecondaryContactEmail = Some("fiSecondary@email.com"),
-        subscriptionPrimaryContactEmail = "test@email.com",
-        subscriptionSecondaryContactEmail = Some("secondarySub@email.com")
+        fiPrimaryContact = Some(ContactInfo("testfiPrimaryUser","fiPrimary@email.com")),
+        fiSecondaryContact = Some(ContactInfo("testfiSecondaryUser","fiSecondary@email.com")),
+        subscriptionPrimaryContact = ContactInfo("testUser","test@email.com"),
+        subscriptionSecondaryContact = Some(ContactInfo("testSecondaryUser","secondarySub@email.com"))
       )
     }
 
@@ -168,10 +169,10 @@ class ValidationConnectorSpec extends AnyFreeSpec with ISpecBase {
         |    "fiNameFromFim": "fi-name",
         |    "electionsRequired": true,
         |    "isFiUser": true,
-        |    "fiPrimaryContactEmail":"fiPrimary@email.com",
-        |    "fiSecondaryContactEmail":"fiSecondary@email.com",
-        |    "subscriptionPrimaryContactEmail":"test@email.com",
-        |    "subscriptionSecondaryContactEmail":"secondarySub@email.com"
+        |    "fiPrimaryContact":{"name": "testfiPrimaryUser","email":"fiPrimary@email.com"},
+        |    "fiSecondaryContact":{"name": "testfiSecondaryUser","email":"fiSecondary@email.com"},
+        |    "subscriptionPrimaryContact":{"name": "testUser","email":"test@email.com"},
+        |    "subscriptionSecondaryContact":{"name": "testSecondaryUser","email":"secondarySub@email.com"}
         |  }
         |}
             """.stripMargin

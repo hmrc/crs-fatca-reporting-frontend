@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.fileDetails.FileDetails
+import models.fileDetails.{ContactInfo, FileDetails}
 import models.submission.ConversationId
 import models.submission.fileDetails.{Pending, Rejected}
 import models.{CRS, CRSReportType}
@@ -55,10 +55,10 @@ class RulesErrorControllerSpec extends SpecBase with RulesErrorHelper {
     reportType = CRSReportType.NewInformation,
     isFiUser = true,
     fiNameFromFim = "Some-fi-name",
-    fiPrimaryContactEmail = None,
-    fiSecondaryContactEmail = None,
-    subscriptionPrimaryContactEmail = "test@email.com",
-    subscriptionSecondaryContactEmail = None,
+    fiPrimaryContact = None,
+    fiSecondaryContact = None,
+    subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
+    subscriptionSecondaryContact = None,
     errors = Some(validationErrors),
     sendingCompanyIn = "some-company-in"
   )
