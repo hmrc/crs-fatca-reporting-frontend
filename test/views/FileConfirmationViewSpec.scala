@@ -38,6 +38,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
   implicit private val messages: Messages               = messagesControllerComponentsForView.messagesApi.preferred(Seq(Lang("en")))
 
   "FilePassedChecksView" - {
+    val manageReportPath = s"manage-reports-for-2025"
     val fd = FileDetailsModel(
       "name.xml",
       "c-8-new-f-va",
@@ -72,7 +73,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
         "Back to manage your CRS and FATCA reports"
       )
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, true, "EFG Bank plc")
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, true, "EFG Bank plc", manageReportPath)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getWindowTitle(doc) must include("File successfully sent")
@@ -83,6 +84,9 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
       validateListValues(getAllElements(doc, ".govuk-summary-list__value"), listOfValues)
       validateAllParaValues(getAllParagraph(doc).text(), listOfPara)
       validateListValues(getAllElements(doc, ".govuk-list"), listValues)
+
+      val electionsLink = doc.select("a:contains(make any elections for EFG Bank plc in the service)").first()
+      electionsLink.attr("href") mustEqual s"http://localhost:10039/crs-fatca-manual-submission-frontend/manage-reports-for-2025"
     }
 
     "should not render election para components" in {
@@ -92,7 +96,7 @@ class FileConfirmationViewSpec extends SpecBase with GuiceOneAppPerSuite with In
       val fileSummary = FileConfirmationViewModel.getSummaryRows(fileDetails)
       val paraContent = FileConfirmationViewModel.getEmailParagraphForFI("user1@email.com", None)
 
-      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false, fileDetails.reportingEntityName)
+      val renderedHtml: HtmlFormat.Appendable = view(fileSummary, paraContent, date, time, false, fileDetails.reportingEntityName, manageReportPath)
       lazy val doc                            = Jsoup.parse(renderedHtml.body)
 
       getAllParagraph(doc).text() mustNot include("You can make any elections for EFG Bank plc in the service.")

@@ -17,14 +17,14 @@
 package controllers
 
 import controllers.actions.*
-import models.fileDetails.FileDetailsModel
+import models.fileDetails.{FileDetails, FileDetailsModel}
 import models.submission.ConversationId
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.DateTimeFormats
 import utils.DateTimeFormats.dateFormatterForFileConfirmation
+import utils.{createManageReportPath, DateTimeFormats}
 import viewmodels.FileConfirmationViewModel
 import views.html.FileConfirmationView
 
@@ -67,7 +67,7 @@ class FileConfirmationController @Inject() (
             }
           val hasElectionFailed: Boolean = fileDetails.electionSubmitted.contains(false)
 
-          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim)))
+          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim, createManageReportPath(fileDetails))))
         case _ =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }

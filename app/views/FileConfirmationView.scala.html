@@ -28,7 +28,7 @@
         para: components.Paragraph
 )
 
-@(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean, fiName: String)(implicit request: Request[_], messages: Messages)
+@(fileSummary: SummaryList, paraContent: String, date: String, time: String, isElectionFailed: Boolean, fiName: String, manageReportPath: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("fileConfirmation.title")), showBackLink = false) {
 
@@ -41,7 +41,7 @@
     </div>
     @para(Html(messages("fileConfirmation.p1", paraContent)))
     @if(isElectionFailed){
-    @para(Html(messages("fileConfirmation.p2", link("#", "fileConfirmation.p2.link.text", messageArgs = Seq(fiName))))) <!--TODO : Add link to elections-->
+    @para(Html(messages("fileConfirmation.p2", link(appConfig.manageReport + "/" + manageReportPath, "fileConfirmation.p2.link.text", messageArgs = Seq(fiName))))) <!--TODO : Add link to elections-->
     }
     @heading(messages("fileConfirmation.subheading1"), size = "m",tag = "h2")
     @para(Html(messages("fileConfirmation.p3")))
