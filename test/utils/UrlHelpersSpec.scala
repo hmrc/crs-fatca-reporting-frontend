@@ -56,7 +56,7 @@ class UrlHelpersSpec extends SpecBase {
     "createManageReportPath" - {
       "return the correct path with encoded parameters" in {
         val expectedPath = "elections/manage-elections-for-2024?fiId=123456789&fiName=Test+Company+%26+Co."
-        createManageReportPath(fileDetails) mustEqual expectedPath
+        createManageElectionsPath(fileDetails) mustEqual expectedPath
       }
     }
   }

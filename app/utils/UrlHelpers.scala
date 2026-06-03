@@ -24,5 +24,5 @@ import java.nio.charset.StandardCharsets
 def encodeParam(value: String): String =
   URLEncoder.encode(value, StandardCharsets.UTF_8.name())
 
-def createManageReportPath(fileDetails: FileDetails): String =
+def createManageElectionsPath(fileDetails: FileDetails): String =
   s"elections/manage-elections-for-${fileDetails.reportingPeriod.getYear}?fiId=${fileDetails.sendingCompanyIn}&fiName=${encodeParam(fileDetails.fiNameFromFim)}"

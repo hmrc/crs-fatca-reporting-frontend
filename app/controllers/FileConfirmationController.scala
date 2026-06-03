@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.FileDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats.dateFormatterForFileConfirmation
-import utils.{createManageReportPath, DateTimeFormats}
+import utils.{createManageElectionsPath, DateTimeFormats}
 import viewmodels.FileConfirmationViewModel
 import views.html.FileConfirmationView
 
@@ -67,7 +67,7 @@ class FileConfirmationController @Inject() (
             }
           val hasElectionFailed: Boolean = fileDetails.electionSubmitted.contains(false)
 
-          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim, createManageReportPath(fileDetails))))
+          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim, createManageElectionsPath(fileDetails))))
         case _ =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
