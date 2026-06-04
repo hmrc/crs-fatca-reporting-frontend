@@ -25,7 +25,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, reset, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage, ValidXMLPage}
 import play.api.test.FakeRequest
@@ -123,7 +123,7 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
       verifyElectionsSubmitCalledOnce()
     }
 
-    "returns GiinAndElectionSubmittedSuccessful for a successful CRS election submission" in {
+    "returns GiinAndElectionSubmittedSuccessful for a successful CRS election submission With ElectCrsCarfGrossProceedsPage as False" in {
       lazy val uaWithBoth: UserAnswers = baseUaCRS
         .withPage(ReportElectionsPage, true)
         .withPage(ElectCrsCarfGrossProceedsPage, false)
@@ -143,7 +143,35 @@ class SubmissionServiceSpec extends SpecBase with BeforeAndAfterEach {
       electionsValue.reportingPeriod mustBe "2026"
       electionsValue.fatcaDetails mustBe None
       electionsValue.crsDetails.isDefined mustBe true
-      electionsValue.crsDetails.get mustBe CrsElectionsDetails(Some(false), Some(true), Some(false), Some(true))
+      electionsValue.crsDetails.get mustBe CrsElectionsDetails(None, Some(true), Some(false), Some(true))
+
+      result mustBe GiinAndElectionSubmittedSuccessful
+      verifyGiinUpdateNeverCalled()
+      verifyElectionsSubmitCalledOnce()
+    }
+
+    "returns GiinAndElectionSubmittedSuccessful for a successful CRS election submission" in {
+      lazy val uaWithBoth: UserAnswers = baseUaCRS
+        .withPage(ReportElectionsPage, true)
+        .withPage(ElectCrsCarfGrossProceedsPage, true)
+        .withPage(ElectCrsGrossProceedsPage, true)
+        .withPage(ElectCrsContractPage, true)
+        .withPage(DormantAccountsPage, false)
+        .withPage(ThresholdsPage, true)
+
+      when(mockConnector.submitElections(any[ElectionsSubmissionDetails])(using any[HeaderCarrier], any[ExecutionContext]))
+        .thenReturn(Future.successful(true))
+
+      val result = service.submitElectionsAndGiin(uaWithBoth).futureValue
+
+      val electionsSubmissionDetailsCaptor = ArgumentCaptor.forClass(classOf[ElectionsSubmissionDetails])
+      verify(mockConnector).submitElections(electionsSubmissionDetailsCaptor.capture())(using any[HeaderCarrier], any[ExecutionContext])
+      val electionsValue = electionsSubmissionDetailsCaptor.getValue
+      electionsValue.fiId mustBe "testFI"
+      electionsValue.reportingPeriod mustBe "2026"
+      electionsValue.fatcaDetails mustBe None
+      electionsValue.crsDetails.isDefined mustBe true
+      electionsValue.crsDetails.get mustBe CrsElectionsDetails(Some(true), Some(true), Some(false), Some(true))
 
       result mustBe GiinAndElectionSubmittedSuccessful
       verifyGiinUpdateNeverCalled()
