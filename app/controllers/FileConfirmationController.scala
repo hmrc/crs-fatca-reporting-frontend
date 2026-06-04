@@ -67,7 +67,9 @@ class FileConfirmationController @Inject() (
             }
           val hasElectionFailed: Boolean = fileDetails.electionSubmitted.contains(false)
 
-          Future.successful(Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim, createManageElectionsPath(fileDetails))))
+          Future.successful(
+            Ok(view(fileSummary, paraContent, date, time, hasElectionFailed, fileDetails.fiNameFromFim, createManageElectionsPath(fileDetails)))
+          )
         case _ =>
           Future.successful(Redirect(controllers.routes.PageUnavailableController.onPageLoad().url))
       }
