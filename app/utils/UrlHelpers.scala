@@ -18,11 +18,5 @@ package utils
 
 import models.fileDetails.FileDetails
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-
-def encodeParam(value: String): String =
-  URLEncoder.encode(value, StandardCharsets.UTF_8.name())
-
 def createManageElectionsPath(fileDetails: FileDetails): String =
-  s"elections/manage-elections-for-${fileDetails.reportingPeriod.getYear}?fiId=${fileDetails.sendingCompanyIn}&fiName=${encodeParam(fileDetails.fiNameFromFim)}"
+  s"elections/manage-elections-for-${fileDetails.reportingPeriod.getYear}?fiId=${fileDetails.sendingCompanyIn}"

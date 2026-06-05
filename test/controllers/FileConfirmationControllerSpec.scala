@@ -97,7 +97,7 @@ class FileConfirmationControllerSpec extends SpecBase {
         resultHtml must include("test@email.com")
         resultHtml must include("make any elections for Some fi name in the service")
         resultHtml must include(
-          "http://localhost:10039/crs-fatca-manual-submission-frontend/elections/manage-elections-for-2026?fiId=123456&amp;fiName=Some+fi+name"
+          "http://localhost:10039/crs-fatca-manual-submission-frontend/elections/manage-elections-for-2026?fiId=123456"
         )
       }
     }
