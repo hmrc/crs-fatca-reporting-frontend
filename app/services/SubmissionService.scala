@@ -22,7 +22,7 @@ import models.{CRS, FATCA, UserAnswers}
 import models.UserAnswers.extractMessageSpecData
 import models.requests.DataRequest
 import models.submission.*
-import pages.elections.crs.{DormantAccountsPage, ElectCrsCarfGrossProceedsPage, ElectCrsContractPage, ThresholdsPage}
+import pages.elections.crs.{DormantAccountsPage, ElectCrsContractPage, ElectCrsGrossProceedsPage, ThresholdsPage}
 import pages.elections.fatca.{ElectFatcaThresholdsPage, TreasuryRegulationsPage}
 import pages.{ReportElectionsPage, RequiredGiinPage}
 import play.api.Logging
@@ -90,7 +90,7 @@ class SubmissionService @Inject() (val connector: SubmissionConnector) extends L
             val fiId            = messageSpecData.sendingCompanyIN
             val reportingPeriod = messageSpecData.reportingPeriod.getYear.toString
 
-            val crsHasCARF            = userAnswers.get(ElectCrsCarfGrossProceedsPage).fold(None)(Some(_))
+            val crsHasCARF            = userAnswers.get(ElectCrsGrossProceedsPage).fold(None)(Some(_))
             val crsHasContracts       = userAnswers.get(ElectCrsContractPage).fold(None)(Some(_))
             val crsHasDormantAccounts = userAnswers.get(DormantAccountsPage).fold(None)(Some(_))
             val crsHasThresholds      = userAnswers.get(ThresholdsPage).fold(None)(Some(_))
