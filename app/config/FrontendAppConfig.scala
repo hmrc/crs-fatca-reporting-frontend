@@ -39,6 +39,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration, servicesConfig:
   val signOutUrl: String       = configuration.get[String]("urls.signOut")
   val manageFI: String         = configuration.get[String]("urls.manageFI")
   val yourFIs: String          = configuration.get[String]("urls.yourFIs")
+  val manageSubmission: String = configuration.get[String]("urls.manageSubmission")
   lazy val registerUrl: String = configuration.get[String]("urls.register")
 
   val emailEnquiries: String = configuration.get[String]("urls.emailEnquiries")

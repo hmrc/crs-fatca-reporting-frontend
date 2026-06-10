@@ -62,13 +62,13 @@ class FileConfirmationControllerSpec extends SpecBase {
       messageType = CRS,
       reportType = CRSReportType.NewInformation,
       isFiUser = true,
-      fiNameFromFim = "Some-fi-name",
+      fiNameFromFim = "Some fi name",
       fiPrimaryContact = None,
       fiSecondaryContact = None,
       subscriptionPrimaryContact = ContactInfo("testUser", "test@email.com"),
       subscriptionSecondaryContact = None,
       electionSubmitted = Some(false),
-      sendingCompanyIn = "Some-company-in"
+      sendingCompanyIn = "123456"
     )
 
     "must return OK and the correct view for a GET" in {
@@ -95,7 +95,10 @@ class FileConfirmationControllerSpec extends SpecBase {
         resultHtml must include("12 September 2025")
         resultHtml must include("12:01pm")
         resultHtml must include("test@email.com")
-        resultHtml must include("make any elections for Some-fi-name in the service")
+        resultHtml must include("make any elections for Some fi name in the service")
+        resultHtml must include(
+          "http://localhost:10039/crs-fatca-manual-submission-frontend/elections/manage-elections-for-2026?fiId=123456"
+        )
       }
     }
 
