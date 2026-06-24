@@ -95,6 +95,13 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSAccountType extends BusinessRuleErrorCode("CRS Error Code 68")
   case CRSPoolReport extends BusinessRuleErrorCode("CRS Error Code 69")
 
+  //Fatca
+  case FATCAFailedThreatScan extends BusinessRuleErrorCode("FATCA Error Code 1")
+  case FATCAEmojis extends BusinessRuleErrorCode("FATCA Error Code 3")
+  case FATCAMessageRefIdInvalidFormat extends BusinessRuleErrorCode("FATCA Error Code 7")
+  case FATCAFileNameMessageRefIdMismatch extends BusinessRuleErrorCode("FATCA Error Code 8")
+
+
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
 object BusinessRuleErrorCode:
@@ -170,7 +177,12 @@ object BusinessRuleErrorCode:
     CRSCashValueInsuranceContractOrAnnuityContract2,
     CRSDDProcedure,
     CRSAccountType,
-    CRSPoolReport
+    CRSPoolReport,
+    //FATCA
+    FATCAFailedThreatScan,
+    FATCAEmojis,
+    FATCAMessageRefIdInvalidFormat,
+    FATCAFileNameMessageRefIdMismatch
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

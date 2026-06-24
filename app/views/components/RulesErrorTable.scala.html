@@ -149,6 +149,44 @@
             <li>{messages("crs.code.59.bullet1")}</li>
             <li>{messages("crs.code.59.bullet2")}</li>
         </ul>
+        case FATCAFailedThreatScan.code =>
+            <p class="govuk-body">{messages("fatca.code.1.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.1.bullet1")}</li>
+                <li>{messages("fatca.code.1.bullet2")}</li>
+                <li>{messages("fatca.code.1.bullet3")}</li>
+            </ul>
+            <p class="govuk-!-margin-top-4">{messages("fatca.code.1.intro.2")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.1.bullet4")}</li>
+                <li>{messages("fatca.code.1.bullet5")}</li>
+                <li>{messages("fatca.code.1.bullet6")}</li>
+                <li>{messages("fatca.code.1.bullet7")}</li>
+                <li>{messages("fatca.code.1.bullet8")}</li>
+            </ul>
+            <p class="govuk-!-margin-top-4">{messages("fatca.code.1.intro.3")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.1.bullet9")}</li>
+                <li>{messages("fatca.code.1.bullet10")}</li>
+                <li>{messages("fatca.code.1.bullet11")}</li>
+                <li>{messages("fatca.code.1.bullet12")}</li>
+                <li>{messages("fatca.code.1.bullet13")}</li>
+            </ul>
+        case FATCAMessageRefIdInvalidFormat.code =>
+            <p class="govuk-body">{messages("fatca.code.7.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.7.bullet1")}</li>
+                <li>{messages("fatca.code.7.bullet2")}</li>
+                <li>{messages("fatca.code.7.bullet1")}</li>
+                <li>{messages("fatca.code.7.bullet3")}</li>
+                <li>{messages("fatca.code.7.bullet4")}</li>
+                <li>{messages("fatca.code.7.bullet3")}</li>
+                <li>{messages("fatca.code.7.bullet5")}</li>
+            </ul>
+        case FATCAFileNameMessageRefIdMismatch.code =>
+            <p class="govuk-body">{messages("fatca.code.8.paragraph1")}</p>
+            <p class="govuk-!-margin-top-3">{messages("fatca.code.8.paragraph2")}</p>
+            <p class="govuk-!-margin-top-3">{messages("fatca.code.8.paragraph3")}</p>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 
