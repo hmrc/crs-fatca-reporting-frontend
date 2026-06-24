@@ -79,3 +79,7 @@ lazy val it =
   (project in file("it"))
     .enablePlugins(PlayScala)
     .dependsOn(microservice % "test->test")
+addCommandAlias(
+  "precommit",
+  "; clean ; scalafmtAll ; coverage ; test ; it/test ; coverageReport ; coverageOff"
+)
