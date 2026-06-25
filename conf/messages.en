@@ -531,6 +531,46 @@ fatca.code.19.bullet7 = 3 numbers
 fatca.code.20.intro = These sections must contain a TIN element:
 fatca.code.20.bullet1 = ReportingFI
 fatca.code.20.bullet2 = Sponsor, Individual and Organisation, if provided
+fatca.code.21.value = A TIN must have an issuedBy attribute.
+fatca.code.22.intro = If not a GIIN, TIN values outside of the ReportingFI and Sponsor must be in one of the following formats:
+fatca.code.22.bullet1 = 3 numbers, a hyphen (-), 2 numbers, a hyphen (-) and 4 numbers
+fatca.code.22.bullet2 = 2 numbers, a hyphen (-) and 7 numbers
+fatca.code.22.bullet3 = 9 numbers
+fatca.code.22.paragraph = For example, 123-45-3789, 12-3456789 or 123456789.
+fatca.code.23.paragraph1 = Sponsor section must contain only one TIN that has an issuedBy attribute value of ‘US’.
+fatca.code.23.paragraph2 = The TIN value must be in a 19-character GIIN format and include the following in the order referenced:
+fatca.code.23.bullet1 = 6 letters or numbers, excluding ‘O’
+fatca.code.23.bullet2 = one full stop (.)
+fatca.code.23.bullet3 = 5 letters or numbers, excluding ‘O’
+fatca.code.23.bullet4 = one full stop (.)
+fatca.code.23.bullet5 = 2 letters, excluding ‘O’
+fatca.code.23.bullet6 = one full stop (.)
+fatca.code.23.bullet7 = 3 numbers
+fatca.code.24.value = Individual Name element must not contain the nameType attribute.
+fatca.code.25.value = Address element must not contain the legalAddressType attribute.
+fatca.code.26.value = Address element must contain the AddressFix element.
+fatca.code.27.value = ReportingFI FilerCategory value must not be FATCA603, FATCA604, FATCA605, FATCA606, FATCA607, FATCA608, FATCA609 or FATCA611.
+fatca.code.28.intro = The file must contain the ReportingFI FilerCategory if both of the following apply:
+fatca.code.28.bullet1 = ReportingFI DocTypeIndic is FATCA1
+fatca.code.28.bullet2 = the file does not contain a Sponsor section
+fatca.code.29.intro = The file must contain the Sponsor FilerCategory and not the ReportingFI FilerCategory if both of the following apply:
+fatca.code.29.bullet1 = ReportingFI DocTypeIndic is FATCA1
+fatca.code.29.bullet2 = the file contains a Sponsor element
+fatca.code.30.intro = The file must not contain the ReportingFI FilerCategory element if both of the following apply:
+fatca.code.30.bullet1 = ReportingFI DocTypeIndic is FATCA2 or FATCA4
+fatca.code.30.bullet2 = the file does not contain a Sponsor element but its FATCA1 file did
+fatca.code.31.intro = The file must not contain the ReportingFI FilerCategory element if both of the following apply:
+fatca.code.31.bullet1 = ReportingFI DocTypeIndic is FATCA2 or FATCA4
+fatca.code.31.bullet2 = this file and its FATCA1 file do not contain a Sponsor element
+fatca.code.32.intro = The file must contain the Sponsor FilerCategory and not the ReportingFI FilerCategory if both of the following apply:
+fatca.code.32.bullet1 =  ReportingFI DocTypeIndic is FATCA2 or FATCA4
+fatca.code.32.bullet2 = the file contains a Sponsor section
+
+
+
+
+
+
 
 xml.elem.missing = {0} element is missing
 xml.section.missing = {0} section is missing

@@ -113,6 +113,18 @@ enum BusinessRuleErrorCode(val code: String):
   case FATCAReportingFIResCountryCode extends BusinessRuleErrorCode("FATCA Error Code 18")
   case FATCAReportingFITin extends BusinessRuleErrorCode("FATCA Error Code 19")
   case FATCATinMissing extends BusinessRuleErrorCode("FATCA Error Code 20")
+  case FATCATinIssuedByAttributeMissing extends BusinessRuleErrorCode("FATCA Error Code 21")
+  case FATCAUSIssuedTin extends BusinessRuleErrorCode("FATCA Error Code 22")
+  case FATCASponsorTin extends BusinessRuleErrorCode("FATCA Error Code 23")
+  case FATCANameType extends BusinessRuleErrorCode("FATCA Error Code 24")
+  case FATCAlegalAddressType extends BusinessRuleErrorCode("FATCA Error Code 25")
+  case FATCAlegalAddressAddressFix extends BusinessRuleErrorCode("FATCA Error Code 26")
+  case FATCAReportingFIFilerCategory extends BusinessRuleErrorCode("FATCA Error Code 27")
+  case FATCAFilerCategory1 extends BusinessRuleErrorCode("FATCA Error Code 28")
+  case FATCAFilerCategory2 extends BusinessRuleErrorCode("FATCA Error Code 29")
+  case FATCAFilerCategory3 extends BusinessRuleErrorCode("FATCA Error Code 30")
+  case FATCAFilerCategory4 extends BusinessRuleErrorCode("FATCA Error Code 31")
+  case FATCAFilerCategory5 extends BusinessRuleErrorCode("FATCA Error Code 32")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -206,7 +218,19 @@ object BusinessRuleErrorCode:
     FATCAChangingReportingPeriod,
     FATCAMultipleReportingGroup,
     FATCAReportingFIResCountryCode,
-    FATCATinMissing
+    FATCATinMissing,
+    FATCATinIssuedByAttributeMissing,
+    FATCAUSIssuedTin,
+    FATCASponsorTin,
+    FATCANameType,
+    FATCAlegalAddressType,
+    FATCAlegalAddressAddressFix,
+    FATCAReportingFIFilerCategory,
+    FATCAFilerCategory1,
+    FATCAFilerCategory2,
+    FATCAFilerCategory3,
+    FATCAFilerCategory4,
+    FATCAFilerCategory5
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

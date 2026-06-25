@@ -205,7 +205,62 @@
                 <li>{messages("fatca.code.20.bullet1")}</li>
                 <li>{messages("fatca.code.20.bullet2")}</li>
             </ul>
-
+        case FATCAUSIssuedTin.code =>
+            <p class="govuk-body">{messages("fatca.code.22.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.22.bullet1")}</li>
+                <li>{messages("fatca.code.22.bullet2")}</li>
+                <li>{messages("fatca.code.22.bullet3")}</li>
+            </ul>
+            <p class="govuk-!-margin-top-4">{messages("fatca.code.22.paragraph")}</p>
+        case FATCASponsorTin.code =>
+            <p class="govuk-body">{messages("fatca.code.23.paragraph1")}</p>
+            <p class="govuk-!-margin-top-3">{messages("fatca.code.23.paragraph2")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.23.bullet1")}</li>
+                <li>{messages("fatca.code.23.bullet2")}</li>
+                <li>{messages("fatca.code.23.bullet3")}</li>
+                <li>{messages("fatca.code.23.bullet4")}</li>
+                <li>{messages("fatca.code.23.bullet5")}</li>
+                <li>{messages("fatca.code.23.bullet6")}</li>
+                <li>{messages("fatca.code.23.bullet7")}</li>
+            </ul>
+        case FATCAFilerCategory1.code =>
+            <p class="govuk-body">{messages("fatca.code.28.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.28.bullet1")}</li>
+                <li>{messages("fatca.code.28.bullet2")}</li>
+            </ul>
+        case FATCAFilerCategory2.code =>
+            <p class="govuk-body">{messages("fatca.code.29.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.29.bullet1")}</li>
+                <li>{messages("fatca.code.29.bullet2")}</li>
+            </ul>
+        case FATCAFilerCategory3.code =>
+            <p class="govuk-body">{messages("fatca.code.30.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.30.bullet1")}</li>
+                <li>{messages("fatca.code.30.bullet2")}</li>
+            </ul>
+        case FATCAFilerCategory3.code =>
+            <p class="govuk-body">{messages("fatca.code.30.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.30.bullet1")}</li>
+                <li>{messages("fatca.code.30.bullet2")}</li>
+            </ul>
+        case FATCAFilerCategory4.code =>
+            <p class="govuk-body">{messages("fatca.code.31.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.31.bullet1")}</li>
+                <li>{messages("fatca.code.31.bullet2")}</li>
+            </ul>
+        case FATCAFilerCategory5.code =>
+            <p class="govuk-body">{messages("fatca.code.32.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.32.bullet1")}</li>
+                <li>{messages("fatca.code.32.bullet2")}</li>
+            </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 
