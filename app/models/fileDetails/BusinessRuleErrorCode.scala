@@ -125,6 +125,12 @@ enum BusinessRuleErrorCode(val code: String):
   case FATCAFilerCategory3 extends BusinessRuleErrorCode("FATCA Error Code 30")
   case FATCAFilerCategory4 extends BusinessRuleErrorCode("FATCA Error Code 31")
   case FATCAFilerCategory5 extends BusinessRuleErrorCode("FATCA Error Code 32")
+  case FATCATestData extends BusinessRuleErrorCode("FATCA Error Code 35")
+  case FATCADocTypeIndicCombinationInvalid extends BusinessRuleErrorCode("FATCA Error Code 36")
+  case FATCADocRefIdInvalidFormat extends BusinessRuleErrorCode("FATCA Error Code 37")
+  case FATCADuplicateDocRefIds extends BusinessRuleErrorCode("FATCA Error Code 38")
+  case FATCADocSpecCorrMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 39")
+  case FATCAFactca1CorrDocRefId extends BusinessRuleErrorCode("FATCA Error Code 40")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -230,7 +236,13 @@ object BusinessRuleErrorCode:
     FATCAFilerCategory2,
     FATCAFilerCategory3,
     FATCAFilerCategory4,
-    FATCAFilerCategory5
+    FATCAFilerCategory5,
+    FATCATestData,
+    FATCADocTypeIndicCombinationInvalid,
+    FATCADocRefIdInvalidFormat,
+    FATCADuplicateDocRefIds,
+    FATCADocSpecCorrMessageRefId,
+    FATCAFactca1CorrDocRefId
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

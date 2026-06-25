@@ -243,12 +243,6 @@
                 <li>{messages("fatca.code.30.bullet1")}</li>
                 <li>{messages("fatca.code.30.bullet2")}</li>
             </ul>
-        case FATCAFilerCategory3.code =>
-            <p class="govuk-body">{messages("fatca.code.30.intro")}</p>
-            <ul class="govuk-list govuk-list--bullet">
-                <li>{messages("fatca.code.30.bullet1")}</li>
-                <li>{messages("fatca.code.30.bullet2")}</li>
-            </ul>
         case FATCAFilerCategory4.code =>
             <p class="govuk-body">{messages("fatca.code.31.intro")}</p>
             <ul class="govuk-list govuk-list--bullet">
@@ -260,6 +254,16 @@
             <ul class="govuk-list govuk-list--bullet">
                 <li>{messages("fatca.code.32.bullet1")}</li>
                 <li>{messages("fatca.code.32.bullet2")}</li>
+            </ul>
+        case FATCADocRefIdInvalidFormat.code =>
+            <p class="govuk-body">{messages("fatca.code.37.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.37.bullet1")}</li>
+                <li>{messages("fatca.code.37.bullet2")}</li>
+                <li>{messages("fatca.code.37.bullet3")}</li>
+                <li>{messages("fatca.code.37.bullet4")}</li>
+                <li>{messages("fatca.code.37.bullet5")}</li>
+                <li>{messages("fatca.code.37.bullet6")}</li>
             </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}

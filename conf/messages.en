@@ -565,9 +565,18 @@ fatca.code.31.bullet2 = this file and its FATCA1 file do not contain a Sponsor e
 fatca.code.32.intro = The file must contain the Sponsor FilerCategory and not the ReportingFI FilerCategory if both of the following apply:
 fatca.code.32.bullet1 =  ReportingFI DocTypeIndic is FATCA2 or FATCA4
 fatca.code.32.bullet2 = the file contains a Sponsor section
-
-
-
+fatca.code.35.value = DocTypeIndic contains a value that indicates the file contains test data, like FATCA11, FATCA12, FATCA13 or FATCA14. Replace the test data value with a value for real data, such as FATCA1, FATCA2 or FATCA4.
+fatca.code.36.value = All DocTypeIndic values must be the same throughout the file. The values must be either FATCA1, FATCA2 or FATCA4.
+fatca.code.37.intro = DocRefId element must be from 44 to 90 characters and include the following in the order referenced:
+fatca.code.37.bullet1 = the same value as the year from the MessageSpec ReportingPeriod in the format ‘YYYY’
+fatca.code.37.bullet2 = a hyphen (-)
+fatca.code.37.bullet3 = the same value as the 13-character FI ID from the MessageSpec SendingCompanyIN
+fatca.code.37.bullet4 = a hyphen (-)
+fatca.code.37.bullet5 = the same value as the MessageRefId for this submission
+fatca.code.37.bullet6 = 1 to 24 characters of your choice to make the ID unique
+fatca.code.38.value = DocRefId values must be unique across all submitted files. We only keep a record of these IDs for successfully sent files.
+fatca.code.39.value = DocSpec section must not contain a CorrMessageRefId element.
+fatca.code.40.value = If the DocTypeIndic is FATCA1, the DocSpec section must not contain a CorrDocRefId element.
 
 
 
