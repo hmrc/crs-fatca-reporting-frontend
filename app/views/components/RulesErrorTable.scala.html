@@ -187,6 +187,25 @@
             <p class="govuk-body">{messages("fatca.code.8.paragraph1")}</p>
             <p class="govuk-!-margin-top-3">{messages("fatca.code.8.paragraph2")}</p>
             <p class="govuk-!-margin-top-3">{messages("fatca.code.8.paragraph3")}</p>
+        case FATCAReportingFITin.code =>
+            <p class="govuk-body">{messages("fatca.code.19.paragraph1")}</p>
+            <p class="govuk-!-margin-top-3">{messages("fatca.code.19.paragraph2")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.19.bullet1")}</li>
+                <li>{messages("fatca.code.19.bullet2")}</li>
+                <li>{messages("fatca.code.19.bullet3")}</li>
+                <li>{messages("fatca.code.19.bullet4")}</li>
+                <li>{messages("fatca.code.19.bullet5")}</li>
+                <li>{messages("fatca.code.19.bullet6")}</li>
+                <li>{messages("fatca.code.19.bullet7")}</li>
+            </ul>
+        case FATCATinMissing.code =>
+            <p class="govuk-body">{messages("fatca.code.20.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.20.bullet1")}</li>
+                <li>{messages("fatca.code.20.bullet2")}</li>
+            </ul>
+
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
 

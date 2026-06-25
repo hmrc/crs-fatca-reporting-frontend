@@ -95,12 +95,24 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSAccountType extends BusinessRuleErrorCode("CRS Error Code 68")
   case CRSPoolReport extends BusinessRuleErrorCode("CRS Error Code 69")
 
-  //Fatca
+  // Fatca
   case FATCAFailedThreatScan extends BusinessRuleErrorCode("FATCA Error Code 1")
   case FATCAEmojis extends BusinessRuleErrorCode("FATCA Error Code 3")
+  case FATCAEmptyMandatoryElements extends BusinessRuleErrorCode("FATCA Error Code 4")
+  case FATCASendCompanyIn extends BusinessRuleErrorCode("FATCA Error Code 5")
   case FATCAMessageRefIdInvalidFormat extends BusinessRuleErrorCode("FATCA Error Code 7")
   case FATCAFileNameMessageRefIdMismatch extends BusinessRuleErrorCode("FATCA Error Code 8")
-
+  case FATCADuplicateMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 9")
+  case FATCAMessageSpecCorrMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 10")
+  case FATCAReportingPeriodEndDate extends BusinessRuleErrorCode("FATCA Error Code 11")
+  case FATCAReportingPeriodEarlyDate extends BusinessRuleErrorCode("FATCA Error Code 12")
+  case FATCAReportingPeriodFutureDate extends BusinessRuleErrorCode("FATCA Error Code 13")
+  case FATCAMultipleReportingFIs extends BusinessRuleErrorCode("FATCA Error Code 14")
+  case FATCAChangingReportingPeriod extends BusinessRuleErrorCode("FATCA Error Code 15")
+  case FATCAMultipleReportingGroup extends BusinessRuleErrorCode("FATCA Error Code 17")
+  case FATCAReportingFIResCountryCode extends BusinessRuleErrorCode("FATCA Error Code 18")
+  case FATCAReportingFITin extends BusinessRuleErrorCode("FATCA Error Code 19")
+  case FATCATinMissing extends BusinessRuleErrorCode("FATCA Error Code 20")
 
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
@@ -178,11 +190,23 @@ object BusinessRuleErrorCode:
     CRSDDProcedure,
     CRSAccountType,
     CRSPoolReport,
-    //FATCA
+    // FATCA
     FATCAFailedThreatScan,
     FATCAEmojis,
+    FATCASendCompanyIn,
+    FATCAEmptyMandatoryElements,
     FATCAMessageRefIdInvalidFormat,
-    FATCAFileNameMessageRefIdMismatch
+    FATCAFileNameMessageRefIdMismatch,
+    FATCADuplicateMessageRefId,
+    FATCAMessageSpecCorrMessageRefId,
+    FATCAReportingPeriodEndDate,
+    FATCAReportingPeriodEarlyDate,
+    FATCAReportingPeriodFutureDate,
+    FATCAMultipleReportingFIs,
+    FATCAChangingReportingPeriod,
+    FATCAMultipleReportingGroup,
+    FATCAReportingFIResCountryCode,
+    FATCATinMissing
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =
