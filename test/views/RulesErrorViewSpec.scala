@@ -137,7 +137,7 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
           RecordError(BusinessRuleErrorCode.FATCAPaymentTypeDesc, Some("DocRefId1"), Some(Seq("DocRefId2")))
         )
         val validationErrors = FileValidationErrors(None, Some(recordErrors))
-        val viewModel = FileRejectedViewModel(validationErrors)
+        val viewModel        = FileRejectedViewModel(validationErrors)
 
         val expectedRows = Seq(
           Seq("FATCA 3", "DocRefId1 DocRefId2", "The file must not contain emoji Unicode characters."),
@@ -146,7 +146,7 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
         )
 
         val renderedHtml = view(fileName, regimeType, expectedRows.size, viewModel)
-        val doc = Jsoup.parse(renderedHtml.body)
+        val doc          = Jsoup.parse(renderedHtml.body)
 
         doc.select(".govuk-table__body .govuk-table__row").size() mustEqual expectedRows.size
 
