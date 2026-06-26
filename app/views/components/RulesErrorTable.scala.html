@@ -166,11 +166,11 @@
             </ul>
             <p class="govuk-!-margin-top-4">{messages("fatca.code.1.intro.3")}</p>
             <ul class="govuk-list govuk-list--bullet">
-                <li>{messages("fatca.code.1.bullet9")}</li>
-                <li>{messages("fatca.code.1.bullet10")}</li>
-                <li>{messages("fatca.code.1.bullet11")}</li>
-                <li>{messages("fatca.code.1.bullet12")}</li>
-                <li>{messages("fatca.code.1.bullet13")}</li>
+                <li>{messages("fatca.code.1.bullet9")} <code class="code--slim">{messages("apos.value")}</code></li>
+                <li>{messages("fatca.code.1.bullet10")} <code class="code--slim">{messages("quote.value")}</code></li>
+                <li>{messages("fatca.code.1.bullet11")} <code class="code--slim">{messages("ampersand.value")}</code></li>
+                <li>{messages("fatca.code.1.bullet12")} <code class="code--slim">{messages("lt.value")}</code></li>
+                <li>{messages("fatca.code.1.bullet13")} <code class="code--slim">{messages("gt.value")}</code></li>
             </ul>
         case FATCAMessageRefIdInvalidFormat.code =>
             <p class="govuk-body">{messages("fatca.code.7.intro")}</p>
@@ -264,6 +264,41 @@
                 <li>{messages("fatca.code.37.bullet4")}</li>
                 <li>{messages("fatca.code.37.bullet5")}</li>
                 <li>{messages("fatca.code.37.bullet6")}</li>
+            </ul>
+        case FATCANilReport.code =>
+            <p class="govuk-body">{messages("fatca.code.46.paragraph1")}</p>
+            <p class="govuk-!-margin-top-3">{messages("fatca.code.46.paragraph2")}</p>
+        case FATCARegimeIncorrect2.code =>
+            <p class="govuk-body">{messages("fatca.code.51.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.51.bullet1")}</li>
+                <li>{messages("fatca.code.51.bullet2")}</li>
+            </ul>
+        case FATCAIndividualTINCodes.code =>
+            <p class="govuk-body">{messages("fatca.code.53.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.53.bullet1")}</li>
+                <li>{messages("fatca.code.53.bullet2")}</li>
+            </ul>
+        case FATCAOrganisationTINCodes.code =>
+            <p class="govuk-body">{messages("fatca.code.54.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.54.bullet1")}</li>
+                <li>{messages("fatca.code.54.bullet2")}</li>
+            </ul>
+        case FATCAIBANFormatInvalid.code =>
+            <p class="govuk-body">{messages("fatca.code.55.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.55.bullet1")}</li>
+                <li>{messages("fatca.code.55.bullet2")}</li>
+                <li>{messages("fatca.code.55.bullet3")}</li>
+            </ul>
+        case FATCAISINFormatInvalid.code =>
+            <p class="govuk-body">{messages("fatca.code.56.intro")}</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>{messages("fatca.code.56.bullet1")}</li>
+                <li>{messages("fatca.code.56.bullet2")}</li>
+                <li>{messages("fatca.code.56.bullet3")}</li>
             </ul>
         case _ =>
             {messages(s"${regimentType.toLowerCase()}.code.${removeErrorCodeText(code)}.value")}
