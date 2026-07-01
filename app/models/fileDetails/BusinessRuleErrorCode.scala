@@ -95,6 +95,67 @@ enum BusinessRuleErrorCode(val code: String):
   case CRSAccountType extends BusinessRuleErrorCode("CRS Error Code 68")
   case CRSPoolReport extends BusinessRuleErrorCode("CRS Error Code 69")
 
+  // Fatca
+  case FATCAFailedThreatScan extends BusinessRuleErrorCode("FATCA Error Code 1")
+  case FATCAEmojis extends BusinessRuleErrorCode("FATCA Error Code 3")
+  case FATCAEmptyMandatoryElements extends BusinessRuleErrorCode("FATCA Error Code 4")
+  case FATCASendCompanyIn extends BusinessRuleErrorCode("FATCA Error Code 5")
+  case FATCAMessageRefIdInvalidFormat extends BusinessRuleErrorCode("FATCA Error Code 7")
+  case FATCAFileNameMessageRefIdMismatch extends BusinessRuleErrorCode("FATCA Error Code 8")
+  case FATCADuplicateMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 9")
+  case FATCAMessageSpecCorrMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 10")
+  case FATCAReportingPeriodEndDate extends BusinessRuleErrorCode("FATCA Error Code 11")
+  case FATCAReportingPeriodEarlyDate extends BusinessRuleErrorCode("FATCA Error Code 12")
+  case FATCAReportingPeriodFutureDate extends BusinessRuleErrorCode("FATCA Error Code 13")
+  case FATCAMultipleReportingFIs extends BusinessRuleErrorCode("FATCA Error Code 14")
+  case FATCAChangingReportingPeriod extends BusinessRuleErrorCode("FATCA Error Code 15")
+  case FATCAMultipleReportingGroup extends BusinessRuleErrorCode("FATCA Error Code 17")
+  case FATCAReportingFIResCountryCode extends BusinessRuleErrorCode("FATCA Error Code 18")
+  case FATCAReportingFITin extends BusinessRuleErrorCode("FATCA Error Code 19")
+  case FATCATinMissing extends BusinessRuleErrorCode("FATCA Error Code 20")
+  case FATCATinIssuedByAttributeMissing extends BusinessRuleErrorCode("FATCA Error Code 21")
+  case FATCAUSIssuedTin extends BusinessRuleErrorCode("FATCA Error Code 22")
+  case FATCASponsorTin extends BusinessRuleErrorCode("FATCA Error Code 23")
+  case FATCANameType extends BusinessRuleErrorCode("FATCA Error Code 24")
+  case FATCAlegalAddressType extends BusinessRuleErrorCode("FATCA Error Code 25")
+  case FATCAlegalAddressAddressFix extends BusinessRuleErrorCode("FATCA Error Code 26")
+  case FATCAReportingFIFilerCategory extends BusinessRuleErrorCode("FATCA Error Code 27")
+  case FATCAFilerCategory1 extends BusinessRuleErrorCode("FATCA Error Code 28")
+  case FATCAFilerCategory2 extends BusinessRuleErrorCode("FATCA Error Code 29")
+  case FATCAFilerCategory3 extends BusinessRuleErrorCode("FATCA Error Code 30")
+  case FATCAFilerCategory4 extends BusinessRuleErrorCode("FATCA Error Code 31")
+  case FATCAFilerCategory5 extends BusinessRuleErrorCode("FATCA Error Code 32")
+  case FATCATestData extends BusinessRuleErrorCode("FATCA Error Code 35")
+  case FATCADocTypeIndicCombinationInvalid extends BusinessRuleErrorCode("FATCA Error Code 36")
+  case FATCADocRefIdInvalidFormat extends BusinessRuleErrorCode("FATCA Error Code 37")
+  case FATCADuplicateDocRefIds extends BusinessRuleErrorCode("FATCA Error Code 38")
+  case FATCADocSpecCorrMessageRefId extends BusinessRuleErrorCode("FATCA Error Code 39")
+  case FATCAFactca1CorrDocRefId extends BusinessRuleErrorCode("FATCA Error Code 40")
+  case FATCACorrDocRefIdMissing extends BusinessRuleErrorCode("FATCA Error Code 41")
+  case FATCADuplicateCorrDocRefIds extends BusinessRuleErrorCode("FATCA Error Code 42")
+  case FATCACorrDocRefIdInvalid extends BusinessRuleErrorCode("FATCA Error Code 43")
+  case FATCACorrDocRefIdUnknown extends BusinessRuleErrorCode("FATCA Error Code 44")
+  case FATCAInvalidCorrDocRefId extends BusinessRuleErrorCode("FATCA Error Code 45")
+  case FATCANilReport extends BusinessRuleErrorCode("FATCA Error Code 46")
+  case FATCAReportingGroup extends BusinessRuleErrorCode("FATCA Error Code 47")
+  case FATCAResCountryCodeMissing extends BusinessRuleErrorCode("FATCA Error Code 48")
+  case FATCAResCountryCodeUS extends BusinessRuleErrorCode("FATCA Error Code 49")
+  case FATCARegimeIncorrect1 extends BusinessRuleErrorCode("FATCA Error Code 50")
+  case FATCARegimeIncorrect2 extends BusinessRuleErrorCode("FATCA Error Code 51")
+  case FATCASponsorFilerCategory extends BusinessRuleErrorCode("FATCA Error Code 52")
+  case FATCAIndividualTINCodes extends BusinessRuleErrorCode("FATCA Error Code 53")
+  case FATCAOrganisationTINCodes extends BusinessRuleErrorCode("FATCA Error Code 54")
+  case FATCAIBANFormatInvalid extends BusinessRuleErrorCode("FATCA Error Code 55")
+  case FATCAISINFormatInvalid extends BusinessRuleErrorCode("FATCA Error Code 56")
+  case FATCAOrganisationAcctHolderType extends BusinessRuleErrorCode("FATCA Error Code 57")
+  case FATCANationality extends BusinessRuleErrorCode("FATCA Error Code 58")
+  case FATCABirthDateRange extends BusinessRuleErrorCode("FATCA Error Code 59")
+  case FATCASubstantialOwner extends BusinessRuleErrorCode("FATCA Error Code 61")
+  case FATCAPaymentTypeDesc extends BusinessRuleErrorCode("FATCA Error Code 62")
+  case FATCACARRef extends BusinessRuleErrorCode("FATCA Error Code 63")
+  case FATCAAdditionalData extends BusinessRuleErrorCode("FATCA Error Code 64")
+  case FATCA_SubstantialOwner extends BusinessRuleErrorCode("FATCA Error Code 65")
+
   case UnknownErrorCode(override val code: String) extends BusinessRuleErrorCode(code)
 
 object BusinessRuleErrorCode:
@@ -170,7 +231,66 @@ object BusinessRuleErrorCode:
     CRSCashValueInsuranceContractOrAnnuityContract2,
     CRSDDProcedure,
     CRSAccountType,
-    CRSPoolReport
+    CRSPoolReport,
+    // FATCA
+    FATCAFailedThreatScan,
+    FATCAEmojis,
+    FATCASendCompanyIn,
+    FATCAEmptyMandatoryElements,
+    FATCAMessageRefIdInvalidFormat,
+    FATCAFileNameMessageRefIdMismatch,
+    FATCADuplicateMessageRefId,
+    FATCAMessageSpecCorrMessageRefId,
+    FATCAReportingPeriodEndDate,
+    FATCAReportingPeriodEarlyDate,
+    FATCAReportingPeriodFutureDate,
+    FATCAMultipleReportingFIs,
+    FATCAChangingReportingPeriod,
+    FATCAMultipleReportingGroup,
+    FATCAReportingFIResCountryCode,
+    FATCATinMissing,
+    FATCATinIssuedByAttributeMissing,
+    FATCAUSIssuedTin,
+    FATCASponsorTin,
+    FATCANameType,
+    FATCAlegalAddressType,
+    FATCAlegalAddressAddressFix,
+    FATCAReportingFIFilerCategory,
+    FATCAFilerCategory1,
+    FATCAFilerCategory2,
+    FATCAFilerCategory3,
+    FATCAFilerCategory4,
+    FATCAFilerCategory5,
+    FATCATestData,
+    FATCADocTypeIndicCombinationInvalid,
+    FATCADocRefIdInvalidFormat,
+    FATCADuplicateDocRefIds,
+    FATCADocSpecCorrMessageRefId,
+    FATCAFactca1CorrDocRefId,
+    FATCACorrDocRefIdMissing,
+    FATCADuplicateCorrDocRefIds,
+    FATCACorrDocRefIdInvalid,
+    FATCACorrDocRefIdUnknown,
+    FATCAInvalidCorrDocRefId,
+    FATCANilReport,
+    FATCAReportingGroup,
+    FATCAResCountryCodeMissing,
+    FATCAResCountryCodeUS,
+    FATCARegimeIncorrect1,
+    FATCARegimeIncorrect2,
+    FATCASponsorFilerCategory,
+    FATCAIndividualTINCodes,
+    FATCAOrganisationTINCodes,
+    FATCAIBANFormatInvalid,
+    FATCAISINFormatInvalid,
+    FATCAOrganisationAcctHolderType,
+    FATCANationality,
+    FATCABirthDateRange,
+    FATCASubstantialOwner,
+    FATCAPaymentTypeDesc,
+    FATCACARRef,
+    FATCAAdditionalData,
+    FATCA_SubstantialOwner
   )
 
   private val lookup: Map[String, BusinessRuleErrorCode] =

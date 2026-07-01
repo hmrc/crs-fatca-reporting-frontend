@@ -130,34 +130,23 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
 
       }
 
-      "should render page components for FATCA regimeType with over 100 errors" ignore {
-
-        val tableHeaderValues = Seq(
-          "Code",
-          "DocRefId",
-          "Error"
+      "should render table components for Fatca regimeType with specific record errors" in {
+        val recordErrors = Seq(
+          RecordError(BusinessRuleErrorCode.FATCAEmojis, Some("DocRefId1"), Some(Seq("DocRefId1", "DocRefId2"))),
+          RecordError(BusinessRuleErrorCode.FATCABirthDateRange, Some("DocRefId1"), Some(Seq("DocRefId2"))),
+          RecordError(BusinessRuleErrorCode.FATCAPaymentTypeDesc, Some("DocRefId1"), Some(Seq("DocRefId2")))
         )
-
-        val tableCellValueFirstRow = Seq(
-          "FATCA 80002",
-          "N/A",
-          "The CorrDocRefId provided does not match any DocRefId in our records."
-        )
-
-        val tableCellValueSecondRow = Seq(
-          "FATCA 50008",
-          "GB2026GB-FIID123456789-CRSReport2026001-ReportingFI-001",
-          "MessageRefId must be 100 characters or less and follow this structure in the order referenced: the same value as the year in the MessageSpec ReportingPeriod in the format ‘YYYY’ For example, ‘GB2022GBXACBC0000999999CBC40120230523T140000123456789’."
-        )
-
-        val renderedHtml: HtmlFormat.Appendable = view(fileName, regimeType, 101, createViewModel())
-
-        lazy val doc = Jsoup.parse(renderedHtml.body)
+        val validationErrors = FileValidationErrors(None, Some(recordErrors))
+        val viewModel        = FileRejectedViewModel(validationErrors)
 
         val expectedRows = Seq(
-          Seq("CRS 3", "DocRefId1", "The file must not contain emoji Unicode characters."),
-          Seq("CRS 6", "DocRefId2", "If the MessageTypeIndic is CRS703, the file must not contain a CrsBody.")
+          Seq("FATCA 3", "DocRefId1 DocRefId2", "The file must not contain emoji Unicode characters."),
+          Seq("FATCA 59", "DocRefId2", "BirthDate must be 1900-01-01 or later and not later than the current date."),
+          Seq("FATCA 62", "DocRefId2", "The file must not contain the PaymentTypeDesc element.")
         )
+
+        val renderedHtml = view(fileName, regimeType, expectedRows.size, viewModel)
+        val doc          = Jsoup.parse(renderedHtml.body)
 
         doc.select(".govuk-table__body .govuk-table__row").size() mustEqual expectedRows.size
 
@@ -165,13 +154,7 @@ class RulesErrorViewSpec extends SpecBase with GuiceOneAppPerSuite with Injectin
           case (row, idx) =>
             validateListValues(getAllElements(doc, s".govuk-table__body .govuk-table__row:nth-child(${idx + 1})"), row)
         }
-
-        validateListValues(getAllElements(doc, ".govuk-table__header"), tableHeaderValues)
-        doc.select(".govuk-table__body .govuk-table__row").size() mustEqual 2
-        validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(1)"), tableCellValueFirstRow)
-        validateListValues(getAllElements(doc, ".govuk-table__body .govuk-table__row:nth-child(2)"), tableCellValueSecondRow)
       }
-
     }
   }
 
