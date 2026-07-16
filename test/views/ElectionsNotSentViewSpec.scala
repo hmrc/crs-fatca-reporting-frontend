@@ -46,7 +46,7 @@ class ElectionsNotSentViewSpec extends SpecBase with GuiceOneAppPerSuite with In
         "We have received the GIIN for this financial institution, but have not been able to receive the elections.",
         "You can still send your file without the elections, then add them after in the service."
       )
-
+      getAllElements(doc, "#technicalDifficultiesRedirectUrl").get(0).attr("value") must include("/there-is-a-problem")
       getWindowTitle(doc) mustEqual "There is a problem with sending the elections - Send a CRS or FATCA report - GOV.UK"
       getPageHeading(doc) mustEqual "There is a problem with sending the elections"
       validateAllParaValues(getAllParagraph(doc).text(), paragraphValues)

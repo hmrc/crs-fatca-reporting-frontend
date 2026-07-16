@@ -48,6 +48,7 @@ class SendYourFileViewSpec extends SpecBase with GuiceOneAppPerSuite with Inject
 
       getWindowTitle(doc) must include("Send your file")
       getPageHeading(doc) mustEqual "Send your file"
+      getAllElements(doc, "#technicalDifficultiesRedirectUrl").get(0).attr("value") must include("/there-is-a-problem")
       val allParagraphValues = getAllParagraph(doc).text()
       validateAllParaValues(allParagraphValues, paragraphValues)
       allParagraphValues mustNot include("We'll also send your GIIN or let you know if there are any issues with sending it.")
