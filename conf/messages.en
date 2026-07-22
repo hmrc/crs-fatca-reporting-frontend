@@ -686,6 +686,10 @@ xml.elem.timestamp.invalid = Timestamp element must be in the format YYYY-MM-DDT
 xml.elem.crs.countryinfo.invalid = Optional CountryInfo element must include CountryCode or FormerCountryName
 xml.elem.crs.addressfix.missing = Address must contain AddressFix
 xml.elem.crs.accountHolder.missing = AccountHolder must contain either Individual or Organisation and AcctHolderType
+xml.section.notapplicable = {0} section is not required for UK reporting and should be removed
+xml.elem.fatca.reportinggroup.choice = ReportingGroup must contain either NilReport or AccountReport. PoolReport is not required for UK reporting and should be removed, if provided
+xml.elem.noaccounttoreport = NoAccountToReport element is missing. The value must be 'yes'
+xml.elem.boolean.invalid = {0} element value must be true or false
 
 submissionsChecks.title = Results of submission checks
 submissionsChecks.heading = Results of submission checks
