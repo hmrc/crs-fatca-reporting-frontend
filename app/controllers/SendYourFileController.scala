@@ -187,7 +187,7 @@ class SendYourFileController @Inject() (
       .exists(
         e => notAcceptedErrorCodes(e.code)
       )
-    println(s"Result $isNotAcceptedRecord  , $isNotAccepted")
+
     if (isNotAccepted || isNotAcceptedRecord)
       Future.successful(Ok(Json.toJson(URL(routes.FileNotAcceptedController.onPageLoad(regime).url))))
     else

@@ -289,7 +289,7 @@ class StillCheckingYourFileControllerSpec extends SpecBase {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual controllers.routes.FileNotAcceptedController.onPageLoad(FATCA.toString).url
         }
-      } //
+      }
 
       "when file status is Rejected with FATCA 51 error" in {
         val messageSpecData  = getMessageSpecData(FATCA, fiNameFromFim = hardcodedFiName, reportType = NewInformation)
