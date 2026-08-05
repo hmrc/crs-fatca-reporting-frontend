@@ -173,9 +173,7 @@ class SendYourFileController @Inject() (
   }
 
   private def handleRejectedWithErrors(errors: Option[FileValidationErrors], conversationId: ConversationId, regime: String): Future[Result] = {
-    println("I am here ....")
     val notAcceptedErrorCodes = Set(FailedSchemaValidationCrs, FailedSchemaValidationFatca, FATCARegimeIncorrect2)
-    println(errors.get.recordError)
     val isNotAcceptedRecord = errors
       .flatMap(_.recordError)
       .getOrElse(Nil)
