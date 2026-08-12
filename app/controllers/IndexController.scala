@@ -28,7 +28,7 @@ import models.upscan.*
 import models.{ErrorCode, InvalidArgumentErrorMessage}
 import org.apache.pekko
 import org.apache.pekko.actor.ActorSystem
-import pages.{FileReferencePage, UploadIDPage}
+import pages.{FileReferencePage, PollingCountPage, UploadIDPage}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.i18n.Lang.logger
@@ -36,7 +36,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.UploadXMLView
+import views.html.{FileUploadPendingView, UploadXMLView}
 
 import javax.inject.Inject
 import scala.concurrent.Future
@@ -53,7 +53,8 @@ class IndexController @Inject() (
   config: FrontendAppConfig,
   upscanConnector: UpscanConnector,
   formProvider: UploadXMLFormProvider,
-  view: UploadXMLView
+  view: UploadXMLView,
+  uploadPendingView: FileUploadPendingView
 ) extends FrontendBaseController
     with I18nSupport {
 
@@ -106,6 +107,10 @@ class IndexController @Inject() (
 
   def getStatus(uploadId: UploadId): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
+      val refreshThreshHold = 5;
+      val pollingCount      = request.userAnswers.get(PollingCountPage).getOrElse(0)
+      // What is missing deleting the PollingCountPage when we redirect to a new page.
+
       // Delay the call to make sure the backend db has been populated by the upscan callback first
       pekko.pattern.after(config.upscanCallbackDelayInSeconds.seconds, actorSystem.scheduler) {
         upscanConnector.getUploadStatus(uploadId) map {
@@ -132,7 +137,19 @@ class IndexController @Inject() (
             logger.warn("File upload returned failed status")
             Redirect(routes.IndexController.showError("UploadFailed", "", "").url)
           case Some(_) =>
-            Redirect(routes.IndexController.getStatus(uploadId).url)
+            if (pollingCount <= refreshThreshHold) {
+              val count = pollingCount + 1
+              Future
+                .fromTry(request.userAnswers.set(PollingCountPage, count))
+                .flatMap(
+                  u => sessionRepository.set(u)
+                )
+              Redirect(routes.IndexController.getStatus(uploadId).url)
+            } else {
+              Ok(uploadPendingView(uploadId))
+            }
+          // Ok(uploadPendingView(uploadId))
+          // Redirect(routes.IndexController.getStatus(uploadId).url)
           case None =>
             logger.error("Unable to retrieve file upload status from Upscan")
             Redirect(routes.IndexController.showError("UploadFailed", "", "").url)
@@ -144,3 +161,11 @@ class IndexController @Inject() (
 
   private def isFileEmpty(size: Long): Boolean = size == 0L
 }
+
+//if (pollingCount <= refreshThreshHold) {
+//  val count = pollingCount + 1
+//  Future.fromTry(request.userAnswers.set(PollingCountPage, count)).flatMap(u => sessionRepository.set(u))
+//  Redirect(routes.IndexController.getStatus(uploadId).url)
+//} else {
+//  Ok(uploadPendingView(uploadId))
+//}
