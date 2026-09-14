@@ -619,7 +619,8 @@ fatca.code.62.value = The file must not contain the PaymentTypeDesc element.
 fatca.code.63.value = AccountReport must not contain the CARRef section.
 fatca.code.64.value = AccountReport must not contain the AdditionalData element.
 fatca.code.65.value = AccountReport must not contain the SubstantialOwner element if it also contains the AccountHolder Individual element.
-
+xml.elem.fatca.precedingTitle.max = PrecedingTitle element is not required for FATCA and should be removed
+xml.elem.fatca.title.max = Title element is not required for FATCA and should be removed
 xml.elem.missing = {0} element is missing
 xml.section.missing = {0} section is missing
 xml.elem.value.empty = Value is missing between {0} element tags
