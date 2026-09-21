@@ -33,7 +33,8 @@ class ErrorViewHelper @Inject() () {
         er.message.messageKey match {
           case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
           case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber)
-          case "xml.elem.messageRefId.max"        => messageRefId(er.lineNumber)
+          case "xml.elem.messageRefId.max"        => messageRefId(er.lineNumber, true)
+          case "xml.elem.fatca.messageRefId.max"  => messageRefId(er.lineNumber, false)
           case "xml.elem.unknown"                 => unknownElem(er.lineNumber, er.message)
           case _ =>
             Seq(
@@ -51,7 +52,11 @@ class ErrorViewHelper @Inject() () {
 
   private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.DocRefId.max", 3)
 
-  private def messageRefId(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.messageRefId.max", 7)
+  private def messageRefId(lineNumber: Int, isCrs: Boolean)(implicit messages: Messages) = if (isCrs) {
+    errorRows(lineNumber, "xml.elem.messageRefId.max", 7)
+  } else{
+    errorRows(lineNumber, "xml.elem.fatca.messageRefId.max", 7)
+  }
 
   private def unknownElem(lineNumber: Int, m: Message)(implicit messages: Messages) = {
     val htmlContent =
