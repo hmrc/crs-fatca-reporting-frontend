@@ -32,7 +32,8 @@ class ErrorViewHelper @Inject() () {
       er =>
         er.message.messageKey match {
           case "xml.elem.reportingPeriod.invalid" => invalidReportingPeriod(er.lineNumber)
-          case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber)
+          case "xml.elem.DocRefId.max"            => invalidDocRef(er.lineNumber, true)
+          case "xml.elem.fatca.DocRefId.max"      => invalidDocRef(er.lineNumber, false)
           case "xml.elem.messageRefId.max"        => messageRefId(er.lineNumber, true)
           case "xml.elem.fatca.messageRefId.max"  => messageRefId(er.lineNumber, false)
           case "xml.elem.unknown"                 => unknownElem(er.lineNumber, er.message)
@@ -50,11 +51,12 @@ class ErrorViewHelper @Inject() () {
 
   private def invalidReportingPeriod(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.reportingPeriod.invalid", 3)
 
-  private def invalidDocRef(lineNumber: Int)(implicit messages: Messages) = errorRows(lineNumber, "xml.elem.DocRefId.max", 3)
+  private def invalidDocRef(lineNumber: Int, isCrs: Boolean)(implicit messages: Messages) =
+    if isCrs then errorRows(lineNumber, "xml.elem.DocRefId.max", 3) else errorRowsForWithoutLastPara(lineNumber, "xml.elem.fatca.DocRefId.max", 6)
 
   private def messageRefId(lineNumber: Int, isCrs: Boolean)(implicit messages: Messages) = if (isCrs) {
     errorRows(lineNumber, "xml.elem.messageRefId.max", 7)
-  } else{
+  } else {
     errorRows(lineNumber, "xml.elem.fatca.messageRefId.max", 7)
   }
 
@@ -89,6 +91,35 @@ class ErrorViewHelper @Inject() () {
          |  $listItemsHtml
          |</ul>
          |<p class="govuk-body govuk-!-margin-bottom-0">${messages(s"$messageTag.p2")}</p>
+         |""".stripMargin
+
+    Seq(
+      TableRow(
+        content = Text(lineNumber.toString),
+        classes = "govuk-table__cell--numeric",
+        attributes = Map("id" -> s"lineNumber_$lineNumber")
+      ),
+      TableRow(
+        content = HtmlContent(htmlContent),
+        attributes = Map("id" -> s"errorMessage_$lineNumber")
+      )
+    )
+  }
+
+  private def errorRowsForWithoutLastPara(lineNumber: Int, messageTag: String, listCount: Int)(implicit messages: Messages): Seq[TableRow] = {
+
+    val listItemsHtml = (1 to listCount)
+      .map {
+        index => s"<li>${messages(s"$messageTag.li$index")}</li>"
+      }
+      .mkString("\n")
+
+    val htmlContent =
+      s"""
+         |<p class="govuk-body govuk-!-margin-bottom-1">${messages(messageTag)}</p>
+         |<ul class="govuk-list govuk-list--bullet">
+         |  $listItemsHtml
+         |</ul>
          |""".stripMargin
 
     Seq(

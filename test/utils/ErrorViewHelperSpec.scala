@@ -110,6 +110,32 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
         }
       }
 
+      "xml.elem.fatca.DocRefId.max" - {
+
+        "generates an HtmlContent row" in {
+          val error  = GenericError(lineNumber = 20, message = Message("xml.elem.fatca.DocRefId.max"))
+          val result = helper.generateTable(Seq(error))(mockMessages)
+          val row    = result.head
+
+          row.head.attributes shouldBe Map("id" -> "lineNumber_20")
+          row(1).attributes shouldBe Map("id" -> "errorMessage_20")
+          row(1).content shouldBe a[HtmlContent]
+        }
+
+        "includes all expected message keys in the html" in {
+          val error = GenericError(lineNumber = 20, message = Message("xml.elem.fatca.DocRefId.max"))
+          val html  = helper.generateTable(Seq(error))(mockMessages).head(1).content.asInstanceOf[HtmlContent].value.body
+
+          html should include("xml.elem.fatca.DocRefId.max")
+          html should include("xml.elem.fatca.DocRefId.max.li1")
+          html should include("xml.elem.fatca.DocRefId.max.li2")
+          html should include("xml.elem.fatca.DocRefId.max.li3")
+          html should include("xml.elem.fatca.DocRefId.max.li4")
+          html should include("xml.elem.fatca.DocRefId.max.li5")
+          html should include("xml.elem.fatca.DocRefId.max.li6")
+        }
+      }
+
       "xml.elem.messageRefId.max" - {
 
         "generates an HtmlContent row" in {
@@ -163,6 +189,7 @@ class ErrorViewHelperSpec extends AnyFreeSpec with Matchers {
           val keys = Seq(
             "xml.elem.reportingPeriod.invalid",
             "xml.elem.DocRefId.max",
+            "xml.elem.fatca.DocRefId.max",
             "xml.elem.messageRefId.max",
             "xml.elem.unknown"
           )
