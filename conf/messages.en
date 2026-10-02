@@ -716,6 +716,7 @@ xml.elem.noaccounttoreport = NoAccountToReport element is missing. The value mus
 xml.elem.noaccounttoreport.no = NoAccountToReport value must be ‘yes’
 xml.elem.boolean.invalid = {0} element value must be true or false
 xml.elem.payment.type.missing = Payment Type element is missing
+xml.elem.fatca.tin.max = Optional TIN value must be a GIIN or 9 unique digits. The 9 unique digits can be in the format 123456789, 12-3456789 or 123-45-6789
 
 submissionsChecks.title = Results of submission checks
 submissionsChecks.heading = Results of submission checks
